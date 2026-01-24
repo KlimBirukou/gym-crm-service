@@ -1,43 +1,35 @@
 package com.epam.gym.repository.trainer;
 
 import com.epam.gym.domain.Trainer;
-import com.epam.gym.storage.TrainerStorage;
-import lombok.RequiredArgsConstructor;
+import com.epam.gym.storage.InMemoryStorage;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
 
 @Repository
-@RequiredArgsConstructor
 public final class InMemoryTrainerRepository implements ITrainerRepository {
 
-    private final TrainerStorage trainerStorage;
+    private InMemoryStorage inMemoryStorage;
 
     @Override
     public void save(Trainer trainer) {
-        trainerStorage.getStorage().put(trainer.getUid(), trainer);
-    }
-
-    @Override
-    public Optional<Trainer> findByUid(UUID uid) {
-        return Optional.ofNullable(trainerStorage.getStorage().get(uid));
+        inMemoryStorage.getTrainerStorage().put(trainer.getUid(), trainer);
     }
 
     @Override
     public List<Trainer> findByFirstNameAndLastName(String firstName, String lastName) {
-        return trainerStorage.getStorage()
+        return inMemoryStorage.getTrainerStorage()
             .values()
             .stream()
-            .filter(trainer -> Objects.equals(trainer.getFirstName(), firstName)
-                && Objects.equals(trainer.getLastName(), lastName))
+            .filter(trainer -> Objects.equals(trainer.getFirstName(), firstName))
+            .filter(trainer -> Objects.equals(trainer.getLastName(), lastName))
             .toList();
     }
 
-    @Override
-    public void deleteByUid(UUID uid) {
-        trainerStorage.getStorage().remove(uid);
+    @Autowired
+    public void setInMemoryStorage(InMemoryStorage inMemoryStorage) {
+        this.inMemoryStorage = inMemoryStorage;
     }
 }
