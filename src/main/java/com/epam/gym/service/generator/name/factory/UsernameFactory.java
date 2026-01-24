@@ -1,4 +1,4 @@
-package com.epam.gym.service.name.factory;
+package com.epam.gym.service.generator.name.factory;
 
 import com.epam.gym.GymApplication;
 import org.springframework.stereotype.Service;

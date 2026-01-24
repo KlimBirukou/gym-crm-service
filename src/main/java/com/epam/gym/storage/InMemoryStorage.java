@@ -1,6 +1,6 @@
 package com.epam.gym.storage;
 
-import com.epam.gym.domain.Trainer;
+import com.epam.gym.domain.user.Trainer;
 import lombok.Getter;
 import org.springframework.stereotype.Component;
 

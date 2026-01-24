@@ -1,6 +1,6 @@
 package com.epam.gym.repository.trainer;
 
-import com.epam.gym.domain.Trainer;
+import com.epam.gym.domain.user.Trainer;
 import com.epam.gym.storage.InMemoryStorage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;

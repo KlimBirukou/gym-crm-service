@@ -1,12 +1,12 @@
-package com.epam.gym.service.trainer;
+package com.epam.gym.facade;
 
 import com.epam.gym.domain.user.Trainer;
 import com.epam.gym.service.trainer.dto.CreateTrainerDto;
 import com.epam.gym.service.trainer.dto.UpdateTrainerDto;
 
-public interface ITrainerService {
+public interface IGymFacade {
 
-    Trainer create(CreateTrainerDto dto);
+    Trainer createTrainer(CreateTrainerDto dto);
 
-    void update(UpdateTrainerDto dto);
+    void updateTrainer(UpdateTrainerDto dto);
 }

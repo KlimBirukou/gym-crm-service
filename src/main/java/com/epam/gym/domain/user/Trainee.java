@@ -1,4 +1,4 @@
-package com.epam.gym.domain;
+package com.epam.gym.domain.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,6 +8,8 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 import lombok.experimental.SuperBuilder;
 
+import java.util.Date;
+
 @Data
 @SuperBuilder
 @NoArgsConstructor
@@ -15,7 +17,8 @@ import lombok.experimental.SuperBuilder;
 @Accessors(chain = true)
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public final class Trainer extends User {
+public final class Trainee extends User {
 
-    private String specialization;
+    private String address;
+    private Date birhDate;
 }

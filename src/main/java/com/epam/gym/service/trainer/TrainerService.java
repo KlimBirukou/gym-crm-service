@@ -1,16 +1,18 @@
 package com.epam.gym.service.trainer;
 
-import com.epam.gym.domain.Trainer;
+import com.epam.gym.domain.user.Trainer;
 import com.epam.gym.repository.trainer.ITrainerRepository;
-import com.epam.gym.service.name.IUsernameGenerator;
-import com.epam.gym.service.password.IPasswordGenerator;
+import com.epam.gym.service.generator.name.IUsernameGenerator;
+import com.epam.gym.service.generator.password.IPasswordGenerator;
 import com.epam.gym.service.trainer.dto.CreateTrainerDto;
 import com.epam.gym.service.trainer.dto.UpdateTrainerDto;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
+@Slf4j
 @Service
 public final class TrainerService implements ITrainerService {
 
@@ -20,6 +22,7 @@ public final class TrainerService implements ITrainerService {
 
     @Override
     public Trainer create(CreateTrainerDto dto) {
+        log.debug("Creating trainer with firstName = {}, lastName = {}", dto.firstName(), dto.lastName());
         var trainer = Trainer.builder()
             .uid(UUID.randomUUID())
             .firstName(dto.firstName())
@@ -30,15 +33,18 @@ public final class TrainerService implements ITrainerService {
             .isActive(true)
             .build();
         trainerRepository.save(trainer);
+        log.debug("Trainer created with uid = {}", trainer.getUid());
         return trainer;
     }
 
     @Override
     public void update(UpdateTrainerDto dto) {
+        log.debug("Updating trainer uid = {}", dto.uid());
         var trainer = trainerRepository.findByUid(dto.uid())
             .orElseThrow(() -> new RuntimeException("Trainer not found"));
         trainer.setSpecialization(dto.specialization());
         trainerRepository.save(trainer);
+        log.debug("Trainer with uid = {} updated", trainer.getUid());
     }
 
     @Autowired

@@ -1,9 +1,9 @@
-package com.epam.gym.service.name;
+package com.epam.gym.service.generator.name;
 
 import com.epam.gym.GymApplication;
-import com.epam.gym.domain.Trainer;
+import com.epam.gym.domain.user.Trainer;
 import com.epam.gym.repository.trainer.ITrainerRepository;
-import com.epam.gym.service.name.factory.IUsernameFactory;
+import com.epam.gym.service.generator.name.factory.IUsernameFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

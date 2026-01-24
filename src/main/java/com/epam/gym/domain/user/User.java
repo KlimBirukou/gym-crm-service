@@ -1,4 +1,4 @@
-package com.epam.gym.domain;
+package com.epam.gym.domain.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

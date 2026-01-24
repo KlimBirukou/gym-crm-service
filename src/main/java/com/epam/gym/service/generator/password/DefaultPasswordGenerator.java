@@ -1,4 +1,4 @@
-package com.epam.gym.service.password;
+package com.epam.gym.service.generator.password;
 
 import java.util.UUID;
 

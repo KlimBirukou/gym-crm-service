@@ -1,6 +1,6 @@
 package com.epam.gym.repository.trainer;
 
-import com.epam.gym.domain.Trainer;
+import com.epam.gym.domain.user.Trainer;
 
 import java.util.List;
 import java.util.Optional;

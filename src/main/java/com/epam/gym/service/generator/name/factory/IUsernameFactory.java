@@ -1,4 +1,4 @@
-package com.epam.gym.service.name.factory;
+package com.epam.gym.service.generator.name.factory;
 
 public interface IUsernameFactory {
 

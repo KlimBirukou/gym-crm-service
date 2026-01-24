@@ -1,4 +1,4 @@
-package com.epam.gym.service.name;
+package com.epam.gym.service.generator.name;
 
 public interface IUsernameGenerator {
 
