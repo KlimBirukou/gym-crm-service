@@ -4,6 +4,8 @@ import com.epam.gym.domain.Trainer;
 import com.epam.gym.repository.trainer.ITrainerRepository;
 import com.epam.gym.service.name.IUsernameGenerator;
 import com.epam.gym.service.password.IPasswordGenerator;
+import com.epam.gym.service.trainer.dto.CreateTrainerDto;
+import com.epam.gym.service.trainer.dto.UpdateTrainerDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,9 +34,11 @@ public final class TrainerService implements ITrainerService {
     }
 
     @Override
-    public void update(Trainer trainer) {
-
-        //TODO need full realization
+    public void update(UpdateTrainerDto dto) {
+        var trainer = trainerRepository.findByUid(dto.uid())
+            .orElseThrow(() -> new RuntimeException("Trainer not found"));
+        trainer.setSpecialization(dto.specialization());
+        trainerRepository.save(trainer);
     }
 
     @Autowired

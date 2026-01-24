@@ -1,4 +1,4 @@
-package com.epam.gym.service.trainer;
+package com.epam.gym.service.trainer.dto;
 
 public record CreateTrainerDto(
 
