@@ -1,10 +1,10 @@
-package com.epam.gym.service.trainig;
+package com.epam.gym.service.training;
 
 import com.epam.gym.domain.training.Training;
 import com.epam.gym.repository.trainee.ITraineeRepository;
 import com.epam.gym.repository.trainer.ITrainerRepository;
 import com.epam.gym.repository.training.ITrainingRepository;
-import com.epam.gym.service.trainig.dto.CreateTrainingDto;
+import com.epam.gym.service.training.dto.CreateTrainingDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

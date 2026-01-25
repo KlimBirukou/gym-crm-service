@@ -9,7 +9,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Repository
-public final class InMemoryTrainerRepository implements ITrainingRepository {
+public final class InMemoryTrainingRepository implements ITrainingRepository {
 
     private InMemoryStorage inMemoryStorage;
 

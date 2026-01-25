@@ -7,7 +7,7 @@ import com.epam.gym.service.trainee.dto.CreateTraineeDto;
 import com.epam.gym.service.trainee.dto.UpdateTraineeDto;
 import com.epam.gym.service.trainer.dto.CreateTrainerDto;
 import com.epam.gym.service.trainer.dto.UpdateTrainerDto;
-import com.epam.gym.service.trainig.dto.CreateTrainingDto;
+import com.epam.gym.service.training.dto.CreateTrainingDto;
 
 import java.util.UUID;
 

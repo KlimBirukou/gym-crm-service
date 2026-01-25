@@ -20,5 +20,5 @@ import java.util.Date;
 public final class Trainee extends User {
 
     private String address;
-    private Date birhDate;
+    private Date birthDate;
 }

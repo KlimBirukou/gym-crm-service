@@ -1,4 +1,4 @@
-package com.epam.gym.service.trainig.dto;
+package com.epam.gym.service.training.dto;
 
 import com.epam.gym.domain.training.TrainingType;
 
