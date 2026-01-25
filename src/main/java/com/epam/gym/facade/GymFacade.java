@@ -1,5 +1,6 @@
 package com.epam.gym.facade;
 
+import com.epam.gym.domain.training.Training;
 import com.epam.gym.domain.user.Trainee;
 import com.epam.gym.domain.user.Trainer;
 import com.epam.gym.service.trainee.ITraineeService;
@@ -8,6 +9,8 @@ import com.epam.gym.service.trainee.dto.UpdateTraineeDto;
 import com.epam.gym.service.trainer.ITrainerService;
 import com.epam.gym.service.trainer.dto.CreateTrainerDto;
 import com.epam.gym.service.trainer.dto.UpdateTrainerDto;
+import com.epam.gym.service.trainig.ITrainingService;
+import com.epam.gym.service.trainig.dto.CreateTrainingDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -21,6 +24,7 @@ public final class GymFacade implements IGymFacade {
 
     private final ITrainerService trainerService;
     private final ITraineeService traineeService;
+    private final ITrainingService trainingService;
 
     @Override
     public Trainer createTrainer(CreateTrainerDto dto) {
@@ -57,5 +61,14 @@ public final class GymFacade implements IGymFacade {
         log.info("Deleting trainee with uid = {}", uid);
         traineeService.delete(uid);
         log.info("Trainee with uid = {} deleted", uid);
+    }
+
+    @Override
+    public Training createTraining(CreateTrainingDto dto) {
+        log.info("Creating training for trainer = {}, trainee = {}, on date = {} ",
+            dto.trainerUid(), dto.traineeUid(), dto.trainingDate());
+        var training = trainingService.create(dto);
+        log.info("Training created with uid = {}", training.getTrainingUid());
+        return training;
     }
 }

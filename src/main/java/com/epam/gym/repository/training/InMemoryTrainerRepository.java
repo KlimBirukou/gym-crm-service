@@ -2,11 +2,11 @@ package com.epam.gym.repository.training;
 
 import com.epam.gym.domain.training.Training;
 import com.epam.gym.storage.InMemoryStorage;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
 
 @Repository
 public final class InMemoryTrainerRepository implements ITrainingRepository {
@@ -19,14 +19,15 @@ public final class InMemoryTrainerRepository implements ITrainingRepository {
     }
 
     @Override
-    public List<Training> findByTrainerUid(UUID uid) {
+    public List<Training> findByLocalDate(LocalDate date) {
         return inMemoryStorage.getTrainingStorage()
             .values()
             .stream()
-            .filter(training -> Objects.equals(training.getTrainerUid(), uid))
+            .filter(training -> training.getTrainingDate().isEqual(date))
             .toList();
     }
 
+    @Autowired
     public void setInMemoryStorage(InMemoryStorage inMemoryStorage) {
         this.inMemoryStorage = inMemoryStorage;
     }
