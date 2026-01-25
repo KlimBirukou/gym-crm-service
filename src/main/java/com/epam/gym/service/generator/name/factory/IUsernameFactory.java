@@ -1,8 +1,10 @@
 package com.epam.gym.service.generator.name.factory;
 
+import lombok.NonNull;
+
 public interface IUsernameFactory {
 
-    String create(String firstName, String lastName);
+    String create(@NonNull String firstName, @NonNull String lastName);
 
-    String create(String firstName, String lastName, int suffix);
+    String create(@NonNull String firstName, @NonNull String lastName, int suffix);
 }
