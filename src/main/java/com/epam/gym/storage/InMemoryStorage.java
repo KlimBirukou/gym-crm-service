@@ -1,5 +1,6 @@
 package com.epam.gym.storage;
 
+import com.epam.gym.domain.training.Training;
 import com.epam.gym.domain.user.Trainee;
 import com.epam.gym.domain.user.Trainer;
 import lombok.Getter;
@@ -15,4 +16,5 @@ public class InMemoryStorage {
 
     private final Map<UUID, Trainer> trainerStorage = new HashMap<>();
     private final Map<UUID, Trainee> traineeStorage = new HashMap<>();
+    private final Map<UUID, Training> trainingStorage = new HashMap<>();
 }

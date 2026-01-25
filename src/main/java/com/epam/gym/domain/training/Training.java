@@ -17,6 +17,7 @@ import java.util.UUID;
 @Accessors(chain = true)
 public final class Training {
 
+    private UUID trainingUid;
     private UUID traineeUid;
     private UUID trainerUid;
     private String trainingName;
