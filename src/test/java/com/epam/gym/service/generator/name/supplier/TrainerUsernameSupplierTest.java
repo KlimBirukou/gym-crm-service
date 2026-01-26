@@ -3,13 +3,16 @@ package com.epam.gym.service.generator.name.supplier;
 import com.epam.gym.GymApplication;
 import com.epam.gym.domain.user.Trainer;
 import com.epam.gym.repository.trainer.ITrainerRepository;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -51,51 +54,37 @@ class TrainerUsernameSupplierTest {
     @InjectMocks
     private TrainerUsernameSupplier testObject;
 
-    @Test
-    void provideUsers_shouldReturnEmptyList_whenNoTrainerExist() {
+    static Stream<Arguments> supplyTrainersFromRepository() {
+        return Stream.of(
+            Arguments.of(EMPTY_TRAINER_LIST, EMPTY_USERNAME_LIST),
+            Arguments.of(LIST_WITH_TRAINER, LIST_WITH_USERNAME),
+            Arguments.of(LIST_WITH_TRAINERS, LIST_WITH_USERNAMES)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("supplyTrainersFromRepository")
+    void supply_shouldReturnExpectedResult(List<Trainer> trainees, List<String> usernames) {
         when(trainerRepository.findByFirstNameAndLastName(FIRSTNAME, LASTNAME))
-            .thenReturn(EMPTY_TRAINER_LIST);
+            .thenReturn(trainees);
 
         var result = testObject.supply(FIRSTNAME, LASTNAME);
 
-        assertEquals(EMPTY_USERNAME_LIST, result);
+        assertEquals(usernames, result);
     }
 
-    @Test
-    void provideUsers_shouldReturnListWithOneTrainer_whenOneTrainerExist() {
-        when(trainerRepository.findByFirstNameAndLastName(FIRSTNAME, LASTNAME))
-            .thenReturn(LIST_WITH_TRAINER);
-
-        var result = testObject.supply(FIRSTNAME, LASTNAME);
-
-        assertEquals(LIST_WITH_USERNAME, result);
+    static Stream<Arguments> provideNullNameArguments() {
+        return Stream.of(
+            Arguments.of(null, LASTNAME),
+            Arguments.of(FIRSTNAME, null),
+            Arguments.of(null, null)
+        );
     }
 
-    @Test
-    void provideUsers_shouldReturnListWithManyTrainers_whenManyTrainerExist() {
-        when(trainerRepository.findByFirstNameAndLastName(FIRSTNAME, LASTNAME))
-            .thenReturn(LIST_WITH_TRAINERS);
-
-        var result = testObject.supply(FIRSTNAME, LASTNAME);
-
-        assertEquals(LIST_WITH_USERNAMES, result);
-    }
-
-    @Test
-    void provideUsers_shouldThrowNpe_whenFirstNameIsNull() {
+    @ParameterizedTest
+    @MethodSource("provideNullNameArguments")
+    void shouldThrowNpe_whenArgumentsAreNull(String firstName, String lastName) {
         assertThrows(NullPointerException.class,
-            () -> testObject.supply(null, LASTNAME));
-    }
-
-    @Test
-    void provideUsers_shouldThrowNpe_whenLastNameIsNull() {
-        assertThrows(NullPointerException.class,
-            () -> testObject.supply(FIRSTNAME, null));
-    }
-
-    @Test
-    void provideUsers_shouldThrowNpe_whenBothNamesAreNull() {
-        assertThrows(NullPointerException.class,
-            () -> testObject.supply(null, null));
+            () -> testObject.supply(firstName, lastName));
     }
 }

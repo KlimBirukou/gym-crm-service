@@ -61,7 +61,7 @@ class CompositeUsernameSupplierTest {
 
     @ParameterizedTest
     @MethodSource("provideSupplySingleSupplierTestData")
-    void supply_singleSupplier(List<String> usernames) {
+    void supply_singleSupplier_shouldReturnExpectedResult(List<String> usernames) {
         when(usernameSupplier.supply(FIRSTNAME, LASTNAME))
             .thenReturn(usernames);
 
@@ -80,7 +80,7 @@ class CompositeUsernameSupplierTest {
         assertEquals(EXCEPTION_MESSAGE, exception.getMessage());
     }
 
-    static Stream<Arguments> provideSupplyNullParametersTestData() {
+    static Stream<Arguments> provideNullNameArguments() {
         return Stream.of(
             Arguments.of(null, LASTNAME),
             Arguments.of(FIRSTNAME, null),
@@ -89,8 +89,8 @@ class CompositeUsernameSupplierTest {
     }
 
     @ParameterizedTest
-    @MethodSource("provideSupplyNullParametersTestData")
-    void supply_shouldThrowNpe_whenParametersAreNull(String firstName, String lastName) {
+    @MethodSource("provideNullNameArguments")
+    void shouldThrowNpe_whenParametersAreNull(String firstName, String lastName) {
         assertThrows(NullPointerException.class,
             () -> testObject.supply(firstName, lastName));
     }
