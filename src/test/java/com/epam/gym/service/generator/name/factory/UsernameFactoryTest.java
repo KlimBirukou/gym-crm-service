@@ -55,8 +55,8 @@ class UsernameFactoryTest {
             Arguments.of(null, LASTNAME, SUFFIX_1),
             Arguments.of(FIRSTNAME, null, SUFFIX_1),
             Arguments.of(null, null, SUFFIX_1),
-            Arguments.of(null, LASTNAME, BAD_SUFFIX_ZERO),
-            Arguments.of(FIRSTNAME, null, BAD_SUFFIX_ZERO),
+            Arguments.of(null, LASTNAME, BAD_SUFFIX_NEGATIVE),
+            Arguments.of(FIRSTNAME, null, BAD_SUFFIX_NEGATIVE),
             Arguments.of(null, null, BAD_SUFFIX_ZERO)
         );
     }
@@ -77,7 +77,6 @@ class UsernameFactoryTest {
 
     static Stream<Arguments> provideBadSuffixesArguments() {
         return Stream.of(
-            Arguments.of(BAD_SUFFIX_ZERO),
             Arguments.of(BAD_SUFFIX_NEGATIVE)
         );
     }

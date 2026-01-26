@@ -10,11 +10,12 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 @Service
-public final class DefaultUserNameGenerator implements IUsernameGenerator {
+public final class DefaultUsernameGenerator implements IUsernameGenerator {
 
     private IUsernameFactory usernameFactory;
     private IUsernameSupplier usernameSupplier;
@@ -22,21 +23,19 @@ public final class DefaultUserNameGenerator implements IUsernameGenerator {
     @Override
     public String generate(@NonNull String firstName, @NonNull String lastName) {
         validateInput(firstName, lastName);
-        return Optional.of(usernameSupplier.supply(firstName, lastName))
-            .filter(Predicate.not(List::isEmpty))
-            .map(this::calculateSuffix)
-            .map(suffix -> usernameFactory.create(firstName, lastName, suffix))
-            .orElseGet(() -> usernameFactory.create(firstName, lastName));
-    }
-
-    private int calculateSuffix(List<String> usernames) {
+        var usernames = usernameSupplier.supply(firstName, lastName);
+        if (usernames.isEmpty()) {
+            return usernameFactory.create(firstName, lastName);
+        }
         return usernames.stream()
             .map(username -> username.split(Pattern.quote(GymApplication.DEFAULT_USERNAME_DELIMITER)))
             .filter(parts -> parts.length == 3)
-            .map(parts -> parts[parts.length - 1])
-            .mapToInt(Integer::parseInt)
+            .mapToInt(parts -> Integer.parseInt(parts[2]))
             .max()
-            .orElseThrow(() -> new RuntimeException("sdasdfhjdsfgjkhdf")); //todo - update
+            .stream()
+            .mapToObj(maxSuffix -> usernameFactory.create(firstName, lastName, maxSuffix))
+            .findFirst()
+            .orElseGet(() -> usernameFactory.create(firstName, lastName, 0));
     }
 
     private void validateInput(String firstName, String lastName) {
