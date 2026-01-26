@@ -14,8 +14,8 @@ public class UsernameFactory implements IUsernameFactory {
 
     @Override
     public String create(@NonNull String firstName, @NonNull String lastName, int suffix) {
-        if (suffix < 0) {
-            throw new IllegalArgumentException("Suffix must be non-negative");
+        if (suffix <= 0) {
+            throw new IllegalArgumentException("Suffix must be positive");
         }
         return String.join(GymApplication.DEFAULT_USERNAME_DELIMITER, firstName, lastName, String.valueOf(suffix + 1));
     }

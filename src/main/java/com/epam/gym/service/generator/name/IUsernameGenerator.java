@@ -1,6 +1,8 @@
 package com.epam.gym.service.generator.name;
 
+import lombok.NonNull;
+
 public interface IUsernameGenerator {
 
-    String generate(String firstName, String lastName);
+    String generate(@NonNull String firstName, @NonNull String lastName);
 }

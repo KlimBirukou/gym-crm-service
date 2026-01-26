@@ -1,55 +1,57 @@
 package com.epam.gym.service.generator.name;
 
 import com.epam.gym.GymApplication;
-import com.epam.gym.domain.user.Trainee;
-import com.epam.gym.domain.user.Trainer;
-import com.epam.gym.repository.trainee.ITraineeRepository;
-import com.epam.gym.repository.trainer.ITrainerRepository;
 import com.epam.gym.service.generator.name.factory.IUsernameFactory;
+import com.epam.gym.service.generator.name.supplier.IUsernameSupplier;
+import lombok.NonNull;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 @Service
 public final class DefaultUserNameGenerator implements IUsernameGenerator {
 
-    private ITraineeRepository traineeRepository;
-    private ITrainerRepository trainerRepository;
     private IUsernameFactory usernameFactory;
+    private IUsernameSupplier usernameSupplier;
 
     @Override
-    public String generate(String firstName, String lastName) {
-        var traineesUsernames = traineeRepository.findByFirstNameAndLastName(firstName, lastName)
-            .stream()
-            .map(Trainee::getUsername);
-        var trainersUsernames = trainerRepository.findByFirstNameAndLastName(firstName, lastName)
-            .stream()
-            .map(Trainer::getUsername);
-        var lastSuffix = Stream.concat(traineesUsernames, trainersUsernames)
+    public String generate(@NonNull String firstName, @NonNull String lastName) {
+        validateInput(firstName, lastName);
+        return Optional.of(usernameSupplier.supply(firstName, lastName))
+            .filter(Predicate.not(List::isEmpty))
+            .map(this::calculateSuffix)
+            .map(suffix -> usernameFactory.create(firstName, lastName, suffix))
+            .orElseGet(() -> usernameFactory.create(firstName, lastName));
+    }
+
+    private int calculateSuffix(List<String> usernames) {
+        return usernames.stream()
             .map(username -> username.split(Pattern.quote(GymApplication.DEFAULT_USERNAME_DELIMITER)))
-            .filter(parts -> parts.length > 2)
+            .filter(parts -> parts.length == 3)
             .map(parts -> parts[parts.length - 1])
             .mapToInt(Integer::parseInt)
-            .max();
-        return lastSuffix.isEmpty()
-            ? usernameFactory.create(firstName, lastName)
-            : usernameFactory.create(firstName, lastName, lastSuffix.getAsInt());
+            .max()
+            .orElseThrow(() -> new RuntimeException("sdasdfhjdsfgjkhdf")); //todo - update
     }
 
-    @Autowired
-    public void setTraineeRepository(ITraineeRepository traineeRepository) {
-        this.traineeRepository = traineeRepository;
-    }
-
-    @Autowired
-    public void setTrainerRepository(ITrainerRepository trainerRepository) {
-        this.trainerRepository = trainerRepository;
+    private void validateInput(String firstName, String lastName) {
+        if (StringUtils.isAnyBlank(firstName, lastName)) {
+            throw new IllegalArgumentException("firstName or lastName cannot be blank");
+        }
     }
 
     @Autowired
     public void setUsernameFactory(IUsernameFactory usernameFactory) {
         this.usernameFactory = usernameFactory;
+    }
+
+    @Autowired
+    public void setUsernameSupplier(IUsernameSupplier usernameSupplier) {
+        this.usernameSupplier = usernameSupplier;
     }
 }

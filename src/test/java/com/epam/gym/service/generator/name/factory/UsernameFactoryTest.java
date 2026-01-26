@@ -8,54 +8,75 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class UsernameFactoryTest {
 
-    private static final int PREV_SUFFIX = 2;
-    private static final int NEW_SUFFIX = 3;
-    private static final int BAD_SUFFIX = -1;
+    private static final int SUFFIX_1 = 1;
+    private static final int SUFFIX_2 = 2;
+    private static final int BAD_SUFFIX = 0;
     private static final String FIRSTNAME = "John";
     private static final String LASTNAME = "Doe";
-    private static final String EXPECTED_WITHOUT_SUFFIX = FIRSTNAME
-        + GymApplication.DEFAULT_USERNAME_DELIMITER
-        + LASTNAME;
-    private static final String EXPECTED_WITH_SUFFIX = FIRSTNAME
-        + GymApplication.DEFAULT_USERNAME_DELIMITER
-        + LASTNAME
-        + GymApplication.DEFAULT_USERNAME_DELIMITER
-        + NEW_SUFFIX;
+    private static final String USERNAME_WITHOUT_SUFFIX = String.join(
+        GymApplication.DEFAULT_USERNAME_DELIMITER,
+        FIRSTNAME,
+        LASTNAME);
+    private static final String USERNAME_WITH_SUFFIX = String.join(
+        GymApplication.DEFAULT_USERNAME_DELIMITER,
+        FIRSTNAME,
+        LASTNAME,
+        String.valueOf(SUFFIX_2));
 
     private final IUsernameFactory testObject = new UsernameFactory();
 
     @Test
-    void create_shouldCreateUsernameWithoutSuffix() {
+    void create_shouldReturnUsernameWithoutSuffix() {
         var result = testObject.create(FIRSTNAME, LASTNAME);
 
-        assertEquals(EXPECTED_WITHOUT_SUFFIX, result);
+        assertEquals(USERNAME_WITHOUT_SUFFIX, result);
     }
 
     @Test
-    void create_shouldCreateUsernameWithSuffix() {
-        var result = testObject.create(FIRSTNAME, LASTNAME, PREV_SUFFIX);
+    void create_shouldReturnUsernameWithSuffix() {
+        var result = testObject.create(FIRSTNAME, LASTNAME, SUFFIX_1);
 
-        assertEquals(EXPECTED_WITH_SUFFIX, result);
+        assertEquals(USERNAME_WITH_SUFFIX, result);
     }
 
     @Test
-    void create_shouldThrowNPE() {
+    void create_shouldThrowNpe_whenLastNameIsNull() {
         assertThrows(NullPointerException.class,
             () -> testObject.create(FIRSTNAME, null));
-        assertThrows(NullPointerException.class,
-            () -> testObject.create(null, LASTNAME));
-        assertThrows(NullPointerException.class,
-            () -> testObject.create(null, null));
-        assertThrows(NullPointerException.class,
-            () -> testObject.create(FIRSTNAME, null, PREV_SUFFIX));
-        assertThrows(NullPointerException.class,
-            () -> testObject.create(null, LASTNAME, PREV_SUFFIX));
-        assertThrows(NullPointerException.class,
-            () -> testObject.create(null, null, PREV_SUFFIX));
     }
 
     @Test
-    void create_shouldThrowIAE() {
+    void create_shouldThrowNpe_whenFirstNameIsNull() {
+        assertThrows(NullPointerException.class,
+            () -> testObject.create(null, LASTNAME));
+    }
+
+    @Test
+    void create_shouldThrowNpe_whenBothNameAreNull() {
+        assertThrows(NullPointerException.class,
+            () -> testObject.create(null, null));
+    }
+
+    @Test
+    void create_shouldThrowNpe_whenFirstNameIsNullWithSuffix() {
+        assertThrows(NullPointerException.class,
+            () -> testObject.create(null, LASTNAME, SUFFIX_1));
+    }
+
+    @Test
+    void create_shouldThrowNpe_whenLastNameIsNullWithSuffix() {
+        assertThrows(NullPointerException.class,
+            () -> testObject.create(FIRSTNAME, null, SUFFIX_1));
+    }
+
+    @Test
+    void create_shouldThrowNpe_whenBothNameAreNullWithSuffix() {
+        assertThrows(NullPointerException.class,
+            () -> testObject.create(null, null, SUFFIX_1));
+    }
+
+    @Test
+    void create_shouldThrowIae_whenBadSuffix() {
         assertThrows(IllegalArgumentException.class,
             () -> testObject.create(FIRSTNAME, LASTNAME, BAD_SUFFIX));
     }
