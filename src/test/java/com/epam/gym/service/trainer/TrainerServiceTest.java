@@ -45,7 +45,6 @@ public class TrainerServiceTest {
     private static final CreateTrainerDto CREATE_TRAINER_DTO = new CreateTrainerDto(FIRSTNAME, LASTNAME, SPECIALIZATION);
     private static final UpdateTrainerDto UPDATE_TRAINER_DTO = new UpdateTrainerDto(UID, NEW_SPECIALIZATION);
 
-
     @Mock
     private IUsernameGenerator usernameGenerator;
     @Mock
@@ -153,5 +152,4 @@ public class TrainerServiceTest {
             .isActive(true)
             .build();
     }
-
 }

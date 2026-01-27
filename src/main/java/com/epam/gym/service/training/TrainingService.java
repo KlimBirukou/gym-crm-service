@@ -5,6 +5,7 @@ import com.epam.gym.repository.trainee.ITraineeRepository;
 import com.epam.gym.repository.trainer.ITrainerRepository;
 import com.epam.gym.repository.training.ITrainingRepository;
 import com.epam.gym.service.training.dto.CreateTrainingDto;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,7 @@ public class TrainingService implements ITrainingService {
     private ITraineeRepository traineeRepository;
 
     @Override
-    public Training create(CreateTrainingDto dto) {
+    public Training create(@NonNull CreateTrainingDto dto) {
         log.debug("Creating training for trainer = {}, trainee = {}, on date = {} ",
             dto.trainerUid(), dto.traineeUid(), dto.trainingDate());
         validateNoConflicts(dto);
@@ -65,12 +66,12 @@ public class TrainingService implements ITrainingService {
     }
 
     @Autowired
-    private void setTrainerRepository(ITrainerRepository trainerRepository) {
+    public void setTrainerRepository(ITrainerRepository trainerRepository) {
         this.trainerRepository = trainerRepository;
     }
 
     @Autowired
-    private void setTraineeRepository(ITraineeRepository traineeRepository) {
+    public void setTraineeRepository(ITraineeRepository traineeRepository) {
         this.traineeRepository = traineeRepository;
     }
 }
