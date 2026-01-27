@@ -1,9 +1,11 @@
 package com.epam.gym.service.trainee.dto;
 
+import lombok.NonNull;
+
 public record CreateTraineeDto (
 
-    String firstName,
-    String lastName,
-    String address
+    @NonNull String firstName,
+    @NonNull String lastName,
+    @NonNull String address
 ) {
 }

@@ -6,6 +6,7 @@ import com.epam.gym.service.generator.name.IUsernameGenerator;
 import com.epam.gym.service.generator.password.IPasswordGenerator;
 import com.epam.gym.service.trainee.dto.CreateTraineeDto;
 import com.epam.gym.service.trainee.dto.UpdateTraineeDto;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,11 +18,13 @@ import java.util.UUID;
 public final class TraineeService implements ITraineeService {
 
     private IUsernameGenerator usernameGenerator;
+
     private IPasswordGenerator passwordGenerator;
+
     private ITraineeRepository traineeRepository;
 
     @Override
-    public Trainee create(CreateTraineeDto dto) {
+    public Trainee create(@NonNull CreateTraineeDto dto) {
         log.debug("Creating trainee with firstName = {}, lastName = {}", dto.firstName(), dto.lastName());
         var trainee = Trainee.builder()
             .uid(UUID.randomUUID())
@@ -38,7 +41,7 @@ public final class TraineeService implements ITraineeService {
     }
 
     @Override
-    public void update(UpdateTraineeDto dto) {
+    public void update(@NonNull UpdateTraineeDto dto) {
         log.debug("Updating trainee uid = {}", dto.uid());
         var trainee = traineeRepository.findByUid(dto.uid())
             .orElseThrow(() -> new RuntimeException("Trainee not found"));
@@ -48,7 +51,7 @@ public final class TraineeService implements ITraineeService {
     }
 
     @Override
-    public void delete(UUID uid) {
+    public void delete(@NonNull UUID uid) {
         log.debug("Deleting trainee with uid = {}", uid);
         traineeRepository.findByUid(uid)
             .orElseThrow(() -> new RuntimeException("Trainee not found"));

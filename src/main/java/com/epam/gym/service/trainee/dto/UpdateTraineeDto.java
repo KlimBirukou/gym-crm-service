@@ -1,10 +1,12 @@
 package com.epam.gym.service.trainee.dto;
 
+import lombok.NonNull;
+
 import java.util.UUID;
 
 public record UpdateTraineeDto(
 
-    UUID uid,
-    String address
+    @NonNull UUID uid,
+    @NonNull String address
 ) {
 }
