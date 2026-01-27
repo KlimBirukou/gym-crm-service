@@ -6,6 +6,7 @@ import com.epam.gym.service.generator.name.IUsernameGenerator;
 import com.epam.gym.service.generator.password.IPasswordGenerator;
 import com.epam.gym.service.trainer.dto.CreateTrainerDto;
 import com.epam.gym.service.trainer.dto.UpdateTrainerDto;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,7 @@ public final class TrainerService implements ITrainerService {
     private ITrainerRepository trainerRepository;
 
     @Override
-    public Trainer create(CreateTrainerDto dto) {
+    public Trainer create(@NonNull CreateTrainerDto dto) {
         log.debug("Creating trainer with firstName = {}, lastName = {}", dto.firstName(), dto.lastName());
         var trainer = Trainer.builder()
             .uid(UUID.randomUUID())
@@ -38,7 +39,7 @@ public final class TrainerService implements ITrainerService {
     }
 
     @Override
-    public void update(UpdateTrainerDto dto) {
+    public void update(@NonNull UpdateTrainerDto dto) {
         log.debug("Updating trainer uid = {}", dto.uid());
         var trainer = trainerRepository.findByUid(dto.uid())
             .orElseThrow(() -> new RuntimeException("Trainer not found"));

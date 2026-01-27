@@ -1,10 +1,12 @@
 package com.epam.gym.service.trainer.dto;
 
+import lombok.NonNull;
+
 import java.util.UUID;
 
-public record UpdateTrainerDto (
+public record UpdateTrainerDto(
 
-    UUID uid,
-    String specialization
+    @NonNull UUID uid,
+    @NonNull String specialization
 ) {
 }
