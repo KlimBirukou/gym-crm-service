@@ -8,20 +8,21 @@ import com.epam.gym.service.trainee.dto.UpdateTraineeDto;
 import com.epam.gym.service.trainer.dto.CreateTrainerDto;
 import com.epam.gym.service.trainer.dto.UpdateTrainerDto;
 import com.epam.gym.service.training.dto.CreateTrainingDto;
+import lombok.NonNull;
 
 import java.util.UUID;
 
 public interface IGymFacade {
 
-    Trainer createTrainer(CreateTrainerDto dto);
+    Trainer createTrainer(@NonNull CreateTrainerDto dto);
 
-    void updateTrainer(UpdateTrainerDto dto);
+    void updateTrainer(@NonNull UpdateTrainerDto dto);
 
-    Trainee createTrainee(CreateTraineeDto dto);
+    Trainee createTrainee(@NonNull CreateTraineeDto dto);
 
-    void updateTrainee(UpdateTraineeDto dto);
+    void updateTrainee(@NonNull UpdateTraineeDto dto);
 
-    void deleteTrainee(UUID uid);
+    void deleteTrainee(@NonNull UUID uid);
 
-    Training createTraining(CreateTrainingDto dto);
+    Training createTraining(@NonNull CreateTrainingDto dto);
 }

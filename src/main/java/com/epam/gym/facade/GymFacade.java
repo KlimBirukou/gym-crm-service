@@ -11,6 +11,7 @@ import com.epam.gym.service.trainer.dto.CreateTrainerDto;
 import com.epam.gym.service.trainer.dto.UpdateTrainerDto;
 import com.epam.gym.service.training.ITrainingService;
 import com.epam.gym.service.training.dto.CreateTrainingDto;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -27,7 +28,7 @@ public final class GymFacade implements IGymFacade {
     private final ITrainingService trainingService;
 
     @Override
-    public Trainer createTrainer(CreateTrainerDto dto) {
+    public Trainer createTrainer(@NonNull CreateTrainerDto dto) {
         log.info("Creating trainer with firstName = {}, lastName = {}", dto.firstName(), dto.lastName());
         var trainer = trainerService.create(dto);
         log.info("Trainer created with uid = {}", trainer.getUid());
@@ -35,14 +36,14 @@ public final class GymFacade implements IGymFacade {
     }
 
     @Override
-    public void updateTrainer(UpdateTrainerDto dto) {
+    public void updateTrainer(@NonNull UpdateTrainerDto dto) {
         log.info("Updating trainer uid = {}", dto.uid());
         trainerService.update(dto);
         log.info("Trainer with uid = {} updated", dto.uid());
     }
 
     @Override
-    public Trainee createTrainee(CreateTraineeDto dto) {
+    public Trainee createTrainee(@NonNull CreateTraineeDto dto) {
         log.info("Creating trainee with firstName = {}, lastName = {}", dto.firstName(), dto.lastName());
         var trainee = traineeService.create(dto);
         log.info("Trainee created with uid = {}", trainee.getUid());
@@ -50,21 +51,21 @@ public final class GymFacade implements IGymFacade {
     }
 
     @Override
-    public void updateTrainee(UpdateTraineeDto dto) {
+    public void updateTrainee(@NonNull UpdateTraineeDto dto) {
         log.info("Updating trainee uid = {}", dto.uid());
         traineeService.update(dto);
         log.info("Trainee with uid = {} updated", dto.uid());
     }
 
     @Override
-    public void deleteTrainee(UUID uid) {
+    public void deleteTrainee(@NonNull UUID uid) {
         log.info("Deleting trainee with uid = {}", uid);
         traineeService.delete(uid);
         log.info("Trainee with uid = {} deleted", uid);
     }
 
     @Override
-    public Training createTraining(CreateTrainingDto dto) {
+    public Training createTraining(@NonNull CreateTrainingDto dto) {
         log.info("Creating training for trainer = {}, trainee = {}, on date = {} ",
             dto.trainerUid(), dto.traineeUid(), dto.trainingDate());
         var training = trainingService.create(dto);
