@@ -2,19 +2,17 @@ package com.epam.gym.repository.trainer;
 
 import com.epam.gym.GymApplication;
 import com.epam.gym.domain.user.Trainer;
-import com.epam.gym.storage.InMemoryStorage;
+import com.epam.gym.storage.trainer.InMemoryTrainerStorage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -22,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class InMemoryTrainerRepositoryTest {
@@ -65,18 +62,15 @@ class InMemoryTrainerRepositoryTest {
         .username(USERNAME)
         .build();
 
-    @Mock
-    private InMemoryStorage inMemoryStorage;
+    @Spy
+    private InMemoryTrainerStorage storage;
 
     @InjectMocks
     private InMemoryTrainerRepository testObject;
 
-    private Map<UUID, Trainer> trainerStorage;
-
     @BeforeEach
     void setUp() {
-        trainerStorage = new HashMap<>();
-        when(inMemoryStorage.getTrainerStorage()).thenReturn(trainerStorage);
+        storage.clear();
     }
 
     static Stream<Arguments> provideSaveTestData() {
@@ -98,9 +92,9 @@ class InMemoryTrainerRepositoryTest {
 
         testObject.save(trainerToSave);
 
-        assertEquals(expectedSize, trainerStorage.size());
-        assertEquals(trainerToSave, trainerStorage.get(trainerToSave.getUid()));
-        verify(inMemoryStorage, times(1)).getTrainerStorage();
+        assertEquals(expectedSize, storage.size());
+        assertEquals(trainerToSave, storage.get(trainerToSave.getUid()).orElseThrow());
+        verify(storage, times(1)).put(trainerToSave.getUid(), trainerToSave);
     }
 
 
@@ -120,13 +114,12 @@ class InMemoryTrainerRepositoryTest {
         List<Trainer> expected
     ) {
         fillStorage(expected);
-        trainerStorage.put(TRAINER_3.getUid(), TRAINER_3);
 
         var result = testObject.findByFirstNameAndLastName(firstName, lastName);
 
         assertEquals(expected.size(), result.size());
         assertTrue(result.containsAll(expected));
-        verify(inMemoryStorage, times(1)).getTrainerStorage();
+        verify(storage, times(1)).values();
     }
 
     static Stream<Arguments> provideFindByUidTestData() {
@@ -150,12 +143,12 @@ class InMemoryTrainerRepositoryTest {
 
         assertEquals(shouldBePresent, result.isPresent());
         if (shouldBePresent) {
-            assertEquals(existingTrainers.get(0), result.get());
+            assertEquals(existingTrainers.getFirst(), result.get());
         }
-        verify(inMemoryStorage, times(1)).getTrainerStorage();
+        verify(storage, times(1)).get(uidToFind);
     }
 
     private void fillStorage(List<Trainer> trainers) {
-        trainers.forEach(trainer -> trainerStorage.put(trainer.getUid(), trainer));
+        trainers.forEach(trainer -> storage.put(trainer.getUid(), trainer));
     }
 }

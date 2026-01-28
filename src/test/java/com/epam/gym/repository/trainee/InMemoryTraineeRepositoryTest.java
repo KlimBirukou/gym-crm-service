@@ -2,28 +2,25 @@ package com.epam.gym.repository.trainee;
 
 import com.epam.gym.GymApplication;
 import com.epam.gym.domain.user.Trainee;
-import com.epam.gym.storage.InMemoryStorage;
+import com.epam.gym.storage.trainee.InMemoryTraineeStorage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import javax.swing.*;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class InMemoryTraineeRepositoryTest {
@@ -66,18 +63,15 @@ class InMemoryTraineeRepositoryTest {
         .username(USERNAME)
         .build();
 
-    @Mock
-    private InMemoryStorage inMemoryStorage;
+    @Spy
+    private InMemoryTraineeStorage storage;
 
     @InjectMocks
     private InMemoryTraineeRepository testObject;
 
-    private Map<UUID, Trainee> traineeStorage;
-
     @BeforeEach
     void setUp() {
-        traineeStorage = new HashMap<>();
-        when(inMemoryStorage.getTraineeStorage()).thenReturn(traineeStorage);
+        storage.clear();
     }
 
     static Stream<Arguments> provideSaveTestData() {
@@ -99,9 +93,9 @@ class InMemoryTraineeRepositoryTest {
 
         testObject.save(traineeToSave);
 
-        assertEquals(expectedSize, traineeStorage.size());
-        assertEquals(traineeToSave, traineeStorage.get(traineeToSave.getUid()));
-        verify(inMemoryStorage, times(1)).getTraineeStorage();
+        assertEquals(expectedSize, storage.size());
+        assertEquals(traineeToSave, storage.get(traineeToSave.getUid()).orElseThrow());
+        verify(storage, times(1)).put(traineeToSave.getUid(), traineeToSave);
     }
 
     static Stream<Arguments> provideFindByFirstNameAndLastNameTestData() {
@@ -125,7 +119,7 @@ class InMemoryTraineeRepositoryTest {
 
         assertEquals(expected.size(), result.size());
         assertTrue(result.containsAll(expected));
-        verify(inMemoryStorage, times(1)).getTraineeStorage();
+        verify(storage, times(1)).values();
     }
 
     static Stream<Arguments> provideFindByUidTestData() {
@@ -149,9 +143,9 @@ class InMemoryTraineeRepositoryTest {
 
         assertEquals(shouldBePresent, result.isPresent());
         if (shouldBePresent) {
-            assertEquals(existingTrainees.get(0), result.get());
+            assertEquals(existingTrainees.getFirst(), result.get());
         }
-        verify(inMemoryStorage, times(1)).getTraineeStorage();
+        verify(storage, times(1)).get(uidToFind);
     }
 
     static Stream<Arguments> provideDeleteByUidTestData() {
@@ -174,11 +168,12 @@ class InMemoryTraineeRepositoryTest {
 
         testObject.deleteByUid(uidToDelete);
 
-        assertEquals(expectedSizeAfterDelete, traineeStorage.size());
-        verify(inMemoryStorage, times(1)).getTraineeStorage();
+        assertEquals(expectedSizeAfterDelete, storage.size());
+        assertFalse(storage.get(uidToDelete).isPresent());
+        verify(storage, times(1)).remove(uidToDelete);
     }
 
     private void fillStorage(List<Trainee> trainees) {
-        trainees.forEach(trainee -> traineeStorage.put(trainee.getUid(), trainee));
+        trainees.forEach(trainee -> storage.put(trainee.getUid(), trainee));
     }
 }

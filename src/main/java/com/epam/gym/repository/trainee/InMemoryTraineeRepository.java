@@ -1,7 +1,7 @@
 package com.epam.gym.repository.trainee;
 
 import com.epam.gym.domain.user.Trainee;
-import com.epam.gym.storage.InMemoryStorage;
+import com.epam.gym.storage.trainee.InMemoryTraineeStorage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -13,17 +13,16 @@ import java.util.UUID;
 @Repository
 public final class InMemoryTraineeRepository implements ITraineeRepository {
 
-    private InMemoryStorage inMemoryStorage;
+    private InMemoryTraineeStorage storage;
 
     @Override
     public void save(Trainee trainee) {
-        inMemoryStorage.getTraineeStorage().put(trainee.getUid(), trainee);
+        storage.put(trainee.getUid(), trainee);
     }
 
     @Override
     public List<Trainee> findByFirstNameAndLastName(String firstName, String lastName) {
-        return inMemoryStorage.getTraineeStorage()
-            .values()
+        return storage.values()
             .stream()
             .filter(trainee -> Objects.equals(trainee.getFirstName(), firstName))
             .filter(trainee -> Objects.equals(trainee.getLastName(), lastName))
@@ -32,16 +31,16 @@ public final class InMemoryTraineeRepository implements ITraineeRepository {
 
     @Override
     public Optional<Trainee> findByUid(UUID uid) {
-        return Optional.ofNullable(inMemoryStorage.getTraineeStorage().get(uid));
+        return storage.get(uid);
     }
 
     @Override
     public void deleteByUid(UUID uid) {
-        inMemoryStorage.getTraineeStorage().remove(uid);
+        storage.remove(uid);
     }
 
     @Autowired
-    public void setInMemoryStorage(InMemoryStorage inMemoryStorage) {
-        this.inMemoryStorage = inMemoryStorage;
+    public void InMemoryTraineeStorage(InMemoryTraineeStorage storage) {
+        this.storage = storage;
     }
 }

@@ -1,20 +1,18 @@
 package com.epam.gym.repository.training;
 
 import com.epam.gym.domain.training.Training;
-import com.epam.gym.storage.InMemoryStorage;
+import com.epam.gym.storage.training.InMemoryTrainingStorage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -22,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class InMemoryTrainingRepositoryTest {
@@ -50,18 +47,15 @@ class InMemoryTrainingRepositoryTest {
         .trainingDate(DATE_3)
         .build();
 
-    @Mock
-    private InMemoryStorage inMemoryStorage;
+    @Spy
+    private InMemoryTrainingStorage storage;
 
     @InjectMocks
     private InMemoryTrainingRepository testObject;
 
-    private Map<UUID, Training> trainingStorage;
-
     @BeforeEach
     void setUp() {
-        trainingStorage = new HashMap<>();
-        when(inMemoryStorage.getTrainingStorage()).thenReturn(trainingStorage);
+        storage.clear();
     }
 
     static Stream<Arguments> provideSaveTestData() {
@@ -83,15 +77,17 @@ class InMemoryTrainingRepositoryTest {
 
         testObject.save(trainingToSave);
 
-        assertEquals(expectedSize, trainingStorage.size());
-        assertEquals(trainingToSave, trainingStorage.get(trainingToSave.getTrainingUid()));
-        verify(inMemoryStorage, times(1)).getTrainingStorage();
+        assertEquals(expectedSize, storage.size());
+        assertEquals(trainingToSave, storage.get(trainingToSave.getTrainingUid()).orElseThrow());
+        verify(storage, times(1)).put(trainingToSave.getTrainingUid(), trainingToSave);
     }
 
     static Stream<Arguments> provideFindByLocalDAteTestData() {
         return Stream.of(
-            Arguments.of(DATE_1, List.of()),
-            Arguments.of(DATE_1, List.of(TRAINING_1))
+            Arguments.of(DATE_1, List.of(), List.of()),
+            Arguments.of(DATE_1, List.of(), List.of(TRAINING_2, TRAINING_3)),
+            Arguments.of(DATE_1, List.of(TRAINING_1), List.of(TRAINING_1)),
+            Arguments.of(DATE_1, List.of(TRAINING_1), List.of(TRAINING_1, TRAINING_2, TRAINING_3))
         );
     }
 
@@ -99,19 +95,19 @@ class InMemoryTrainingRepositoryTest {
     @MethodSource("provideFindByLocalDAteTestData")
     void findByLocalDate_shouldReturnExpectedResult(
         LocalDate date,
-        List<Training> expected
+        List<Training> expected,
+        List<Training> existingTrainings
     ) {
-        fillStorage(expected);
-        trainingStorage.put(TRAINING_3.getTrainingUid(), TRAINING_3);
+        fillStorage(existingTrainings);
 
         var result = testObject.findByLocalDate(date);
 
         assertEquals(expected.size(), result.size());
         assertTrue(result.containsAll(expected));
-        verify(inMemoryStorage, times(1)).getTrainingStorage();
+        verify(storage, times(1)).values();
     }
 
     private void fillStorage(List<Training> trainings) {
-        trainings.forEach(training -> trainingStorage.put(training.getTrainingUid(), training));
+        trainings.forEach(training -> storage.put(training.getTrainingUid(), training));
     }
 }
