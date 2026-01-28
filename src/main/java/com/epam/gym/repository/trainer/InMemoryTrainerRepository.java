@@ -35,7 +35,7 @@ public final class InMemoryTrainerRepository implements ITrainerRepository {
     }
 
     @Autowired
-    public void InMemoryTrainerStorage(InMemoryTrainerStorage trainerStorage) {
+    public void setInMemoryTrainerStorage(InMemoryTrainerStorage trainerStorage) {
         this.storage = trainerStorage;
     }
 }

@@ -21,15 +21,7 @@ public abstract class InMemoryAbstractStorage<K, V> {
         storage.remove(key);
     }
 
-    public int size() {
-        return storage.size();
-    }
-
     public Collection<V> values() {
         return storage.values();
-    }
-
-    public void clear() {
-        storage.clear();
     }
 }

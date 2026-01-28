@@ -3,16 +3,17 @@ package com.epam.gym.repository.trainer;
 import com.epam.gym.GymApplication;
 import com.epam.gym.domain.user.Trainer;
 import com.epam.gym.storage.trainer.InMemoryTrainerStorage;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
-import org.mockito.Spy;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -20,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class InMemoryTrainerRepositoryTest {
@@ -32,8 +34,6 @@ class InMemoryTrainerRepositoryTest {
     private static final String LASTNAME = "Doe";
     private static final String OTHER_FIRSTNAME = "firstname";
     private static final String OTHER_LASTNAME = "lastname";
-    private static final String UPDATED_FIRSTNAME = "JohnNew";
-    private static final String UPDATED_LASTNAME = "DoeNew";
     private static final String USERNAME = String.join(GymApplication.DEFAULT_USERNAME_DELIMITER,
         FIRSTNAME,
         LASTNAME);
@@ -49,106 +49,115 @@ class InMemoryTrainerRepositoryTest {
         .lastName(LASTNAME)
         .username(USERNAME)
         .build();
-    private static final Trainer TRAINER_3 = Trainer.builder()
+    private static final Trainer TRAINER_OTHER = Trainer.builder()
         .uid(UUID_3)
         .firstName(OTHER_FIRSTNAME)
         .lastName(OTHER_LASTNAME)
         .username(USERNAME)
         .build();
-    private static final Trainer UPDATED_TRAINER = Trainer.builder()
-        .uid(UUID_1)
-        .firstName(UPDATED_FIRSTNAME)
-        .lastName(UPDATED_LASTNAME)
-        .username(USERNAME)
-        .build();
 
-    @Spy
+    @Mock
     private InMemoryTrainerStorage storage;
 
     @InjectMocks
     private InMemoryTrainerRepository testObject;
 
-    @BeforeEach
-    void setUp() {
-        storage.clear();
-    }
-
-    static Stream<Arguments> provideSaveTestData() {
+    static Stream<Trainer> provideSaveTestData() {
         return Stream.of(
-            Arguments.of(List.of(), TRAINER_1, 1),
-            Arguments.of(List.of(TRAINER_1), TRAINER_2, 2),
-            Arguments.of(List.of(TRAINER_1), UPDATED_TRAINER, 1)
+            TRAINER_1,
+            TRAINER_OTHER
         );
     }
 
     @ParameterizedTest
     @MethodSource("provideSaveTestData")
-    void save_shouldAddOrUpdateTrainerInStorage(
-        List<Trainer> existingTrainers,
-        Trainer trainerToSave,
-        int expectedSize
-    ) {
-        fillStorage(existingTrainers);
-
+    void save_shouldAddOrUpdateTrainerInStorage(Trainer trainerToSave) {
         testObject.save(trainerToSave);
 
-        assertEquals(expectedSize, storage.size());
-        assertEquals(trainerToSave, storage.get(trainerToSave.getUid()).orElseThrow());
-        verify(storage, times(1)).put(trainerToSave.getUid(), trainerToSave);
+        verify(storage, times(1))
+            .put(trainerToSave.getUid(), trainerToSave);
     }
-
 
     static Stream<Arguments> provideFindByFirstNameAndLastNameTestData() {
         return Stream.of(
-            Arguments.of(FIRSTNAME, LASTNAME, List.of()),
-            Arguments.of(FIRSTNAME, LASTNAME, List.of(TRAINER_1)),
-            Arguments.of(FIRSTNAME, LASTNAME, List.of(TRAINER_1, TRAINER_2))
+            Arguments.of(
+                FIRSTNAME,
+                LASTNAME,
+                List.of(),
+                List.of()
+            ),
+            Arguments.of(
+                FIRSTNAME,
+                LASTNAME,
+                List.of(TRAINER_1),
+                List.of(TRAINER_1)
+            ),
+            Arguments.of(
+                FIRSTNAME,
+                LASTNAME,
+                List.of(TRAINER_1, TRAINER_2),
+                List.of(TRAINER_1, TRAINER_2)
+            ),
+            Arguments.of(
+                FIRSTNAME,
+                LASTNAME,
+                List.of(TRAINER_OTHER),
+                List.of()
+            ),
+            Arguments.of(
+                OTHER_FIRSTNAME,
+                OTHER_LASTNAME,
+                List.of(TRAINER_1, TRAINER_2, TRAINER_OTHER),
+                List.of(TRAINER_OTHER)
+            )
         );
     }
 
     @ParameterizedTest
     @MethodSource("provideFindByFirstNameAndLastNameTestData")
-    void findByFirstNameAndLastName_shouldReturnExpectedResult(
-        String firstName,
-        String lastName,
-        List<Trainer> expected
-    ) {
-        fillStorage(expected);
+    void findByFirstNameAndLastName_shouldReturnExpectedResult(String firstName,
+                                                               String lastName,
+                                                               List<Trainer> storedTrainers,
+                                                               List<Trainer> expected) {
+        when(storage.values())
+            .thenReturn(storedTrainers);
 
         var result = testObject.findByFirstNameAndLastName(firstName, lastName);
 
-        assertEquals(expected.size(), result.size());
-        assertTrue(result.containsAll(expected));
-        verify(storage, times(1)).values();
+        assertEquals(expected, result);
+        verify(storage, times(1))
+            .values();
     }
 
-    static Stream<Arguments> provideFindByUidTestData() {
+    @Test
+    void findByUid_shouldReturnTrainer_whenTrainerExists() {
+        when(storage.get(UUID_1))
+            .thenReturn(Optional.of(TRAINER_1));
+
+        var result = testObject.findByUid(UUID_1);
+
+        assertEquals(TRAINER_1, result.orElseThrow());
+        verify(storage, times(1))
+            .get(UUID_1);
+    }
+
+    static Stream<UUID> provideFindByUidNegativeTestData() {
         return Stream.of(
-            Arguments.of(UUID_1, List.of(TRAINER_1), true),
-            Arguments.of(NON_EXISTENT_UUID, List.of(TRAINER_1), false),
-            Arguments.of(NON_EXISTENT_UUID, List.of(), false)
+            NON_EXISTENT_UUID,
+            UUID_1
         );
     }
 
     @ParameterizedTest
-    @MethodSource("provideFindByUidTestData")
-    void findByUid_shouldReturnExpectedResult(
-        UUID uidToFind,
-        List<Trainer> existingTrainers,
-        boolean shouldBePresent
-    ) {
-        fillStorage(existingTrainers);
+    @MethodSource("provideFindByUidNegativeTestData")
+    void findByUid_shouldReturnEmptyOptional_whenTrainerNotExists(UUID uidToFind) {
+        when(storage.get(uidToFind))
+            .thenReturn(Optional.empty());
 
         var result = testObject.findByUid(uidToFind);
 
-        assertEquals(shouldBePresent, result.isPresent());
-        if (shouldBePresent) {
-            assertEquals(existingTrainers.getFirst(), result.get());
-        }
-        verify(storage, times(1)).get(uidToFind);
-    }
-
-    private void fillStorage(List<Trainer> trainers) {
-        trainers.forEach(trainer -> storage.put(trainer.getUid(), trainer));
+        assertTrue(result.isEmpty());
+        verify(storage, times(1))
+            .get(uidToFind);
     }
 }

@@ -40,7 +40,7 @@ public final class InMemoryTraineeRepository implements ITraineeRepository {
     }
 
     @Autowired
-    public void InMemoryTraineeStorage(InMemoryTraineeStorage storage) {
+    public void setInMemoryTraineeStorage(InMemoryTraineeStorage storage) {
         this.storage = storage;
     }
 }
