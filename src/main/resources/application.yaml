@@ -1,3 +1,12 @@
 spring:
   application:
     name: gym
+
+storage:
+  data:
+    trainee:
+      file: classpath:data/trainee.json
+    trainer:
+      file: classpath:data/trainer.json
+    training:
+      file: classpath:data/training.json
