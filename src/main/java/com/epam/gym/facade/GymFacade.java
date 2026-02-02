@@ -12,20 +12,21 @@ import com.epam.gym.service.trainer.dto.UpdateTrainerDto;
 import com.epam.gym.service.training.ITrainingService;
 import com.epam.gym.service.training.dto.CreateTrainingDto;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
+@Setter(onMethod_ = @Autowired)
 public final class GymFacade implements IGymFacade {
 
-    private final ITrainerService trainerService;
-    private final ITraineeService traineeService;
-    private final ITrainingService trainingService;
+    private ITrainerService trainerService;
+    private ITraineeService traineeService;
+    private ITrainingService trainingService;
 
     @Override
     public Trainer createTrainer(@NonNull CreateTrainerDto dto) {
