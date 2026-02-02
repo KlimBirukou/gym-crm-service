@@ -30,10 +30,10 @@ class InMemoryTraineeRepositoryTest {
     private static final UUID UUID_2 = UUID.randomUUID();
     private static final UUID UUID_3 = UUID.randomUUID();
     private static final UUID NON_EXISTENT_UUID = UUID.randomUUID();
-    private static final String FIRSTNAME = "John";
-    private static final String LASTNAME = "Doe";
-    private static final String OTHER_FIRSTNAME = "firstname";
-    private static final String OTHER_LASTNAME = "lastname";
+    private static final String FIRSTNAME = "firstname";
+    private static final String LASTNAME = "lastname";
+    private static final String OTHER_FIRSTNAME = "other firstname";
+    private static final String OTHER_LASTNAME = "other lastname";
     private static final String USERNAME = String.join(GymApplication.DEFAULT_USERNAME_DELIMITER,
         FIRSTNAME,
         LASTNAME);

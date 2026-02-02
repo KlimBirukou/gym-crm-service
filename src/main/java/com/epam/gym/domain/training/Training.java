@@ -17,11 +17,11 @@ import java.util.UUID;
 @Accessors(chain = true)
 public final class Training {
 
-    private UUID trainingUid;
+    private UUID uid;
     private UUID traineeUid;
     private UUID trainerUid;
-    private String trainingName;
-    private TrainingType trainingType;
-    private LocalDate trainingDate;
-    private Duration trainingDuration;
+    private String name;
+    private TrainingType type;
+    private LocalDate date;
+    private Duration duration;
 }

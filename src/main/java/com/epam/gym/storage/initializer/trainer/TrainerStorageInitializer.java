@@ -11,7 +11,7 @@ import java.util.UUID;
 @Component
 public class TrainerStorageInitializer extends AbstractJsonStorageInitializer<UUID, Trainer> {
 
-    public static final TypeReference<List<Trainer>> TYPE_REFERENCE = new TypeReference<List<Trainer>>() {
+    private static final TypeReference<List<Trainer>> TYPE_REFERENCE = new TypeReference<>() {
     };
 
     @Override

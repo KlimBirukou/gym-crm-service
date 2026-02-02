@@ -2,33 +2,40 @@ package com.epam.gym.repository.training;
 
 import com.epam.gym.domain.training.Training;
 import com.epam.gym.storage.training.InMemoryTrainingStorage;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
 @Repository
+@RequiredArgsConstructor
 public final class InMemoryTrainingRepository implements ITrainingRepository {
 
-    private InMemoryTrainingStorage storage;
+    //@Value("${storage}")
+    private final InMemoryTrainingStorage storage;
 
     @Override
-    public void save(Training training) {
-        storage.put(training.getTrainingUid(), training);
+    public void save(@NonNull Training training) {
+        storage.put(training.getUid(), training);
     }
 
     @Override
-    public List<Training> findByLocalDate(LocalDate date) {
-        return storage
-            .values()
+    public List<Training> findByLocalDate(@NonNull LocalDate date) {
+        return storage.values()
             .stream()
-            .filter(training -> training.getTrainingDate().isEqual(date))
+            .filter(training -> training.getDate().isEqual(date))
             .toList();
     }
 
-    @Autowired
-    public void setInMemoryTrainingStorage(InMemoryTrainingStorage storage) {
-        this.storage = storage;
+    @Override
+    public List<Training> findByTraineeUid(@NonNull UUID uid) {
+        return storage.values()
+            .stream()
+            .filter(training -> Objects.equals(training.getTraineeUid(), uid))
+            .toList();
     }
 }

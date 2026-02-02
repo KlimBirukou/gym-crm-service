@@ -1,15 +1,17 @@
 package com.epam.gym.storage;
 
+import lombok.NonNull;
+
 import java.util.Collection;
 import java.util.Optional;
 
 public interface IStorage<K, V> {
 
-    void put(K key, V value);
+    void put(@NonNull K key,@NonNull V value);
 
-    Optional<V> get(K key);
+    Optional<V> get(@NonNull K key);
 
-    void remove(K key);
+    void remove(@NonNull K key);
 
     Collection<V> values();
 }

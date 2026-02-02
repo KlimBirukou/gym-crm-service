@@ -20,13 +20,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class DefaultUserNameGeneratorTest {
+class DefaultUserNameGeneratorTest {
 
     private static final int SUFFIX_0 = 0;
     private static final int SUFFIX_1 = 1;
     private static final int SUFFIX_2 = 2;
-    private static final String FIRSTNAME = "John";
-    private static final String LASTNAME = "Doe";
+    private static final String FIRSTNAME = "firstname";
+    private static final String LASTNAME = "lastname";
     private static final String USERNAME_WITHOUT_SUFFIX = String.join(GymApplication.DEFAULT_USERNAME_DELIMITER,
         FIRSTNAME,
         LASTNAME);

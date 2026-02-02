@@ -1,6 +1,7 @@
 package com.epam.gym.repository.trainer;
 
 import com.epam.gym.domain.user.Trainer;
+import lombok.NonNull;
 
 import java.util.List;
 import java.util.Optional;
@@ -8,10 +9,10 @@ import java.util.UUID;
 
 public interface ITrainerRepository {
 
-    void save(Trainer trainer);
+    void save(@NonNull Trainer trainer);
 
-    List<Trainer> findByFirstNameAndLastName(String firstName, String lastName);
+    List<Trainer> findByFirstNameAndLastName(@NonNull String firstName, @NonNull String lastName);
 
-    Optional<Trainer> findByUid(UUID uid);
+    Optional<Trainer> findByUid(@NonNull UUID uid);
 }
 

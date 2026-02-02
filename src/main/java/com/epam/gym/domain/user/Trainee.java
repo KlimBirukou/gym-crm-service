@@ -8,7 +8,7 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 import lombok.experimental.SuperBuilder;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Data
 @SuperBuilder
@@ -20,5 +20,5 @@ import java.util.Date;
 public final class Trainee extends User {
 
     private String address;
-    private Date birthDate;
+    private LocalDate birthdate;
 }

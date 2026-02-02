@@ -19,15 +19,15 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class InMemoryTrainerStorageTest {
+class InMemoryTrainerStorageTest {
 
     private static final UUID UUID_1 = UUID.randomUUID();
     private static final UUID UUID_2 = UUID.randomUUID();
     private static final UUID NON_EXISTENT_UUID = UUID.randomUUID();
-    private static final String FIRSTNAME = "John";
-    private static final String LASTNAME = "Doe";
-    private static final String UPDATED_FIRSTNAME = "JohnNew";
-    private static final String UPDATED_LASTNAME = "DoeNew";
+    private static final String FIRSTNAME = "firstname";
+    private static final String LASTNAME = "lastname";
+    private static final String UPDATED_FIRSTNAME = "new firstname";
+    private static final String UPDATED_LASTNAME = "new lastname";
     private static final String USERNAME = String.join(GymApplication.DEFAULT_USERNAME_DELIMITER,
         FIRSTNAME,
         LASTNAME);

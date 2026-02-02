@@ -3,23 +3,19 @@ package com.epam.gym.service.generator.name.supplier;
 import com.epam.gym.domain.user.Trainer;
 import com.epam.gym.repository.trainer.ITrainerRepository;
 import lombok.NonNull;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public final class TrainerUsernameSupplier extends UserUsernameSupplier<Trainer> {
 
-    private ITrainerRepository trainerRepository;
+    private final ITrainerRepository trainerRepository;
 
     @Override
     protected List<Trainer> provideUsers(@NonNull String firstName, @NonNull String lastName) {
         return trainerRepository.findByFirstNameAndLastName(firstName, lastName);
-    }
-
-    @Autowired
-    public void setTrainerRepository(ITrainerRepository trainerRepository) {
-        this.trainerRepository = trainerRepository;
     }
 }

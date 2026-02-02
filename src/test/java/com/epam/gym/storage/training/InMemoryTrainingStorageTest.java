@@ -19,26 +19,24 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class InMemoryTrainingStorageTest {
+class InMemoryTrainingStorageTest {
 
     private static final UUID UUID_1 = UUID.randomUUID();
     private static final UUID UUID_2 = UUID.randomUUID();
-    private static final UUID UUID_3 = UUID.randomUUID();
     private static final UUID NON_EXISTENT_UUID = UUID.randomUUID();
     private static final LocalDate DATE_1 = LocalDate.of(2020, 1, 1);
     private static final LocalDate DATE_2 = LocalDate.of(2020, 1, 2);
-    private static final LocalDate DATE_3 = LocalDate.of(2020, 1, 3);
     private static final Training TRAINING_1 = Training.builder()
-        .trainingUid(UUID_1)
-        .trainingDate(DATE_1)
+        .uid(UUID_1)
+        .date(DATE_1)
         .build();
     private static final Training UPDATED_TRAINING = Training.builder()
-        .trainingUid(UUID_1)
-        .trainingDate(DATE_2)
+        .uid(UUID_1)
+        .date(DATE_2)
         .build();
     private static final Training TRAINING_2 = Training.builder()
-        .trainingUid(UUID_2)
-        .trainingDate(DATE_2)
+        .uid(UUID_2)
+        .date(DATE_2)
         .build();
 
     private InMemoryTrainingStorage testObject;
@@ -80,7 +78,7 @@ public class InMemoryTrainingStorageTest {
                                                 Set<Training> expectedTrainings) {
         fillStorage(existingTrainings);
 
-        testObject.put(trainingToSave.getTrainingUid(), trainingToSave);
+        testObject.put(trainingToSave.getUid(), trainingToSave);
 
         assertEquals(expectedTrainings, new HashSet<>(testObject.values()));
     }
@@ -124,13 +122,13 @@ public class InMemoryTrainingStorageTest {
 
     @Test
     void remove_shouldDeleteValue() {
-        testObject.put(TRAINING_1.getTrainingUid(), TRAINING_1);
+        testObject.put(TRAINING_1.getUid(), TRAINING_1);
 
-        assertTrue(testObject.get(TRAINING_1.getTrainingUid()).isPresent());
+        assertTrue(testObject.get(TRAINING_1.getUid()).isPresent());
 
-        testObject.remove(TRAINING_1.getTrainingUid());
+        testObject.remove(TRAINING_1.getUid());
 
-        assertTrue(testObject.get(TRAINING_1.getTrainingUid()).isEmpty());
+        assertTrue(testObject.get(TRAINING_1.getUid()).isEmpty());
     }
 
     @Test
@@ -159,6 +157,6 @@ public class InMemoryTrainingStorageTest {
     }
 
     private void fillStorage(Collection<Training> trainings) {
-        trainings.forEach(training -> testObject.put(training.getTrainingUid(), training));
+        trainings.forEach(training -> testObject.put(training.getUid(), training));
     }
 }

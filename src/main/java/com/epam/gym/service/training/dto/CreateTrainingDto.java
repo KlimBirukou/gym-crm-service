@@ -9,11 +9,11 @@ import java.util.UUID;
 
 public record CreateTrainingDto(
 
-    @NonNull UUID trainerUid,
     @NonNull UUID traineeUid,
-    @NonNull String trainingName,
-    @NonNull TrainingType trainingType,
-    @NonNull LocalDate trainingDate,
-    @NonNull Duration trainingDuration
+    @NonNull UUID trainerUid,
+    @NonNull String name,
+    @NonNull TrainingType type,
+    @NonNull LocalDate date,
+    @NonNull Duration duration
 ) {
 }

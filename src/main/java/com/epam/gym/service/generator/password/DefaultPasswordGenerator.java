@@ -5,7 +5,8 @@ import org.springframework.stereotype.Service;
 import java.util.UUID;
 
 @Service
-public final class DefaultPasswordGenerator implements IPasswordGenerator {
+public final class DefaultPasswordGenerator
+    implements IPasswordGenerator {
 
     @Override
     public String generate() {

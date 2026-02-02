@@ -7,7 +7,7 @@ import java.util.List;
 
 public abstract class UserUsernameSupplier<T extends User> implements IUsernameSupplier {
 
-    protected abstract List<T> provideUsers(String firstName, String lastName);
+    protected abstract List<T> provideUsers(@NonNull String firstName, @NonNull String lastName);
 
     @Override
     public final List<String> supply(@NonNull String firstName, @NonNull String lastName) {

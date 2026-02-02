@@ -1,6 +1,13 @@
 spring:
   application:
     name: gym
+  validation:
+    trainee:
+      min-years: 18
+      max-years: 100
+    training:
+      min-days: 1
+      max-month: 3
 
 storage:
   data:

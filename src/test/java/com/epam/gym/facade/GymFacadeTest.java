@@ -37,14 +37,14 @@ class GymFacadeTest {
     private static final UUID TRAINER_UID = UUID.randomUUID();
     private static final UUID TRAINEE_UID = UUID.randomUUID();
     private static final UUID TRAINING_UID = UUID.randomUUID();
-    private static final String FIRSTNAME = "John";
-    private static final String LASTNAME = "Doe";
-    private static final String USERNAME = "John.Doe";
+    private static final String FIRSTNAME = "firstname";
+    private static final String LASTNAME = "lastname";
+    private static final String USERNAME = "username";
     private static final String SPECIALIZATION = "Yoga";
-    private static final String ADDRESS = "Main Street 21";
-    private static final String TRAINING_NAME = "Training";
+    private static final String ADDRESS = "address";
+    private static final String TRAINING_NAME = "training";
     private static final LocalDate DATE_OF_BIRTH = LocalDate.of(1990, 1, 1);
-    private static final LocalDate TRAINING_DATE = LocalDate.of(2023, 1, 1);
+    private static final LocalDate TRAINING_DATE = LocalDate.of(2026, 2, 10);
     private static final Duration DURATION = Duration.ofHours(1);
 
     private static final CreateTrainerDto CREATE_TRAINER_DTO = new CreateTrainerDto(
@@ -54,7 +54,7 @@ class GymFacadeTest {
         TRAINEE_UID, SPECIALIZATION
     );
     private static final CreateTraineeDto CREATE_TRAINEE_DTO = new CreateTraineeDto(
-        FIRSTNAME, LASTNAME, ADDRESS
+        FIRSTNAME, LASTNAME, ADDRESS, DATE_OF_BIRTH
     );
     private static final UpdateTraineeDto UPDATE_TRAINEE_DTO = new UpdateTraineeDto(
         TRAINEE_UID, ADDRESS
@@ -76,8 +76,8 @@ class GymFacadeTest {
         .address(ADDRESS)
         .build();
     private static final Training TRAINING = Training.builder()
-        .trainingUid(TRAINING_UID)
-        .trainingName(TRAINING_NAME)
+        .uid(TRAINING_UID)
+        .name(TRAINING_NAME)
         .build();
 
     @Mock

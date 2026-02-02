@@ -22,8 +22,8 @@ import static org.mockito.Mockito.when;
 class TrainerUsernameSupplierTest {
 
     private static final int SUFFIX_1 = 1;
-    private static final String FIRSTNAME = "John";
-    private static final String LASTNAME = "Doe";
+    private static final String FIRSTNAME = "firstname";
+    private static final String LASTNAME = "lastname";
     private static final String USERNAME_WITHOUT_SUFFIX = String.join(GymApplication.DEFAULT_USERNAME_DELIMITER,
         FIRSTNAME,
         LASTNAME);

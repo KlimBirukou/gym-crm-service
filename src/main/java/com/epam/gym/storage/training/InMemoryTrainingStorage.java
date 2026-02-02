@@ -23,6 +23,6 @@ public final class InMemoryTrainingStorage extends InMemoryAbstractStorage<UUID,
     @PostConstruct
     void initialize() {
         storageInitializer.load(trainingDataFile)
-            .forEach(training -> put(training.getTrainingUid(), training));
+            .forEach(training -> put(training.getUid(), training));
     }
 }

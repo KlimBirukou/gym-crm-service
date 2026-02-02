@@ -17,8 +17,8 @@ class UsernameFactoryTest {
     private static final int SUFFIX_2 = 2;
     private static final int BAD_SUFFIX_ZERO = 0;
     private static final int BAD_SUFFIX_NEGATIVE = -10;
-    private static final String FIRSTNAME = "John";
-    private static final String LASTNAME = "Doe";
+    private static final String FIRSTNAME = "firstname";
+    private static final String LASTNAME = "lastname";
     private static final String USERNAME_WITHOUT_SUFFIX = String.join(
         GymApplication.DEFAULT_USERNAME_DELIMITER,
         FIRSTNAME,

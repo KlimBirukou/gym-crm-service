@@ -1,21 +1,24 @@
 package com.epam.gym.service.trainee;
 
-import com.epam.gym.GymApplication;
 import com.epam.gym.domain.user.Trainee;
+import com.epam.gym.exception.DomainNotFoundException;
 import com.epam.gym.repository.trainee.ITraineeRepository;
 import com.epam.gym.service.generator.name.IUsernameGenerator;
 import com.epam.gym.service.generator.password.IPasswordGenerator;
 import com.epam.gym.service.trainee.dto.CreateTraineeDto;
 import com.epam.gym.service.trainee.dto.UpdateTraineeDto;
+import com.epam.gym.validator.IValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -23,27 +26,45 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 @ExtendWith(MockitoExtension.class)
-public class TraineeServiceTest {
+class TraineeServiceTest {
 
+    private static final LocalDate DATE = LocalDate.of(2026, 1, 1);
     private static final UUID UID = UUID.randomUUID();
-    private static final String FIRSTNAME = "John";
-    private static final String LASTNAME = "Doe";
-    private static final String ADDRESS = "Main Street 21";
-    private static final String NEW_ADDRESS = "New Main Street 21";
-    private static final String PASSWORD = "7a3d9f2b6c";
-    private static final String USERNAME = String.join(GymApplication.DEFAULT_USERNAME_DELIMITER,
+    private static final String FIRSTNAME = "firstname";
+    private static final String LASTNAME = "lastname";
+    private static final String USERNAME = "username";
+    private static final String PASSWORD = "password";
+    private static final String ADDRESS = "address";
+    private static final String NEW_ADDRESS = "new address";
+    private static final CreateTraineeDto CREATE_TRAINEE_DTO = new CreateTraineeDto(
         FIRSTNAME,
-        LASTNAME);
-    private static final String EX_MESSAGE_TRAINEE_NOT_FOUND = "Trainee not found";
-    private static final CreateTraineeDto CREATE_TRAINEE_DTO = new CreateTraineeDto(FIRSTNAME, LASTNAME, ADDRESS);
-    private static final UpdateTraineeDto UPDATE_TRAINEE_DTO = new UpdateTraineeDto(UID, NEW_ADDRESS);
+        LASTNAME,
+        ADDRESS,
+        DATE
+    );
+    private static final UpdateTraineeDto UPDATE_TRAINEE_DTO = new UpdateTraineeDto(
+        UID,
+        NEW_ADDRESS
+    );
+    private static final Trainee EXISTED_TRAINEE = Trainee.builder()
+        .uid(UID)
+        .firstName(FIRSTNAME)
+        .lastName(LASTNAME)
+        .address(ADDRESS)
+        .username(USERNAME)
+        .password(PASSWORD)
+        .birthdate(DATE)
+        .isActive(true)
+        .build();
 
     @Mock
     private IUsernameGenerator usernameGenerator;
@@ -51,139 +72,165 @@ public class TraineeServiceTest {
     private IPasswordGenerator passwordGenerator;
     @Mock
     private ITraineeRepository traineeRepository;
+    @Mock
+    private IValidator<CreateTraineeDto> createTraineeValidator;
+    @Mock
+    private IValidator<UUID> deleteTraineeValidator;
 
     @Captor
     private ArgumentCaptor<Trainee> traineeCaptor;
 
-    @InjectMocks
     private TraineeService testObject;
 
     @BeforeEach
     void setUp() {
-        testObject.setUsernameGenerator(usernameGenerator);
-        testObject.setPasswordGenerator(passwordGenerator);
-        testObject.setTrainerRepository(traineeRepository);
+        testObject = new TraineeService(
+            usernameGenerator,
+            passwordGenerator,
+            traineeRepository,
+            createTraineeValidator,
+            deleteTraineeValidator
+        );
     }
 
     @Test
-    void create_shouldBuildSaveAndReturnTrainee() {
-        when(usernameGenerator.generate(FIRSTNAME, LASTNAME))
-            .thenReturn(USERNAME);
-        when(passwordGenerator.generate())
-            .thenReturn(PASSWORD);
+    void create_shouldCreateTrainee_whenValidationPassed() {
+        doNothing().when(createTraineeValidator)
+            .validate(CREATE_TRAINEE_DTO);
+        doReturn(USERNAME).when(usernameGenerator)
+            .generate(FIRSTNAME, LASTNAME);
+        doReturn(PASSWORD).when(passwordGenerator)
+            .generate();
 
         var result = testObject.create(CREATE_TRAINEE_DTO);
+        verify(traineeRepository).save(traineeCaptor.capture());
+        var saved = traineeCaptor.getValue();
 
         assertNotNull(result);
         assertNotNull(result.getUid());
-        assertEquals(FIRSTNAME, result.getFirstName());
-        assertEquals(LASTNAME, result.getLastName());
-        assertEquals(ADDRESS, result.getAddress());
-        assertEquals(USERNAME, result.getUsername());
-        assertEquals(PASSWORD, result.getPassword());
-        assertTrue(result.isActive());
+        assertEquals(CREATE_TRAINEE_DTO.firstName(), saved.getFirstName());
+        assertEquals(CREATE_TRAINEE_DTO.lastName(), saved.getLastName());
+        assertEquals(CREATE_TRAINEE_DTO.address(), saved.getAddress());
+        assertEquals(CREATE_TRAINEE_DTO.birthdate(), saved.getBirthdate());
+        assertEquals(USERNAME, saved.getUsername());
+        assertEquals(PASSWORD, saved.getPassword());
+        assertTrue(saved.isActive());
 
-        verify(usernameGenerator, times(1)).generate(FIRSTNAME, LASTNAME);
-        verify(passwordGenerator, times(1)).generate();
-        verify(traineeRepository, times(1)).save(traineeCaptor.capture());
-        assertEquals(result, traineeCaptor.getValue());
+        assertEquals(result.getUid(), saved.getUid());
+
+        verify(createTraineeValidator, times(1))
+            .validate(CREATE_TRAINEE_DTO);
+        verify(usernameGenerator, times(1))
+            .generate(FIRSTNAME, LASTNAME);
+        verify(passwordGenerator, times(1))
+            .generate();
+        verify(traineeRepository, times(1))
+            .save(saved);
+        verifyNoInteractions(deleteTraineeValidator);
+        verifyNoMoreInteractions(createTraineeValidator, usernameGenerator, passwordGenerator, traineeRepository);
     }
 
     @Test
-    void create_shouldThrowNpe_whenDtoIsNull() {
+    void create_shouldThrowException_whenValidationFailed() {
+        doThrow(new RuntimeException()).when(createTraineeValidator)
+            .validate(CREATE_TRAINEE_DTO);
+
+        assertThrows(RuntimeException.class,
+            () -> testObject.create(CREATE_TRAINEE_DTO));
+
+        verify(createTraineeValidator, times(1))
+            .validate(CREATE_TRAINEE_DTO);
+        verifyNoInteractions(usernameGenerator, passwordGenerator, traineeRepository, deleteTraineeValidator);
+        verifyNoMoreInteractions(createTraineeValidator);
+    }
+
+    @ParameterizedTest
+    @NullSource
+    void create_shouldThrowException_whenDataNull(CreateTraineeDto dto) {
         assertThrows(NullPointerException.class,
-            () -> testObject.create(null));
-
-        verify(usernameGenerator, never()).generate(any(), any());
-        verify(passwordGenerator, never()).generate();
-        verify(traineeRepository, never()).save(any());
+            () -> testObject.create(dto));
     }
 
     @Test
-    void update_shouldUpdateExistingTrainee() {
-        var existingTrainee = buildTrainee(UID);
-        when(traineeRepository.findByUid(UID))
-            .thenReturn(Optional.of(existingTrainee));
+    void update_shouldUpdateTrainee_whenTraineeExist() {
+        doReturn(Optional.of(EXISTED_TRAINEE)).when(traineeRepository)
+            .findByUid(UID);
 
         testObject.update(UPDATE_TRAINEE_DTO);
-
-        verify(traineeRepository).findByUid(UID);
         verify(traineeRepository).save(traineeCaptor.capture());
+        var saved = traineeCaptor.getValue();
 
-        var updatedTrainee = traineeCaptor.getValue();
-        assertEquals(existingTrainee.getUid(), updatedTrainee.getUid());
-        assertEquals(UPDATE_TRAINEE_DTO.address(), updatedTrainee.getAddress());
-        assertEquals(existingTrainee.getFirstName(), updatedTrainee.getFirstName());
-        assertEquals(existingTrainee.getLastName(), updatedTrainee.getLastName());
-        assertEquals(existingTrainee.getUsername(), updatedTrainee.getUsername());
-        assertEquals(existingTrainee.getPassword(), updatedTrainee.getPassword());
+        assertEquals(UID, saved.getUid());
+        assertEquals(FIRSTNAME, saved.getFirstName());
+        assertEquals(LASTNAME, saved.getLastName());
+        assertEquals(NEW_ADDRESS, saved.getAddress());
+        assertEquals(DATE, saved.getBirthdate());
+        assertEquals(USERNAME, saved.getUsername());
+        assertEquals(PASSWORD, saved.getPassword());
+        assertTrue(saved.isActive());
+
+        verify(traineeRepository, times(1))
+            .findByUid(UID);
+        verify(traineeRepository, times(1))
+            .save(saved);
+        verifyNoInteractions(createTraineeValidator, usernameGenerator, passwordGenerator, deleteTraineeValidator);
+        verifyNoMoreInteractions(traineeRepository);
     }
 
     @Test
-    void update_shouldThrownException_whenTraineeNotFound() {
-        when(traineeRepository.findByUid(UID))
-            .thenReturn(Optional.empty());
+    void update_shouldThrowException_whenTraineeNotExist() {
+        doReturn(Optional.empty()).when(traineeRepository)
+            .findByUid(UID);
 
-        var exception = assertThrows(RuntimeException.class,
+        assertThrows(DomainNotFoundException.class,
             () -> testObject.update(UPDATE_TRAINEE_DTO));
 
-        assertEquals(EX_MESSAGE_TRAINEE_NOT_FOUND, exception.getMessage());
-        verify(traineeRepository, times(1)).findByUid(UID);
-        verify(traineeRepository, never()).save(any());
+        verify(traineeRepository, times(1))
+            .findByUid(UID);
+        verifyNoInteractions(createTraineeValidator, usernameGenerator, passwordGenerator, deleteTraineeValidator);
+        verifyNoMoreInteractions(traineeRepository);
     }
 
-    @Test
-    void update_shouldThrowNpe_whenDtoIsNull() {
+    @ParameterizedTest
+    @NullSource
+    void update_shouldThrowException_whenDataNull(UpdateTraineeDto dto) {
         assertThrows(NullPointerException.class,
-            () -> testObject.update(null));
-
-        verify(traineeRepository, never()).findByUid(any());
-        verify(traineeRepository, never()).save(any());
+            () -> testObject.update(dto));
     }
 
     @Test
-    void delete_shouldDeleteExistingTrainee() {
-        var existingTrainee = buildTrainee(UID);
-        when(traineeRepository.findByUid(UID))
-            .thenReturn(Optional.of(existingTrainee));
+    void delete_shouldDeleteTrainee_whenValidationPassed() {
+        doNothing().when(deleteTraineeValidator)
+            .validate(UID);
 
         testObject.delete(UID);
 
-        verify(traineeRepository, times(1)).findByUid(UID);
-        verify(traineeRepository, times(1)).deleteByUid(UID);
+        verify(deleteTraineeValidator, times(1))
+            .validate(UID);
+        verify(traineeRepository, times(1))
+            .deleteByUid(UID);
+        verifyNoInteractions(createTraineeValidator, usernameGenerator, passwordGenerator);
+        verifyNoMoreInteractions(deleteTraineeValidator, traineeRepository);
     }
 
     @Test
-    void delete_shouldThrowException_whenTraineeNotFound() {
-        when(traineeRepository.findByUid(UID))
-            .thenReturn(Optional.empty());
+    void delete_shouldThrowException_whenValidationFailed() {
+        doThrow(new RuntimeException()).when(deleteTraineeValidator)
+            .validate(UID);
 
-        var exception = assertThrows(RuntimeException.class,
+        assertThrows(RuntimeException.class,
             () -> testObject.delete(UID));
 
-        assertEquals(EX_MESSAGE_TRAINEE_NOT_FOUND, exception.getMessage());
-        verify(traineeRepository, times(1)).findByUid(UID);
-        verify(traineeRepository, never()).deleteByUid(any());
+        verify(deleteTraineeValidator, times(1))
+            .validate(UID);
+        verifyNoInteractions(createTraineeValidator, usernameGenerator, passwordGenerator, traineeRepository);
+        verifyNoMoreInteractions(deleteTraineeValidator);
     }
 
-    @Test
-    void delete_shouldThrowNpe_whenUidIsNull() {
+    @ParameterizedTest
+    @NullSource
+    void delete_shouldThrowException_whenUidNull(UUID uid) {
         assertThrows(NullPointerException.class,
-            () -> testObject.delete(null));
-
-        verify(traineeRepository, never()).findByUid(any());
-        verify(traineeRepository, never()).deleteByUid(any());
-    }
-
-    private Trainee buildTrainee(UUID uid) {
-        return Trainee.builder()
-            .uid(uid)
-            .firstName(FIRSTNAME)
-            .lastName(LASTNAME)
-            .address(ADDRESS)
-            .username(USERNAME)
-            .password(PASSWORD)
-            .isActive(true)
-            .build();
+            () -> testObject.delete(uid));
     }
 }
