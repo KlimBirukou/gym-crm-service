@@ -37,24 +37,19 @@ class InMemoryTraineeRepositoryTest {
     private static final String USERNAME = String.join(GymApplication.DEFAULT_USERNAME_DELIMITER,
         FIRSTNAME,
         LASTNAME);
-    private static final Trainee TRAINEE_1 = Trainee.builder()
-        .uid(UUID_1)
-        .firstName(FIRSTNAME)
-        .lastName(LASTNAME)
-        .username(USERNAME)
-        .build();
-    private static final Trainee TRAINEE_2 = Trainee.builder()
-        .uid(UUID_2)
-        .firstName(FIRSTNAME)
-        .lastName(LASTNAME)
-        .username(USERNAME)
-        .build();
-    private static final Trainee TRAINEE_OTHER = Trainee.builder()
-        .uid(UUID_3)
-        .firstName(OTHER_FIRSTNAME)
-        .lastName(OTHER_LASTNAME)
-        .username(USERNAME)
-        .build();
+    private static final Trainee TRAINEE_1 = getBuild(UUID_1, FIRSTNAME, LASTNAME);
+    private static final Trainee TRAINEE_2 = getBuild(UUID_2, FIRSTNAME, LASTNAME);
+
+    private static Trainee getBuild(UUID uuid2, String firstname, String lastname) {
+        return Trainee.builder()
+            .uid(uuid2)
+            .firstName(firstname)
+            .lastName(lastname)
+            .username(USERNAME)
+            .build();
+    }
+
+    private static final Trainee TRAINEE_OTHER = getBuild(UUID_3, OTHER_FIRSTNAME, OTHER_LASTNAME);
 
     @Mock
     private InMemoryTraineeStorage storage;
