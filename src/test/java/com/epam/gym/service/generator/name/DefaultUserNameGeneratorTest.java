@@ -1,6 +1,6 @@
 package com.epam.gym.service.generator.name;
 
-import com.epam.gym.GymApplication;
+import com.epam.gym.mother.UsernameMother;
 import com.epam.gym.service.generator.name.factory.IUsernameFactory;
 import com.epam.gym.service.generator.name.supplier.IUsernameSupplier;
 import org.apache.commons.lang3.StringUtils;
@@ -27,17 +27,9 @@ class DefaultUserNameGeneratorTest {
     private static final int SUFFIX_2 = 2;
     private static final String FIRSTNAME = "firstname";
     private static final String LASTNAME = "lastname";
-    private static final String USERNAME_WITHOUT_SUFFIX = String.join(GymApplication.DEFAULT_USERNAME_DELIMITER,
-        FIRSTNAME,
-        LASTNAME);
-    private static final String USERNAME_WITH_SUFFIX_1 = String.join(GymApplication.DEFAULT_USERNAME_DELIMITER,
-        FIRSTNAME,
-        LASTNAME,
-        String.valueOf(SUFFIX_1));
-    private static final String USERNAME_WITH_SUFFIX_2 = String.join(GymApplication.DEFAULT_USERNAME_DELIMITER,
-        FIRSTNAME,
-        LASTNAME,
-        String.valueOf(SUFFIX_2));
+    private static final String USERNAME_WITHOUT_SUFFIX = UsernameMother.get();
+    private static final String USERNAME_WITH_SUFFIX_1 = UsernameMother.get(SUFFIX_1);
+    private static final String USERNAME_WITH_SUFFIX_2 = UsernameMother.get(SUFFIX_2);
     private static final List<String> EMPTY_USERNAME_LIST = List.of();
     private static final List<String> ONE_USERNAME_LIST = List.of(USERNAME_WITHOUT_SUFFIX);
     private static final List<String> MANY_USERNAMES_LIST = List.of(USERNAME_WITHOUT_SUFFIX, USERNAME_WITH_SUFFIX_1);

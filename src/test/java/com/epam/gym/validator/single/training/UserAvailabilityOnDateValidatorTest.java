@@ -1,8 +1,9 @@
 package com.epam.gym.validator.single.training;
 
 import com.epam.gym.domain.training.Training;
-import com.epam.gym.domain.training.TrainingType;
 import com.epam.gym.exception.EntityBusyOnDateException;
+import com.epam.gym.mother.TrainingMother;
+import com.epam.gym.mother.dto.training.CreateTrainingDtoMother;
 import com.epam.gym.repository.training.ITrainingRepository;
 import com.epam.gym.service.training.dto.CreateTrainingDto;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,8 +14,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.Duration;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -27,30 +28,21 @@ import static org.mockito.Mockito.when;
 class UserAvailabilityOnDateValidatorTest {
 
     private static final LocalDate DATE = LocalDate.of(2026, 1, 1);
+    private static final String NAME = "name";
     private static final UUID TARGET_TRAINEE_UID = UUID.randomUUID();
     private static final UUID TARGET_TRAINER_UID = UUID.randomUUID();
     private static final UUID OTHER_TRAINEE_UID = UUID.randomUUID();
     private static final UUID OTHER_TRAINER_UID = UUID.randomUUID();
-    private static final CreateTrainingDto CREATE_TRAINING_DTO = new CreateTrainingDto(
-        TARGET_TRAINEE_UID,
-        TARGET_TRAINER_UID,
-        "name",
-        TrainingType.CARDIO,
-        DATE,
-        Duration.ZERO
-    );
-    private static final Training TRAINING_WITH_TARGET_TRAINEE = Training.builder()
-        .traineeUid(TARGET_TRAINEE_UID)
-        .build();
-    private static final Training TRAINING_WITH_TARGET_TRAINER = Training.builder()
-        .trainerUid(TARGET_TRAINER_UID)
-        .build();
-    private static final Training TRAINING_WITH_OTHER_TRAINEE = Training.builder()
-        .traineeUid(OTHER_TRAINEE_UID)
-        .build();
-    private static final Training TRAINING_WITH_OTHER_TRAINER = Training.builder()
-        .traineeUid(OTHER_TRAINER_UID)
-        .build();
+    private static final CreateTrainingDto CREATE_TRAINING_DTO =
+        CreateTrainingDtoMother.get(TARGET_TRAINEE_UID, TARGET_TRAINER_UID, NAME, DATE);
+    private static final Training TRAINING_WITH_TARGET_TRAINEE = TrainingMother
+        .getWithTraineeUid(TARGET_TRAINEE_UID);
+    private static final Training TRAINING_WITH_TARGET_TRAINER = TrainingMother
+        .getWithTrainerUid(TARGET_TRAINER_UID);
+    private static final Training TRAINING_WITH_OTHER_TRAINEE = TrainingMother
+        .getWithTraineeUid(OTHER_TRAINEE_UID);
+    private static final Training TRAINING_WITH_OTHER_TRAINER = TrainingMother
+        .getWithTrainerUid(OTHER_TRAINER_UID);
 
     @Mock
     private ITrainingRepository trainingRepository;

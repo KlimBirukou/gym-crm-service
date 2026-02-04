@@ -1,5 +1,6 @@
 package com.epam.gym.validator.composite.trainee;
 
+import com.epam.gym.mother.dto.trainee.CreateTraineeDtoMother;
 import com.epam.gym.service.trainee.dto.CreateTraineeDto;
 import com.epam.gym.validator.IValidator;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,12 +24,11 @@ import static org.mockito.Mockito.verify;
 class CreateTraineeValidatorTest {
 
     private static final LocalDate DATE = LocalDate.of(2026, 1, 1);
-    private static final CreateTraineeDto CREATE_TRAINEE_DTO = new CreateTraineeDto(
-        "firstName",
-        "lastName",
-        "address",
-        DATE
-    );
+    public static final String FIRSTNAME = "firstName";
+    public static final String LASTNAME = "lastName";
+    public static final String ADDRESS = "address";
+    private static final CreateTraineeDto CREATE_TRAINEE_DTO =
+        CreateTraineeDtoMother.get(FIRSTNAME, LASTNAME, ADDRESS, DATE);
 
     @Mock
     private IValidator<LocalDate> traineeBirthdateValidator;

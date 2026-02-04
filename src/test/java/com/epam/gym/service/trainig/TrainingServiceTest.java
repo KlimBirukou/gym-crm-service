@@ -1,7 +1,7 @@
 package com.epam.gym.service.trainig;
 
 import com.epam.gym.domain.training.Training;
-import com.epam.gym.domain.training.TrainingType;
+import com.epam.gym.mother.dto.training.CreateTrainingDtoMother;
 import com.epam.gym.repository.training.ITrainingRepository;
 import com.epam.gym.service.training.TrainingService;
 import com.epam.gym.service.training.dto.CreateTrainingDto;
@@ -16,8 +16,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.Duration;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -36,14 +36,9 @@ class TrainingServiceTest {
     private static final LocalDate DATE = LocalDate.of(2026, 1, 1);
     private static final UUID TRAINEE_UID = UUID.randomUUID();
     private static final UUID TRAINER_UID = UUID.randomUUID();
-    private static final CreateTrainingDto CREATE_TRAINING_DTO = new CreateTrainingDto(
-        TRAINEE_UID,
-        TRAINER_UID,
-        "name",
-        TrainingType.CARDIO,
-        DATE,
-        Duration.ZERO
-    );
+    private static final String NAME = "name";
+    private static final CreateTrainingDto CREATE_TRAINING_DTO =
+        CreateTrainingDtoMother.get(TRAINEE_UID, TRAINER_UID, NAME, DATE);
 
     @Mock
     private ITrainingRepository trainingRepository;

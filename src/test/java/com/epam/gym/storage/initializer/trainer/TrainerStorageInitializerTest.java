@@ -1,6 +1,7 @@
 package com.epam.gym.storage.initializer.trainer;
 
 import com.epam.gym.domain.user.Trainer;
+import com.epam.gym.mother.TrainerMother;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,11 +36,9 @@ class TrainerStorageInitializerTest {
     private static final UUID UID = UUID.randomUUID();
     private static final String FIRSTNAME = "firstname";
     private static final String LASTNAME = "lastname";
-    private static final Trainer TRAINER = Trainer.builder()
-        .uid(UID)
-        .firstName(FIRSTNAME)
-        .lastName(LASTNAME)
-        .build();
+    private static final String USERNAME = "username";
+    private static final Trainer TRAINER =
+        TrainerMother.get(UID, FIRSTNAME, LASTNAME, USERNAME);
     private static final List<Trainer> TRAINERS = List.of(TRAINER);
     private static final String JSON_CONTENT = "[]";
 

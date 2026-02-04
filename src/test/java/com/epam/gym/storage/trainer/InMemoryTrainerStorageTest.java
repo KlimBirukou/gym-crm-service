@@ -1,7 +1,7 @@
 package com.epam.gym.storage.trainer;
 
-import com.epam.gym.GymApplication;
 import com.epam.gym.domain.user.Trainer;
+import com.epam.gym.mother.TrainerMother;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -28,27 +28,13 @@ class InMemoryTrainerStorageTest {
     private static final String LASTNAME = "lastname";
     private static final String UPDATED_FIRSTNAME = "new firstname";
     private static final String UPDATED_LASTNAME = "new lastname";
-    private static final String USERNAME = String.join(GymApplication.DEFAULT_USERNAME_DELIMITER,
-        FIRSTNAME,
-        LASTNAME);
-    private static final Trainer TRAINER_1 = Trainer.builder()
-        .uid(UUID_1)
-        .firstName(FIRSTNAME)
-        .lastName(LASTNAME)
-        .username(USERNAME)
-        .build();
-    private static final Trainer TRAINER_2 = Trainer.builder()
-        .uid(UUID_2)
-        .firstName(FIRSTNAME)
-        .lastName(LASTNAME)
-        .username(USERNAME)
-        .build();
-    private static final Trainer UPDATED_TRAINER = Trainer.builder()
-        .uid(UUID_1)
-        .firstName(UPDATED_FIRSTNAME)
-        .lastName(UPDATED_LASTNAME)
-        .username(USERNAME)
-        .build();
+    private static final String USERNAME = "username";
+    private static final Trainer TRAINER_1 =
+        TrainerMother.get(UUID_1, FIRSTNAME, LASTNAME, USERNAME);
+    private static final Trainer TRAINER_2 =
+        TrainerMother.get(UUID_2, FIRSTNAME, LASTNAME, USERNAME);
+    private static final Trainer UPDATED_TRAINER =
+        TrainerMother.get(UUID_1, UPDATED_FIRSTNAME, UPDATED_LASTNAME, USERNAME);
 
     private InMemoryTrainerStorage testObject;
 

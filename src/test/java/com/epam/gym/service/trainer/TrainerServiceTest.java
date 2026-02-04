@@ -2,6 +2,9 @@ package com.epam.gym.service.trainer;
 
 import com.epam.gym.domain.user.Trainer;
 import com.epam.gym.exception.DomainNotFoundException;
+import com.epam.gym.mother.TrainerMother;
+import com.epam.gym.mother.dto.trainer.CreateTrainerDtoMother;
+import com.epam.gym.mother.dto.trainer.UpdateTrainerDtoMother;
 import com.epam.gym.repository.trainer.ITrainerRepository;
 import com.epam.gym.service.generator.name.IUsernameGenerator;
 import com.epam.gym.service.generator.password.IPasswordGenerator;
@@ -40,25 +43,12 @@ class TrainerServiceTest {
     private static final String NEW_SPECIALIZATION = "new specialization";
     private static final String USERNAME = "username";
     private static final String PASSWORD = "password";
-    private static final CreateTrainerDto CREATE_TRAINER_DTO = new CreateTrainerDto(
-        FIRSTNAME,
-        LASTNAME,
-        SPECIALIZATION
-    );
-    private static final UpdateTrainerDto UPDATE_TRAINER_DTO = new UpdateTrainerDto(
-        UID,
-        NEW_SPECIALIZATION
-    );
-    private static final Trainer EXISTED_TRAINER = Trainer.builder()
-        .uid(UID)
-        .firstName(FIRSTNAME)
-        .lastName(LASTNAME)
-        .specialization(SPECIALIZATION)
-        .username(USERNAME)
-        .password(PASSWORD)
-        .isActive(true)
-        .build();
-
+    private static final CreateTrainerDto CREATE_TRAINER_DTO =
+        CreateTrainerDtoMother.get(FIRSTNAME, LASTNAME, SPECIALIZATION);
+    private static final UpdateTrainerDto UPDATE_TRAINER_DTO =
+        UpdateTrainerDtoMother.get(UID, NEW_SPECIALIZATION);
+    private static final Trainer EXISTED_TRAINER =
+        TrainerMother.get(UID, FIRSTNAME, LASTNAME, USERNAME);
 
     @Mock
     private IUsernameGenerator usernameGenerator;
@@ -151,7 +141,7 @@ class TrainerServiceTest {
 
     @ParameterizedTest
     @NullSource
-    void update_shouldThrowException_whenDataNull(UpdateTrainerDto dto) {
+    void update_shouldThrowException_whenDataNull(com.epam.gym.service.trainer.dto.UpdateTrainerDto dto) {
         assertThrows(NullPointerException.class,
             () -> testObject.update(dto));
     }

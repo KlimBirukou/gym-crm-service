@@ -1,9 +1,16 @@
 package com.epam.gym.facade;
 
 import com.epam.gym.domain.training.Training;
-import com.epam.gym.domain.training.TrainingType;
 import com.epam.gym.domain.user.Trainee;
 import com.epam.gym.domain.user.Trainer;
+import com.epam.gym.mother.TraineeMother;
+import com.epam.gym.mother.TrainerMother;
+import com.epam.gym.mother.TrainingMother;
+import com.epam.gym.mother.dto.trainee.CreateTraineeDtoMother;
+import com.epam.gym.mother.dto.trainee.UpdateTraineeDtoMother;
+import com.epam.gym.mother.dto.trainer.CreateTrainerDtoMother;
+import com.epam.gym.mother.dto.trainer.UpdateTrainerDtoMother;
+import com.epam.gym.mother.dto.training.CreateTrainingDtoMother;
 import com.epam.gym.service.trainee.ITraineeService;
 import com.epam.gym.service.trainee.dto.CreateTraineeDto;
 import com.epam.gym.service.trainee.dto.UpdateTraineeDto;
@@ -18,7 +25,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.Duration;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -40,45 +46,28 @@ class GymFacadeTest {
     private static final String FIRSTNAME = "firstname";
     private static final String LASTNAME = "lastname";
     private static final String USERNAME = "username";
-    private static final String SPECIALIZATION = "Yoga";
+    private static final String TRAINING_NAME = "training name";
     private static final String ADDRESS = "address";
-    private static final String TRAINING_NAME = "training";
+    private static final String SPECIALIZATION = "specialization";
+    private static final String NEW_SPECIALIZATION = "new specialization";
     private static final LocalDate DATE_OF_BIRTH = LocalDate.of(1990, 1, 1);
     private static final LocalDate TRAINING_DATE = LocalDate.of(2026, 2, 10);
-    private static final Duration DURATION = Duration.ofHours(1);
-
-    private static final CreateTrainerDto CREATE_TRAINER_DTO = new CreateTrainerDto(
-        FIRSTNAME, LASTNAME, SPECIALIZATION
-    );
-    private static final UpdateTrainerDto UPDATE_TRAINER_DTO = new UpdateTrainerDto(
-        TRAINEE_UID, SPECIALIZATION
-    );
-    private static final CreateTraineeDto CREATE_TRAINEE_DTO = new CreateTraineeDto(
-        FIRSTNAME, LASTNAME, ADDRESS, DATE_OF_BIRTH
-    );
-    private static final UpdateTraineeDto UPDATE_TRAINEE_DTO = new UpdateTraineeDto(
-        TRAINEE_UID, ADDRESS
-    );
-    private static final CreateTrainingDto CREATE_TRAINING_DTO = new CreateTrainingDto(
-        TRAINER_UID, TRAINEE_UID, TRAINING_NAME, TrainingType.CARDIO, TRAINING_DATE, DURATION
-    );
-
-    private static final Trainer TRAINER = Trainer.builder()
-        .uid(TRAINER_UID)
-        .firstName(FIRSTNAME)
-        .lastName(LASTNAME)
-        .username(USERNAME)
-        .build();
-    private static final Trainee TRAINEE = Trainee.builder()
-        .uid(TRAINEE_UID)
-        .firstName(FIRSTNAME)
-        .lastName(LASTNAME)
-        .address(ADDRESS)
-        .build();
-    private static final Training TRAINING = Training.builder()
-        .uid(TRAINING_UID)
-        .name(TRAINING_NAME)
-        .build();
+    private static final CreateTrainerDto CREATE_TRAINER_DTO = CreateTrainerDtoMother.get(
+        FIRSTNAME, LASTNAME, SPECIALIZATION);
+    private static final UpdateTrainerDto UPDATE_TRAINER_DTO =
+        UpdateTrainerDtoMother.get(TRAINEE_UID, NEW_SPECIALIZATION);
+    private static final CreateTraineeDto CREATE_TRAINEE_DTO =
+        CreateTraineeDtoMother.get(FIRSTNAME, LASTNAME, ADDRESS, DATE_OF_BIRTH);
+    private static final UpdateTraineeDto UPDATE_TRAINEE_DTO =
+        UpdateTraineeDtoMother.get(TRAINEE_UID, ADDRESS);
+    private static final CreateTrainingDto CREATE_TRAINING_DTO =
+        CreateTrainingDtoMother.get(TRAINEE_UID, TRAINER_UID, TRAINING_NAME ,TRAINING_DATE);
+    private static final Trainee TRAINEE =
+        TraineeMother.get(TRAINEE_UID, FIRSTNAME, LASTNAME, USERNAME);
+    private static final Trainer TRAINER =
+        TrainerMother.get(TRAINER_UID, FIRSTNAME, LASTNAME, USERNAME);
+    private static final Training TRAINING =
+        TrainingMother.get(TRAINING_UID, TRAINING_DATE);
 
     @Mock
     private ITrainerService trainerService;

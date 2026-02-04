@@ -2,6 +2,7 @@ package com.epam.gym.validator.single.trainer;
 
 import com.epam.gym.domain.user.Trainer;
 import com.epam.gym.exception.DomainNotFoundException;
+import com.epam.gym.mother.TrainerMother;
 import com.epam.gym.repository.trainer.ITrainerRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,7 +23,11 @@ import static org.mockito.Mockito.when;
 class TrainerPersistenceValidatorTest {
 
     private final static UUID UID = UUID.randomUUID();
-    private final static Trainer TRAINER = new Trainer();
+    private final static String FIRSTNAME = "firstname";
+    private final static String LASTNAME = "lastname";
+    private static final String USERNAME = "username";
+    private final static Trainer TRAINER =
+        TrainerMother.get(UID, FIRSTNAME, LASTNAME, USERNAME);
 
     @Mock
     private ITrainerRepository trainerRepository;

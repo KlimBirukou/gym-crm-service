@@ -1,6 +1,8 @@
 package com.epam.gym.storage.initializer.trainee;
 
 import com.epam.gym.domain.user.Trainee;
+
+import com.epam.gym.mother.TraineeMother;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,11 +37,9 @@ class TraineeStorageInitializerTest {
     private static final UUID UID = UUID.randomUUID();
     private static final String FIRSTNAME = "firstname";
     private static final String LASTNAME = "lastname";
-    private static final Trainee TRAINEE = Trainee.builder()
-        .uid(UID)
-        .firstName(FIRSTNAME)
-        .lastName(LASTNAME)
-        .build();
+    private static final String USERNAME = "username";
+    private static final Trainee TRAINEE =
+        TraineeMother.get(UID, FIRSTNAME, LASTNAME, USERNAME);
     private static final List<Trainee> TRAINEES = List.of(TRAINEE);
     private static final String JSON_CONTENT = "[]";
 
