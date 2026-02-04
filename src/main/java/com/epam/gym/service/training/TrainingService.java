@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -19,6 +21,8 @@ public class TrainingService
     private final ITrainingRepository trainingRepository;
     @Qualifier("createTrainingValidator")
     private final IValidator<CreateTrainingDto> createTrainingValidator;
+    @Qualifier("trainingDateValidator")
+    private final IValidator<LocalDate> trainingDateValidator;
 
     @Override
     public Training create(@NonNull CreateTrainingDto dto) {
@@ -34,5 +38,11 @@ public class TrainingService
             .build();
         trainingRepository.save(training);
         return training;
+    }
+
+    @Override
+    public List<Training> findAllByDate(@NonNull LocalDate date) {
+        trainingDateValidator.validate(date);
+        return trainingRepository.findByLocalDate(date);
     }
 }
