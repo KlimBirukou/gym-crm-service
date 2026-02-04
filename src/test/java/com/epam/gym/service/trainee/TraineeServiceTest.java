@@ -2,6 +2,9 @@ package com.epam.gym.service.trainee;
 
 import com.epam.gym.domain.user.Trainee;
 import com.epam.gym.exception.DomainNotFoundException;
+import com.epam.gym.mother.TraineeMother;
+import com.epam.gym.mother.dto.trainee.CreateTraineeDtoMother;
+import com.epam.gym.mother.dto.trainee.UpdateTraineeDtoMother;
 import com.epam.gym.repository.trainee.ITraineeRepository;
 import com.epam.gym.service.generator.name.IUsernameGenerator;
 import com.epam.gym.service.generator.password.IPasswordGenerator;
@@ -45,26 +48,12 @@ class TraineeServiceTest {
     private static final String PASSWORD = "password";
     private static final String ADDRESS = "address";
     private static final String NEW_ADDRESS = "new address";
-    private static final CreateTraineeDto CREATE_TRAINEE_DTO = new CreateTraineeDto(
-        FIRSTNAME,
-        LASTNAME,
-        ADDRESS,
-        DATE
-    );
-    private static final UpdateTraineeDto UPDATE_TRAINEE_DTO = new UpdateTraineeDto(
-        UID,
-        NEW_ADDRESS
-    );
-    private static final Trainee EXISTED_TRAINEE = Trainee.builder()
-        .uid(UID)
-        .firstName(FIRSTNAME)
-        .lastName(LASTNAME)
-        .address(ADDRESS)
-        .username(USERNAME)
-        .password(PASSWORD)
-        .birthdate(DATE)
-        .isActive(true)
-        .build();
+    private static final CreateTraineeDto CREATE_TRAINEE_DTO =
+        CreateTraineeDtoMother.get(FIRSTNAME, LASTNAME, ADDRESS, DATE);
+    private static final UpdateTraineeDto UPDATE_TRAINEE_DTO =
+        UpdateTraineeDtoMother.get(UID, NEW_ADDRESS);
+    private static final Trainee EXISTED_TRAINEE =
+        TraineeMother.get(UID, FIRSTNAME, LASTNAME, USERNAME);
 
     @Mock
     private IUsernameGenerator usernameGenerator;

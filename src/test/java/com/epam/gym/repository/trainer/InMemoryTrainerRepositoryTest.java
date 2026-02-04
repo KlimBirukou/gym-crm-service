@@ -1,7 +1,7 @@
 package com.epam.gym.repository.trainer;
 
-import com.epam.gym.GymApplication;
 import com.epam.gym.domain.user.Trainer;
+import com.epam.gym.mother.TrainerMother;
 import com.epam.gym.storage.trainer.InMemoryTrainerStorage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,27 +34,13 @@ class InMemoryTrainerRepositoryTest {
     private static final String LASTNAME = "lastname";
     private static final String OTHER_FIRSTNAME = "other firstname";
     private static final String OTHER_LASTNAME = "other lastname";
-    private static final String USERNAME = String.join(GymApplication.DEFAULT_USERNAME_DELIMITER,
-        FIRSTNAME,
-        LASTNAME);
-    private static final Trainer TRAINER_1 = Trainer.builder()
-        .uid(UUID_1)
-        .firstName(FIRSTNAME)
-        .lastName(LASTNAME)
-        .username(USERNAME)
-        .build();
-    private static final Trainer TRAINER_2 = Trainer.builder()
-        .uid(UUID_2)
-        .firstName(FIRSTNAME)
-        .lastName(LASTNAME)
-        .username(USERNAME)
-        .build();
-    private static final Trainer TRAINER_OTHER = Trainer.builder()
-        .uid(UUID_3)
-        .firstName(OTHER_FIRSTNAME)
-        .lastName(OTHER_LASTNAME)
-        .username(USERNAME)
-        .build();
+    private static final String USERNAME = "username";
+    private static final Trainer TRAINER_1 =
+        TrainerMother.get(UUID_1, FIRSTNAME, LASTNAME, USERNAME);
+    private static final Trainer TRAINER_2 =
+        TrainerMother.get(UUID_2, FIRSTNAME, LASTNAME, USERNAME);
+    private static final Trainer TRAINER_OTHER =
+        TrainerMother.get(UUID_3, OTHER_FIRSTNAME, OTHER_LASTNAME, USERNAME);
 
     @Mock
     private InMemoryTrainerStorage storage;

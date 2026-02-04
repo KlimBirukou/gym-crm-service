@@ -1,6 +1,7 @@
 package com.epam.gym.storage.training;
 
 import com.epam.gym.domain.training.Training;
+import com.epam.gym.mother.TrainingMother;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -26,18 +27,9 @@ class InMemoryTrainingStorageTest {
     private static final UUID NON_EXISTENT_UUID = UUID.randomUUID();
     private static final LocalDate DATE_1 = LocalDate.of(2020, 1, 1);
     private static final LocalDate DATE_2 = LocalDate.of(2020, 1, 2);
-    private static final Training TRAINING_1 = Training.builder()
-        .uid(UUID_1)
-        .date(DATE_1)
-        .build();
-    private static final Training UPDATED_TRAINING = Training.builder()
-        .uid(UUID_1)
-        .date(DATE_2)
-        .build();
-    private static final Training TRAINING_2 = Training.builder()
-        .uid(UUID_2)
-        .date(DATE_2)
-        .build();
+    private static final Training TRAINING_1 = TrainingMother.get(UUID_1, DATE_1);
+    private static final Training UPDATED_TRAINING = TrainingMother.get(UUID_1, DATE_2);
+    private static final Training TRAINING_2 = TrainingMother.get(UUID_2, DATE_2);
 
     private InMemoryTrainingStorage testObject;
 

@@ -1,7 +1,8 @@
 package com.epam.gym.service.generator.name.supplier;
 
-import com.epam.gym.GymApplication;
 import com.epam.gym.domain.user.Trainee;
+import com.epam.gym.mother.TraineeMother;
+import com.epam.gym.mother.UsernameMother;
 import com.epam.gym.repository.trainee.ITraineeRepository;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -12,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -21,26 +23,16 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class TraineeUsernameSupplierTest {
 
+    private static final UUID UID = UUID.randomUUID();
     private static final int SUFFIX_1 = 1;
     private static final String FIRSTNAME = "firstname";
     private static final String LASTNAME = "lastname";
-    private static final String USERNAME_WITHOUT_SUFFIX = String.join(GymApplication.DEFAULT_USERNAME_DELIMITER,
-        FIRSTNAME,
-        LASTNAME);
-    private static final String USERNAME_WITH_SUFFIX_1 = String.join(GymApplication.DEFAULT_USERNAME_DELIMITER,
-        FIRSTNAME,
-        LASTNAME,
-        String.valueOf(SUFFIX_1));
-    private static final Trainee TRAINEE_WITHOUT_SUFFIX = Trainee.builder()
-        .firstName(FIRSTNAME)
-        .lastName(LASTNAME)
-        .username(USERNAME_WITHOUT_SUFFIX)
-        .build();
-    private static final Trainee TRAINEE_WITH_SUFFIX_1 = Trainee.builder()
-        .firstName(FIRSTNAME)
-        .lastName(LASTNAME)
-        .username(USERNAME_WITH_SUFFIX_1)
-        .build();
+    private static final String USERNAME_WITHOUT_SUFFIX = UsernameMother.get();
+    private static final String USERNAME_WITH_SUFFIX_1 = UsernameMother.get(SUFFIX_1);
+    private static final Trainee TRAINEE_WITHOUT_SUFFIX =
+        TraineeMother.get(UID, FIRSTNAME, LASTNAME, USERNAME_WITHOUT_SUFFIX);
+    private static final Trainee TRAINEE_WITH_SUFFIX_1 =
+        TraineeMother.get(UID, FIRSTNAME, LASTNAME, USERNAME_WITH_SUFFIX_1);
     private static final List<Trainee> EMPTY_TRAINEE_LIST = List.of();
     private static final List<Trainee> LIST_WITH_TRAINER = List.of(TRAINEE_WITHOUT_SUFFIX);
     private static final List<Trainee> LIST_WITH_TRAINERS = List.of(TRAINEE_WITHOUT_SUFFIX, TRAINEE_WITH_SUFFIX_1);

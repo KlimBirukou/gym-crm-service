@@ -1,7 +1,7 @@
 package com.epam.gym.repository.trainee;
 
-import com.epam.gym.GymApplication;
 import com.epam.gym.domain.user.Trainee;
+import com.epam.gym.mother.TraineeMother;
 import com.epam.gym.storage.trainee.InMemoryTraineeStorage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,22 +34,13 @@ class InMemoryTraineeRepositoryTest {
     private static final String LASTNAME = "lastname";
     private static final String OTHER_FIRSTNAME = "other firstname";
     private static final String OTHER_LASTNAME = "other lastname";
-    private static final String USERNAME = String.join(GymApplication.DEFAULT_USERNAME_DELIMITER,
-        FIRSTNAME,
-        LASTNAME);
-    private static final Trainee TRAINEE_1 = getBuild(UUID_1, FIRSTNAME, LASTNAME);
-    private static final Trainee TRAINEE_2 = getBuild(UUID_2, FIRSTNAME, LASTNAME);
-
-    private static Trainee getBuild(UUID uuid2, String firstname, String lastname) {
-        return Trainee.builder()
-            .uid(uuid2)
-            .firstName(firstname)
-            .lastName(lastname)
-            .username(USERNAME)
-            .build();
-    }
-
-    private static final Trainee TRAINEE_OTHER = getBuild(UUID_3, OTHER_FIRSTNAME, OTHER_LASTNAME);
+    private static final String USERNAME = "username";
+    private static final Trainee TRAINEE_1 =
+        TraineeMother.get(UUID_1, FIRSTNAME, LASTNAME, USERNAME);
+    private static final Trainee TRAINEE_2 =
+        TraineeMother.get(UUID_2, FIRSTNAME, LASTNAME, USERNAME);
+    private static final Trainee TRAINEE_OTHER =
+        TraineeMother.get(UUID_3, OTHER_FIRSTNAME, OTHER_LASTNAME, USERNAME);
 
     @Mock
     private InMemoryTraineeStorage storage;

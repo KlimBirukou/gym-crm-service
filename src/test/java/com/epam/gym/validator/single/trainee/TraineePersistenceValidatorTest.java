@@ -2,6 +2,7 @@ package com.epam.gym.validator.single.trainee;
 
 import com.epam.gym.domain.user.Trainee;
 import com.epam.gym.exception.DomainNotFoundException;
+import com.epam.gym.mother.TraineeMother;
 import com.epam.gym.repository.trainee.ITraineeRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,7 +23,11 @@ import static org.mockito.Mockito.when;
 class TraineePersistenceValidatorTest {
 
     private final static UUID UID = UUID.randomUUID();
-    private final static Trainee TRAINEE = new Trainee();
+    private final static String FIRSTNAME = "firstname";
+    private final static String LASTNAME = "lastname";
+    private static final String USERNAME = "username";
+    private final static Trainee TRAINEE =
+        TraineeMother.get(UID, FIRSTNAME, LASTNAME, USERNAME);
 
     @Mock
     private ITraineeRepository traineeRepository;

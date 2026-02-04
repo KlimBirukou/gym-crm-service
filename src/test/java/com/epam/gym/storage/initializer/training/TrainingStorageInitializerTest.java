@@ -1,6 +1,7 @@
 package com.epam.gym.storage.initializer.training;
 
 import com.epam.gym.domain.training.Training;
+import com.epam.gym.mother.TrainingMother;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,6 +16,7 @@ import tools.jackson.databind.ObjectMapper;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,12 +34,9 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class TrainingStorageInitializerTest {
 
+    private static final LocalDate DATE = LocalDate.of(2026, 1, 1);
     private static final UUID UID = UUID.randomUUID();
-    private static final String NAME = "firstname";
-    private static final Training TRAINING = Training.builder()
-        .uid(UID)
-        .name(NAME)
-        .build();
+    private static final Training TRAINING  = TrainingMother.get(UID, DATE);
     private static final List<Training> TRAININGS = List.of(TRAINING);
     private static final String JSON_CONTENT = "[]";
 

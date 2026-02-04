@@ -19,7 +19,6 @@ class TrainingDateValidatorTest {
 
     private static final String FIXED_NOW_ISO = "2026-01-01T00:00:00Z";
     private static final ZoneId ZONE = ZoneId.of("UTC");
-
     private static final LocalDate TODAY = LocalDate.of(2026, 1, 1);
     private static final int MIN_DAYS = 3;
     private static final int MAX_MONTHS = 6;

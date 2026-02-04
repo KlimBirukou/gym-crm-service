@@ -1,6 +1,6 @@
 package com.epam.gym.service.generator.name.factory;
 
-import com.epam.gym.GymApplication;
+import com.epam.gym.mother.UsernameMother;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -19,16 +19,8 @@ class UsernameFactoryTest {
     private static final int BAD_SUFFIX_NEGATIVE = -10;
     private static final String FIRSTNAME = "firstname";
     private static final String LASTNAME = "lastname";
-    private static final String USERNAME_WITHOUT_SUFFIX = String.join(
-        GymApplication.DEFAULT_USERNAME_DELIMITER,
-        FIRSTNAME,
-        LASTNAME);
-    private static final String USERNAME_WITH_SUFFIX = String.join(
-        GymApplication.DEFAULT_USERNAME_DELIMITER,
-        FIRSTNAME,
-        LASTNAME,
-        String.valueOf(SUFFIX_2));
-
+    private static final String USERNAME_WITHOUT_SUFFIX = UsernameMother.get();
+    private static final String USERNAME_WITH_SUFFIX = UsernameMother.get(SUFFIX_2);
     private final IUsernameFactory testObject = new UsernameFactory();
 
     static Stream<Arguments> provideCreateUsernameTestData() {

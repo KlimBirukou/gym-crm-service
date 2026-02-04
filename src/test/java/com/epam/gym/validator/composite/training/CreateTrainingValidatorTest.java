@@ -1,6 +1,6 @@
 package com.epam.gym.validator.composite.training;
 
-import com.epam.gym.domain.training.TrainingType;
+import com.epam.gym.mother.dto.training.CreateTrainingDtoMother;
 import com.epam.gym.service.training.dto.CreateTrainingDto;
 import com.epam.gym.validator.IValidator;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,7 +11,6 @@ import org.junit.jupiter.params.provider.NullSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.Duration;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -27,17 +26,12 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 class CreateTrainingValidatorTest {
 
-    private static final LocalDate DATE = LocalDate.of(2026, 1, 1);
+    private final static LocalDate DATE = LocalDate.of(2026, 1, 1);
+    private final static String NAME = "name";
     private final static UUID TRAINEE_UID = UUID.randomUUID();
     private final static UUID TRAINER_UID = UUID.randomUUID();
-    private final static CreateTrainingDto CREATE_TRAINING_DTO = new CreateTrainingDto(
-        TRAINEE_UID,
-        TRAINER_UID,
-        "name",
-        TrainingType.CARDIO,
-        DATE,
-        Duration.ZERO
-    );
+    private final static CreateTrainingDto CREATE_TRAINING_DTO =
+        CreateTrainingDtoMother.get(TRAINEE_UID, TRAINER_UID, NAME, DATE);
 
     @Mock
     private IValidator<LocalDate> trainingDateValidator;

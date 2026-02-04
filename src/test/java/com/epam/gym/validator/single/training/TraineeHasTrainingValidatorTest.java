@@ -2,6 +2,7 @@ package com.epam.gym.validator.single.training;
 
 import com.epam.gym.domain.training.Training;
 import com.epam.gym.exception.DomainNotFoundException;
+import com.epam.gym.mother.TrainingMother;
 import com.epam.gym.repository.training.ITrainingRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,8 +23,9 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class TraineeHasTrainingValidatorTest {
 
+    private static final LocalDate DATE = LocalDate.of(2026, 1, 1);
     private final static UUID UID = UUID.randomUUID();
-    private final static Training TRAINING = new Training();
+    private final static Training TRAINING = TrainingMother.get(UID, DATE);
 
     @Mock
     private ITrainingRepository trainingRepository;
