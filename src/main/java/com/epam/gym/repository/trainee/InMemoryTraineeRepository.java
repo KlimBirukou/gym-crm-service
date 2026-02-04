@@ -13,7 +13,7 @@ import java.util.UUID;
 
 @Repository
 @RequiredArgsConstructor
-public final class InMemoryTraineeRepository
+public class InMemoryTraineeRepository
     implements ITraineeRepository {
 
     private final InMemoryTraineeStorage storage;

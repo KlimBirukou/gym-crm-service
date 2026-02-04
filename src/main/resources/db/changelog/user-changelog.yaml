@@ -1,0 +1,41 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2026-02-04-01
+      author: Klim Birukou <klim_birukou@epam.com>
+      changes:
+        - createTable:
+            tableName: user
+            schemaName: gym_schema
+            remarks: Create table for storing gym users
+            columns:
+              - column:
+                  name: uid
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_user
+              - column:
+                  name: first_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: username
+                  type: varchar(255)
+                  constraints:
+                   nullable: false
+              - column:
+                  name: password
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_active
+                  type: boolean
+                  constraints:
+                     nullable: false

@@ -1,6 +1,7 @@
-package com.epam.gym.jparepository.user.v2;
+package com.epam.gym.jparepository.user;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
@@ -8,20 +9,19 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
-import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
-@Table(name = "trainee", schema = "gym_crm")
-public class TraineeEntityM {
+@Table(name = "trainer", schema = "gym_schema")
+public class TrainerEntity {
 
     @Id
     private UUID uid;
 
-    private String address;
-    private LocalDate birthdate;
+    @Column(name = "specialization", nullable = false)
+    private String specialization;
 
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, optional = false)
     @JoinColumn(name = "user_uid", unique = true)
-    private UserEntityM user;
+    private UserEntity user;
 }

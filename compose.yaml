@@ -1,0 +1,29 @@
+services:
+  gym-db:
+    container_name: gym-crm-postgres
+    build:
+      context: .
+      dockerfile: docker/database/Dockerfile
+    environment:
+      - POSTGRES_DB=gym_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=root
+    ports:
+      - "5432:5432"
+    volumes:
+      - gym_db_data:/var/lib/postgresql
+    networks:
+      - gym-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d gym_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+networks:
+  gym-network:
+    driver: bridge
+
+volumes:
+  gym_db_data:
+    driver: local

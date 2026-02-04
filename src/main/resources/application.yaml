@@ -1,30 +1,43 @@
-spring:
-  application:
-    name: gym
-  validation:
-    trainee:
-      min-years: 18
-      max-years: 100
-    training:
-      min-days: 1
-      max-month: 3
+  spring:
+    application:
+      name: gym
+    validation:
+      trainee:
+        min-years: 18
+        max-years: 100
+      training:
+        min-days: 1
+        max-month: 3
 
-  datasource:
-    url: jdbc:h2:mem:testdb
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
+    datasource:
+      url: jdbc:postgresql://localhost:5432/gym_db?currentSchema=gym_schema
+      username: gym_user
+      password: HXGLca@\X$@9I$K
+      driver-class-name: org.postgresql.Driver
 
+    jpa:
+      database-platform: org.hibernate.dialect.PostgreSQLDialect
+      hibernate:
+        ddl-auto: validate
+      show-sql: true
+      properties:
+        hibernate:
+          format_sql: true
+          default_schema: gym_schema
+          jdbc:
+            lob:
+              non_contextual_creation: true
 
-storage:
-  data:
-    trainee:
-      file: classpath:data/trainee.json
-    trainer:
-      file: classpath:data/trainer.json
-    training:
-      file: classpath:data/training.json
+    liquibase:
+      default-schema: gym_schema
+      change-log: classpath:db/changelog/main-changelog.yaml
+      enabled: true
+
+  storage:
+    data:
+      trainee:
+        file: classpath:data/trainee.json
+      trainer:
+        file: classpath:data/trainer.json
+      training:
+        file: classpath:data/training.json
