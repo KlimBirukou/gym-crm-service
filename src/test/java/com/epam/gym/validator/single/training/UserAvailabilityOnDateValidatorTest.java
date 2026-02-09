@@ -2,9 +2,9 @@ package com.epam.gym.validator.single.training;
 
 import com.epam.gym.domain.training.Training;
 import com.epam.gym.exception.EntityBusyOnDateException;
+import com.epam.gym.repository.training.ITrainingRepository;
 import com.epam.gym.mother.TrainingMother;
 import com.epam.gym.mother.dto.training.CreateTrainingDtoMother;
-import com.epam.gym.repository.training.ITrainingRepository;
 import com.epam.gym.service.training.dto.CreateTrainingDto;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -15,7 +15,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -62,7 +61,7 @@ class UserAvailabilityOnDateValidatorTest {
     @ParameterizedTest
     @MethodSource("provideAgreementTestData")
     void validate_shouldPass_whenNoConflicts(List<Training> list) {
-        when(trainingRepository.findByLocalDate(DATE))
+        when(trainingRepository.findByDate(DATE))
             .thenReturn(list);
 
         assertDoesNotThrow(() -> testObject.validate(CREATE_TRAINING_DTO));
@@ -79,7 +78,7 @@ class UserAvailabilityOnDateValidatorTest {
     @ParameterizedTest
     @MethodSource("provideConflictTestData")
     void validate_shouldThrowException_whenHasConflicts(List<Training> list) {
-        when(trainingRepository.findByLocalDate(DATE))
+        when(trainingRepository.findByDate(DATE))
             .thenReturn(list);
 
         assertThrows(EntityBusyOnDateException.class,

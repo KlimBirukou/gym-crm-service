@@ -1,9 +1,9 @@
 package com.epam.gym.service.trainig;
 
 import com.epam.gym.domain.training.Training;
+import com.epam.gym.repository.training.ITrainingRepository;
 import com.epam.gym.mother.TrainingMother;
 import com.epam.gym.mother.dto.training.CreateTrainingDtoMother;
-import com.epam.gym.repository.training.ITrainingRepository;
 import com.epam.gym.service.training.TrainingService;
 import com.epam.gym.service.training.dto.CreateTrainingDto;
 import com.epam.gym.validator.IValidator;
@@ -135,7 +135,7 @@ class TrainingServiceTest {
         doNothing().when(trainingDateValidator)
             .validate(date);
         doReturn(trainings).when(trainingRepository)
-            .findByLocalDate(date);
+            .findByDate(date);
 
         var result = testObject.findAllByDate(date);
 
@@ -145,7 +145,7 @@ class TrainingServiceTest {
 
         verify(trainingDateValidator, times(1))
             .validate(date);
-        verify(trainingRepository, times(1)).findByLocalDate(date);
+        verify(trainingRepository, times(1)).findByDate(date);
         verifyNoMoreInteractions(trainingDateValidator, trainingRepository);
     }
 

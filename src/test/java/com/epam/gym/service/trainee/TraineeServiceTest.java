@@ -2,10 +2,10 @@ package com.epam.gym.service.trainee;
 
 import com.epam.gym.domain.user.Trainee;
 import com.epam.gym.exception.DomainNotFoundException;
+import com.epam.gym.repository.user.trainee.ITraineeRepository;
 import com.epam.gym.mother.TraineeMother;
 import com.epam.gym.mother.dto.trainee.CreateTraineeDtoMother;
 import com.epam.gym.mother.dto.trainee.UpdateTraineeDtoMother;
-import com.epam.gym.repository.trainee.ITraineeRepository;
 import com.epam.gym.service.generator.name.IUsernameGenerator;
 import com.epam.gym.service.generator.password.IPasswordGenerator;
 import com.epam.gym.service.trainee.dto.CreateTraineeDto;

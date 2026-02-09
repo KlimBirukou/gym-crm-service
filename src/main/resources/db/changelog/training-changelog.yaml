@@ -1,0 +1,50 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2026-02-06-01
+      author: Klim Birukou <klim_birukou@epam.com>
+      changes:
+        - createTable:
+            tableName: training
+            schemaName: gym_schema
+            remarks: Create table for storing trainings
+            columns:
+              - column:
+                  name: uid
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_training
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: type
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: date
+                  type: date
+                  constraints:
+                    nullable: false
+              - column:
+                  name: duration
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: trainee_uid
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_training_to_trainee
+                    references: gym_schema.trainee(uid)
+              - column:
+                  name: trainer_uid
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_training_to_trainer
+                    references: gym_schema.trainer(uid)

@@ -9,7 +9,7 @@ import java.util.UUID;
 import java.util.function.Predicate;
 
 @RequiredArgsConstructor
-public abstract class AbstractDomainPersistenceValidator implements IValidator<UUID> {
+public abstract class   AbstractDomainPersistenceValidator implements IValidator<UUID> {
 
     private final Predicate<UUID> existenceChecker;
     private final String entityType;

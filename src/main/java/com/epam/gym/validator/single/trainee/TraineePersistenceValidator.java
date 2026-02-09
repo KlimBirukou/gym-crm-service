@@ -1,7 +1,7 @@
 package com.epam.gym.validator.single.trainee;
 
 import com.epam.gym.domain.user.Trainee;
-import com.epam.gym.repository.trainee.ITraineeRepository;
+import com.epam.gym.repository.user.trainee.ITraineeRepository;
 import com.epam.gym.validator.IValidator;
 import com.epam.gym.validator.base.AbstractDomainPersistenceValidator;
 import org.springframework.stereotype.Service;
@@ -15,7 +15,7 @@ public class TraineePersistenceValidator
 
     public TraineePersistenceValidator(ITraineeRepository traineeRepository) {
         super(
-            uid -> traineeRepository.findByUid(uid).isPresent(),
+            traineeRepository::existByUid,
             Trainee.class.getSimpleName()
         );
     }

@@ -15,8 +15,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class TrainingService
-    implements ITrainingService {
+public class TrainingService implements ITrainingService {
 
     private final ITrainingRepository trainingRepository;
     @Qualifier("createTrainingValidator")
@@ -43,6 +42,6 @@ public class TrainingService
     @Override
     public List<Training> findAllByDate(@NonNull LocalDate date) {
         trainingDateValidator.validate(date);
-        return trainingRepository.findByLocalDate(date);
+        return trainingRepository.findByDate(date);
     }
 }

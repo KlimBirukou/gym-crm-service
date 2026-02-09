@@ -23,7 +23,7 @@ public class UserAvailabilityOnDateValidator
 
     @Override
     public void validate(@NonNull CreateTrainingDto target) {
-        trainingRepository.findByLocalDate(target.date())
+        trainingRepository.findByDate(target.date())
             .forEach(training -> validateTraining(target, training));
     }
 

@@ -11,7 +11,7 @@ public interface ITrainingRepository {
 
     void save(@NonNull Training training);
 
-    List<Training> findByLocalDate(@NonNull LocalDate date);
+    List<Training> findByDate(@NonNull LocalDate date);
 
     List<Training> findByTraineeUid(@NonNull UUID uid);
 }

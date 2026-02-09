@@ -17,7 +17,7 @@ public class TrainerMother {
             .username(username)
             .specialization(SPECIALIZATION)
             .password(PASSWORD)
-            .isActive(true)
+            .active(true)
             .build();
     }
 }

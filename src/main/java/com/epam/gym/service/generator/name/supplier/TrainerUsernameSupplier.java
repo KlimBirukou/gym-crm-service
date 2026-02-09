@@ -1,7 +1,7 @@
 package com.epam.gym.service.generator.name.supplier;
 
 import com.epam.gym.domain.user.Trainer;
-import com.epam.gym.repository.trainer.ITrainerRepository;
+import com.epam.gym.repository.user.trainer.ITrainerRepository;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
