@@ -16,4 +16,6 @@ public interface ITrainerRepository {
     List<Trainer> findByFirstNameAndLastName(@NonNull String firstName, @NonNull String lastName);
 
     Optional<Trainer> findByUid(@NonNull UUID uid);
+
+    Optional<Trainer> findByUsername(@NonNull String username);
 }

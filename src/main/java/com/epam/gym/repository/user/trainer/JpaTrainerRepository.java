@@ -40,7 +40,7 @@ public class JpaTrainerRepository implements ITrainerRepository {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Trainer> findByFirstNameAndLastName(@NonNull String firstName, @NonNull String lastName) {
         return trainerEntityRepository.findByUserFirstNameAndUserLastName(firstName, lastName)
             .stream()
@@ -52,6 +52,13 @@ public class JpaTrainerRepository implements ITrainerRepository {
     @Transactional(readOnly = true)
     public Optional<Trainer> findByUid(@NonNull UUID uid) {
         return trainerEntityRepository.findById(uid)
+            .map(entity -> conversionService.convert(entity, Trainer.class));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<Trainer> findByUsername(@NonNull String username) {
+        return trainerEntityRepository.findByUserUsername(username)
             .map(entity -> conversionService.convert(entity, Trainer.class));
     }
 }

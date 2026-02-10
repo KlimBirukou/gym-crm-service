@@ -7,6 +7,8 @@ import com.epam.gym.service.generator.name.IUsernameGenerator;
 import com.epam.gym.service.generator.password.IPasswordGenerator;
 import com.epam.gym.service.trainee.dto.CreateTraineeDto;
 import com.epam.gym.service.trainee.dto.UpdateTraineeDto;
+import com.epam.gym.service.trainee.dto.ChangePasswordDto;
+import com.epam.gym.service.trainee.dto.ToggleStatusDto;
 import com.epam.gym.validator.IValidator;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +16,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -53,12 +56,44 @@ public class TraineeService implements ITraineeService {
     @Transactional
     public void update(@NonNull UpdateTraineeDto dto) {
         var trainee = traineeRepository.findByUid(dto.uid())
-            .orElseThrow(() -> new DomainNotFoundException(Trainee.class.getSimpleName(), dto.uid()))
-            .setAddress(dto.address());
+            .orElseThrow(() -> new DomainNotFoundException(Trainee.class.getSimpleName(), dto.uid().toString()));
+        trainee.setFirstName(dto.firstName());
+        trainee.setLastName(dto.lastName());
+        trainee.setUsername(dto.username());
+        trainee.setAddress(dto.address());
         traineeRepository.save(trainee);
     }
 
     @Override
+    @Transactional
+    public Trainee findByUsername(@NonNull String username) {
+        return traineeRepository.findByUsername(username)
+            .orElseThrow(() -> new DomainNotFoundException(Trainee.class.getSimpleName(), username));
+    }
+
+    @Override
+    @Transactional
+    public void changePassword(@NonNull ChangePasswordDto dto) {
+        var trainee = traineeRepository.findByUsername(dto.username())
+            .orElseThrow(() -> new DomainNotFoundException(Trainee.class.getSimpleName(), dto.username()));
+        if (!Objects.equals(trainee.getPassword(), dto.oldPassword())) {
+            throw new RuntimeException(); // TODO create normal exception
+        }
+        trainee.setPassword(dto.newPassword());
+        traineeRepository.save(trainee);
+    }
+
+    @Override
+    @Transactional
+    public void toggleStatus(@NonNull ToggleStatusDto dto) {
+        var trainee = traineeRepository.findByUid(dto.uid())
+            .orElseThrow(() -> new DomainNotFoundException(Trainee.class.getSimpleName(), dto.uid().toString()));
+        trainee.setActive(dto.status());
+        traineeRepository.save(trainee);
+    }
+
+    @Override
+    @Transactional
     public void delete(@NonNull UUID uid) {
         deleteTraineeValidator.validate(uid);
         traineeRepository.deleteByUid(uid);

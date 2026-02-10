@@ -17,5 +17,7 @@ public interface ITraineeRepository {
 
     Optional<Trainee> findByUid(@NonNull UUID uid);
 
+    Optional<Trainee> findByUsername(@NonNull String uid);
+
     void deleteByUid(@NonNull UUID uid);
 }
