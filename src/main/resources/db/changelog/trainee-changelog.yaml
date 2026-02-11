@@ -6,7 +6,7 @@ databaseChangeLog:
         - createTable:
             tableName: trainee
             schemaName: gym_schema
-            remarks: Create table for storing trainees
+            remarks: Stores trainee-specific information with one-to-one relation to user
             columns:
               - column:
                   name: uid
@@ -14,21 +14,30 @@ databaseChangeLog:
                   constraints:
                     primaryKey: true
                     primaryKeyName: pk_trainee
+                    nullable: false
               - column:
                   name: address
                   type: varchar(255)
                   constraints:
-                    nullable: false
+                    nullable: true
               - column:
                   name: birthdate
                   type: date
                   constraints:
-                    nullable: false
+                    nullable: true
               - column:
                   name: user_uid
                   type: uuid
                   constraints:
                     nullable: false
                     unique: true
-                    foreignKeyName: fk_trainee_to_user
-                    references: gym_schema.user(uid)
+                    uniqueConstraintName: uk_trainee_user_uid
+
+        - addForeignKeyConstraint:
+            baseTableName: trainee
+            baseColumnNames: user_uid
+            referencedTableName: user
+            referencedColumnNames: uid
+            constraintName: fk_trainee_to_user
+            onDelete: CASCADE
+            onUpdate: CASCADE

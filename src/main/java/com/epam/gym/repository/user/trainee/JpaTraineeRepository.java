@@ -1,8 +1,8 @@
 package com.epam.gym.repository.user.trainee;
 
 import com.epam.gym.domain.user.Trainee;
-import com.epam.gym.repository.jpa.user.trainee.ITraineeEntityRepository;
-import com.epam.gym.repository.jpa.user.trainee.TraineeEntity;
+import com.epam.gym.repository.jpa.repository.ITraineeEntityRepository;
+import com.epam.gym.repository.jpa.entity.TraineeEntity;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
@@ -40,15 +40,6 @@ public class JpaTraineeRepository implements ITraineeRepository {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Trainee> findByFirstNameAndLastName(@NonNull String firstName, @NonNull String lastName) {
-        return traineeEntityRepository.findByUserFirstNameAndUserLastName(firstName, lastName)
-            .stream()
-            .map(entity -> conversionService.convert(entity, Trainee.class))
-            .toList();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public Optional<Trainee> findByUid(@NonNull UUID uid) {
         return traineeEntityRepository.findById(uid)
             .map(entity -> conversionService.convert(entity, Trainee.class));
@@ -59,6 +50,15 @@ public class JpaTraineeRepository implements ITraineeRepository {
     public Optional<Trainee> findByUsername(@NonNull String username) {
         return traineeEntityRepository.findByUserUsername(username)
             .map(entity -> conversionService.convert(entity, Trainee.class));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Trainee> findByFirstNameAndLastName(@NonNull String firstName, @NonNull String lastName) {
+        return traineeEntityRepository.findByUserFirstNameAndUserLastName(firstName, lastName)
+            .stream()
+            .map(entity -> conversionService.convert(entity, Trainee.class))
+            .toList();
     }
 
     @Override

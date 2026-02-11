@@ -1,0 +1,36 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2026-02-10-01
+      author: Klim Birukou <klim_birukou@epam.com>
+      changes:
+        - createTable:
+            tableName: training_type
+            schemaName: gym_schema
+            remarks: Stores training-type enumeration to training
+            columns:
+              - column:
+                  name: uid
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_training_type
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: uk_training_type_name
+
+        - insert:
+            schemaName: gym_schema
+            tableName: training_type
+            columns:
+              - column: { name: name, value: "Strength" }
+              - column: { name: name, value: "Cardio" }
+              - column: { name: name, value: "Functional" }
+              - column: { name: name, value: "Stretching" }
+              - column: { name: name, value: "Hiit" }
+              - column: { name: name, value: "Circuit" }

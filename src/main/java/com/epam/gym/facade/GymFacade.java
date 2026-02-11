@@ -34,7 +34,7 @@ public final class GymFacade implements IGymFacade {
             dto.firstName(), dto.lastName());
         var trainer = trainerService.create(dto);
         log.info("Create trainer. Finished. FirstName={}, LastName={}, CreatedTrainerUid={}",
-            trainer.getFirstName(), trainer.getLastName(), trainer.getUid());
+            trainer.getUser().getFirstName(), trainer.getUser().getLastName(), trainer.getUid());
         return trainer;
     }
 
@@ -51,7 +51,7 @@ public final class GymFacade implements IGymFacade {
             dto.firstName(), dto.lastName());
         var trainee = traineeService.create(dto);
         log.info("Create trainee. Finished. FirstName={}, LastName={}, CreatedTraineeUid={}",
-            trainee.getFirstName(), trainee.getLastName(), trainee.getUid());
+            trainee.getUser().getFirstName(), trainee.getUser().getLastName(), trainee.getUid());
         return trainee;
     }
 

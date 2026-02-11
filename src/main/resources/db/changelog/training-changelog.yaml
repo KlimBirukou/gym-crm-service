@@ -20,11 +20,6 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: type
-                  type: varchar(50)
-                  constraints:
-                    nullable: false
-              - column:
                   name: date
                   type: date
                   constraints:
@@ -35,16 +30,39 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
+                  name: training_type_uid
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
                   name: trainee_uid
                   type: uuid
                   constraints:
                     nullable: false
-                    foreignKeyName: fk_training_to_trainee
-                    references: gym_schema.trainee(uid)
               - column:
                   name: trainer_uid
                   type: uuid
                   constraints:
                     nullable: false
-                    foreignKeyName: fk_training_to_trainer
-                    references: gym_schema.trainer(uid)
+        - addForeignKeyConstraint:
+            baseTableName: training
+            baseColumnNames: training_type_uid
+            referencedTableName: training_type
+            referencedColumnNames: uid
+            constraintName: fk_training_to_training_type
+        - addForeignKeyConstraint:
+            baseTableName: training
+            baseColumnNames: trainee_uid
+            referencedTableName: trainee
+            referencedColumnNames: uid
+            constraintName: fk_training_to_trainee
+            onDelete: CASCADE
+            onUpdate: CASCADE
+        - addForeignKeyConstraint:
+            baseTableName: training
+            baseColumnNames: trainer_uid
+            referencedTableName: trainer
+            referencedColumnNames: uid
+            constraintName: fk_training_to_trainer
+            onDelete: CASCADE
+            onUpdate: CASCADE

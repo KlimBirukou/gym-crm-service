@@ -1,14 +1,16 @@
 package com.epam.gym.service.trainee;
 
 import com.epam.gym.domain.user.Trainee;
+import com.epam.gym.domain.user.User;
 import com.epam.gym.exception.DomainNotFoundException;
 import com.epam.gym.repository.user.trainee.ITraineeRepository;
 import com.epam.gym.service.generator.name.IUsernameGenerator;
 import com.epam.gym.service.generator.password.IPasswordGenerator;
 import com.epam.gym.service.trainee.dto.CreateTraineeDto;
 import com.epam.gym.service.trainee.dto.UpdateTraineeDto;
-import com.epam.gym.service.trainee.dto.ChangePasswordDto;
-import com.epam.gym.service.trainee.dto.ToggleStatusDto;
+import com.epam.gym.service.user.IUserService;
+import com.epam.gym.service.user.dto.ChangePasswordDto;
+import com.epam.gym.service.user.dto.ToggleStatusDto;
 import com.epam.gym.validator.IValidator;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +18,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -26,6 +27,7 @@ public class TraineeService implements ITraineeService {
     private final IUsernameGenerator usernameGenerator;
     private final IPasswordGenerator passwordGenerator;
     private final ITraineeRepository traineeRepository;
+    private final IUserService userService;
     @Qualifier("createTraineeValidator")
     private final IValidator<CreateTraineeDto> createTraineeValidator;
     @Qualifier("deleteTraineeValidator")
@@ -38,15 +40,18 @@ public class TraineeService implements ITraineeService {
         var uid = UUID.randomUUID();
         var username = usernameGenerator.generate(dto.firstName(), dto.lastName());
         var password = passwordGenerator.generate();
-        var trainee = Trainee.builder()
-            .uid(uid)
+        var user = User.builder()
             .firstName(dto.firstName())
             .lastName(dto.lastName())
-            .address(dto.address())
             .username(username)
             .password(password)
-            .birthdate(dto.birthdate())
             .active(true)
+            .build();
+        var trainee = Trainee.builder()
+            .uid(uid)
+            .user(user)
+            .address(dto.address())
+            .birthdate(dto.birthdate())
             .build();
         traineeRepository.save(trainee);
         return trainee;
@@ -57,9 +62,12 @@ public class TraineeService implements ITraineeService {
     public void update(@NonNull UpdateTraineeDto dto) {
         var trainee = traineeRepository.findByUid(dto.uid())
             .orElseThrow(() -> new DomainNotFoundException(Trainee.class.getSimpleName(), dto.uid().toString()));
-        trainee.setFirstName(dto.firstName());
-        trainee.setLastName(dto.lastName());
-        trainee.setUsername(dto.username());
+        userService.updateUserData(
+            trainee.getUser().getUid(),
+            dto.firstName(),
+            dto.lastName(),
+            dto.username()
+        );
         trainee.setAddress(dto.address());
         traineeRepository.save(trainee);
     }
@@ -74,22 +82,13 @@ public class TraineeService implements ITraineeService {
     @Override
     @Transactional
     public void changePassword(@NonNull ChangePasswordDto dto) {
-        var trainee = traineeRepository.findByUsername(dto.username())
-            .orElseThrow(() -> new DomainNotFoundException(Trainee.class.getSimpleName(), dto.username()));
-        if (!Objects.equals(trainee.getPassword(), dto.oldPassword())) {
-            throw new RuntimeException(); // TODO create normal exception
-        }
-        trainee.setPassword(dto.newPassword());
-        traineeRepository.save(trainee);
+        userService.changePassword(dto);
     }
 
-    @Override
     @Transactional
+    @Override
     public void toggleStatus(@NonNull ToggleStatusDto dto) {
-        var trainee = traineeRepository.findByUid(dto.uid())
-            .orElseThrow(() -> new DomainNotFoundException(Trainee.class.getSimpleName(), dto.uid().toString()));
-        trainee.setActive(dto.status());
-        traineeRepository.save(trainee);
+        userService.toggleStatus(dto);
     }
 
     @Override

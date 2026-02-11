@@ -13,11 +13,11 @@ public interface ITraineeRepository {
 
     void save(@NonNull Trainee trainee);
 
-    List<Trainee> findByFirstNameAndLastName(@NonNull String firstName, @NonNull String lastName);
-
     Optional<Trainee> findByUid(@NonNull UUID uid);
 
     Optional<Trainee> findByUsername(@NonNull String uid);
+
+    List<Trainee> findByFirstNameAndLastName(@NonNull String firstName, @NonNull String lastName);
 
     void deleteByUid(@NonNull UUID uid);
 }

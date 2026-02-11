@@ -1,8 +1,8 @@
 package com.epam.gym.repository.training;
 
 import com.epam.gym.domain.training.Training;
-import com.epam.gym.repository.jpa.training.ITrainingEntityRepository;
-import com.epam.gym.repository.jpa.training.TrainingEntity;
+import com.epam.gym.repository.jpa.repository.ITrainingEntityRepository;
+import com.epam.gym.repository.jpa.entity.TrainingEntity;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;

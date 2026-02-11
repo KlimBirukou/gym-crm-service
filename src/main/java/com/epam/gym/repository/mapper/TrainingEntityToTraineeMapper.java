@@ -2,7 +2,7 @@ package com.epam.gym.repository.mapper;
 
 import com.epam.gym.configuration.IMapStructConfiguration;
 import com.epam.gym.domain.training.Training;
-import com.epam.gym.repository.jpa.training.TrainingEntity;
+import com.epam.gym.repository.jpa.entity.TrainingEntity;
 import lombok.NonNull;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;

@@ -2,20 +2,20 @@ package com.epam.gym.domain.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 import lombok.experimental.Accessors;
 import lombok.experimental.SuperBuilder;
+
+import java.util.UUID;
 
 @Data
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(chain = true)
-@ToString(callSuper = true)
-@EqualsAndHashCode(callSuper = true)
-public final class Trainer extends User {
+public final class Trainer {
 
+    private UUID uid;
+    private User user;
     private String specialization;
 }

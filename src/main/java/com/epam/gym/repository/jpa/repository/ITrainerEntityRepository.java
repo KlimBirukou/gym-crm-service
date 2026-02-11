@@ -1,5 +1,6 @@
-package com.epam.gym.repository.jpa.user.trainer;
+package com.epam.gym.repository.jpa.repository;
 
+import com.epam.gym.repository.jpa.entity.TrainerEntity;
 import lombok.NonNull;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

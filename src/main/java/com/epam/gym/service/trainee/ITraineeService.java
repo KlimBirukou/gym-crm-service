@@ -3,8 +3,8 @@ package com.epam.gym.service.trainee;
 import com.epam.gym.domain.user.Trainee;
 import com.epam.gym.service.trainee.dto.CreateTraineeDto;
 import com.epam.gym.service.trainee.dto.UpdateTraineeDto;
-import com.epam.gym.service.trainee.dto.ChangePasswordDto;
-import com.epam.gym.service.trainee.dto.ToggleStatusDto;
+import com.epam.gym.service.user.dto.ChangePasswordDto;
+import com.epam.gym.service.user.dto.ToggleStatusDto;
 import lombok.NonNull;
 
 import java.util.UUID;

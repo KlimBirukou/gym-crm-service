@@ -1,4 +1,4 @@
-package com.epam.gym.service.trainer.dto;
+package com.epam.gym.service.user.dto;
 
 import lombok.NonNull;
 

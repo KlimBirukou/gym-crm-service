@@ -86,7 +86,7 @@ class TrainingServiceTest {
         assertEquals(CREATE_TRAINING_DTO.trainerUid(), saved.getTrainerUid());
         assertEquals(CREATE_TRAINING_DTO.date(), saved.getDate());
         assertEquals(CREATE_TRAINING_DTO.name(), saved.getName());
-        assertEquals(CREATE_TRAINING_DTO.type(), saved.getType());
+        assertEquals(CREATE_TRAINING_DTO.type(), saved.getTrainingType());
         assertEquals(CREATE_TRAINING_DTO.duration(), saved.getDuration());
 
         assertEquals(result.getUid(), saved.getUid());

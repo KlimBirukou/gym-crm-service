@@ -1,5 +1,8 @@
 databaseChangeLog:
   - include:
+      file: training-type-changelog.yaml
+      relativeToChangeLogFile: true
+  - include:
       file: user-changelog.yaml
       relativeToChangeLogFile: true
   - include:
@@ -10,4 +13,7 @@ databaseChangeLog:
       relativeToChangeLogFile: true
   - include:
       file: training-changelog.yaml
+      relativeToChangeLogFile: true
+  - include:
+      file: trainee-trainer-changelog.yaml
       relativeToChangeLogFile: true

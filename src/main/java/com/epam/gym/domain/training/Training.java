@@ -15,13 +15,13 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(chain = true)
-public final class Training {
+public class Training {
 
     private UUID uid;
     private UUID traineeUid;
     private UUID trainerUid;
     private String name;
-    private TrainingType type;
+    private TrainingType trainingType;
     private LocalDate date;
     private Duration duration;
 }

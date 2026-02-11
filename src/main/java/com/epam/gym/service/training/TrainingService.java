@@ -32,7 +32,7 @@ public class TrainingService implements ITrainingService {
             .traineeUid(dto.traineeUid())
             .date(dto.date())
             .name(dto.name())
-            .type(dto.type())
+            .trainingType(dto.type())
             .duration(dto.duration())
             .build();
         trainingRepository.save(training);
