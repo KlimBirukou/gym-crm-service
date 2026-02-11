@@ -1,3 +1,19 @@
 spring:
   application:
     name: gym
+  validation:
+    trainee:
+      min-years: 18
+      max-years: 100
+    training:
+      min-days: 1
+      max-month: 3
+
+storage:
+  data:
+    trainee:
+      file: classpath:data/trainee.json
+    trainer:
+      file: classpath:data/trainer.json
+    training:
+      file: classpath:data/training.json

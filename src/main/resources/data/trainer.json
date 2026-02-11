@@ -1,0 +1,47 @@
+[
+  {
+    "uid": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+    "firstName": "Mark",
+    "lastName": "Strong",
+    "specialization": "Fitness",
+    "username": "Mark_Strong",
+    "password": "pass123456",
+    "isActive": true
+  },
+  {
+    "uid": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+    "firstName": "Anna",
+    "lastName": "Power",
+    "specialization": "Yoga",
+    "username": "Anna_Power",
+    "password": "pass123456",
+    "isActive": true
+  },
+  {
+    "uid": "dddddddd-dddd-dddd-dddd-dddddddddddd",
+    "firstName": "Tom",
+    "lastName": "Speed",
+    "specialization": "Cardio",
+    "username": "Tom_Speed",
+    "password": "pass123456",
+    "isActive": true
+  },
+  {
+    "uid": "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee",
+    "firstName": "Laura",
+    "lastName": "Flex",
+    "specialization": "Stretching",
+    "username": "Laura_Flex",
+    "password": "pass123456",
+    "isActive": true
+  },
+  {
+    "uid": "ffffffff-ffff-ffff-ffff-ffffffffffff",
+    "firstName": "Chris",
+    "lastName": "Iron",
+    "specialization": "Strength",
+    "username": "Chris_Iron",
+    "password": "pass123456",
+    "isActive": true
+  }
+]
