@@ -32,7 +32,7 @@ public class TrainerEntity {
     @Id
     private UUID uid;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "training_type_uid", nullable = false)
     private TrainingTypeEntity specialization;
 
@@ -40,6 +40,9 @@ public class TrainerEntity {
     @JoinColumn(name = "user_uid", unique = true, nullable = false)
     private UserEntity user;
 
-    @OneToMany(mappedBy = "trainer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "training", cascade = CascadeType.REMOVE)
+    private List<TrainingEntity> trainings;
+
+    @OneToMany(mappedBy = "trainer", cascade = CascadeType.REMOVE)
     private List<TraineeTrainerEntity> trainees;
 }

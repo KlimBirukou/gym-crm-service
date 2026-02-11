@@ -39,11 +39,11 @@ public class TraineeEntity {
     @Column(name = "birthdate")
     private LocalDate birthdate;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, optional = false)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, optional = false)
     @JoinColumn(name = "user_uid", unique = true, nullable = false)
     private UserEntity user;
 
-    @OneToMany(mappedBy = "trainee", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "training", cascade = CascadeType.REMOVE)
     private List<TrainingEntity> trainings;
 
     @OneToMany(mappedBy = "trainee", cascade = CascadeType.REMOVE, orphanRemoval = true)
