@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
-public final class DefaultUsernameGenerator implements IUsernameGenerator {
+public class DefaultUsernameGenerator implements IUsernameGenerator {
 
     public static final String MESSAGE = "firstName or lastName cannot be blank";
 

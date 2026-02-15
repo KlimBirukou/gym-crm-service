@@ -1,6 +1,6 @@
 package com.epam.gym.mother.dto.trainer;
 
-import com.epam.gym.service.trainer.dto.CreateTrainerDto;
+import com.epam.gym.v1.service.trainer.dto.CreateTrainerDto;
 
 public class CreateTrainerDtoMother {
 

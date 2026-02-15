@@ -1,6 +1,6 @@
 package com.epam.gym.mother.dto.trainee;
 
-import com.epam.gym.service.trainee.dto.UpdateTraineeDto;
+import com.epam.gym.v1.service.trainee.dto.UpdateTraineeDto;
 
 import java.util.UUID;
 

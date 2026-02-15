@@ -1,7 +1,7 @@
 package com.epam.gym.validator.composite.trainee;
 
 import com.epam.gym.mother.dto.trainee.CreateTraineeDtoMother;
-import com.epam.gym.service.trainee.dto.CreateTraineeDto;
+import com.epam.gym.v1.service.trainee.dto.CreateTraineeDto;
 import com.epam.gym.validator.IValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

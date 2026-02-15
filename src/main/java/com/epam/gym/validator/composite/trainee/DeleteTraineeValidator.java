@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
 
-@Service("deleteTraineeValidator")
+/*@Service("deleteTraineeValidator")
 @RequiredArgsConstructor
 public class DeleteTraineeValidator
     extends AbstractCompositeValidator<UUID>
@@ -33,4 +33,4 @@ public class DeleteTraineeValidator
             traineeHasTrainingValidator
         );
     }
-}
+}*/

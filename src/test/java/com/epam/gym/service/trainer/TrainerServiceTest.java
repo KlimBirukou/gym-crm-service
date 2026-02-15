@@ -2,14 +2,15 @@ package com.epam.gym.service.trainer;
 
 import com.epam.gym.domain.user.Trainer;
 import com.epam.gym.exception.DomainNotFoundException;
-import com.epam.gym.repository.user.trainer.ITrainerRepository;
+import com.epam.gym.v1.repository.user.trainer.ITrainerRepository;
 import com.epam.gym.mother.TrainerMother;
 import com.epam.gym.mother.dto.trainer.CreateTrainerDtoMother;
 import com.epam.gym.mother.dto.trainer.UpdateTrainerDtoMother;
 import com.epam.gym.service.generator.name.IUsernameGenerator;
 import com.epam.gym.service.generator.password.IPasswordGenerator;
-import com.epam.gym.service.trainer.dto.CreateTrainerDto;
-import com.epam.gym.service.trainer.dto.UpdateTrainerDto;
+import com.epam.gym.v1.service.trainer.TrainerService;
+import com.epam.gym.v1.service.trainer.dto.CreateTrainerDto;
+import com.epam.gym.v1.service.trainer.dto.UpdateTrainerDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -141,7 +142,7 @@ class TrainerServiceTest {
 
     @ParameterizedTest
     @NullSource
-    void update_shouldThrowException_whenDataNull(com.epam.gym.service.trainer.dto.UpdateTrainerDto dto) {
+    void update_shouldThrowException_whenDataNull(UpdateTrainerDto dto) {
         assertThrows(NullPointerException.class,
             () -> testObject.update(dto));
     }

@@ -2,7 +2,7 @@ package com.epam.gym.validator.single.training;
 
 import com.epam.gym.domain.training.Training;
 import com.epam.gym.exception.DomainNotFoundException;
-import com.epam.gym.repository.training.ITrainingRepository;
+import com.epam.gym.v1.repository.training.ITrainingRepository;
 import com.epam.gym.mother.TrainingMother;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

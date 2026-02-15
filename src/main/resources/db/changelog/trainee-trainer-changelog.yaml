@@ -14,7 +14,7 @@ databaseChangeLog:
                   defaultValueComputed: gen_random_uuid()
                   constraints:
                     primaryKey: true
-                    primaryKeyName: pk_trainee
+                    primaryKeyName: pk_trainee_trainer
                     nullable: false
               - column:
                   name: trainee_uid

@@ -4,7 +4,7 @@ import com.epam.gym.domain.training.Training;
 import com.epam.gym.domain.user.Trainee;
 import com.epam.gym.domain.user.Trainer;
 import com.epam.gym.exception.EntityBusyOnDateException;
-import com.epam.gym.repository.training.ITrainingRepository;
+import com.epam.gym.repository.domain.training.ITrainingRepository;
 import com.epam.gym.service.training.dto.CreateTrainingDto;
 import com.epam.gym.validator.IValidator;
 import lombok.NonNull;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.Objects;
 import java.util.UUID;
 
-@Service("userAvailabilityOnDateValidator")
+/*@Service("userAvailabilityOnDateValidator")
 @RequiredArgsConstructor
 public class UserAvailabilityOnDateValidator
     implements IValidator<CreateTrainingDto> {
@@ -37,4 +37,4 @@ public class UserAvailabilityOnDateValidator
             throw new EntityBusyOnDateException(simpleName, dto.trainerUid(), dto.date());
         }
     }
-}
+}*/

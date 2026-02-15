@@ -1,0 +1,34 @@
+package com.epam.gym.repository.domain.type;
+
+import com.epam.gym.domain.training.TrainingType;
+import com.epam.gym.repository.jpa.type.ITrainingTypeEntityRepository;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Primary;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+@Primary
+@RequiredArgsConstructor
+public class JpaTrainingTypeRepository implements ITrainingTypeRepository {
+
+    private final ITrainingTypeEntityRepository repository;
+    private final ConversionService conversionService;
+
+    @Override
+    public Optional<TrainingType> getByName(@NonNull String name) {
+        return repository.getByName(name)
+            .map(entity -> conversionService.convert(entity, TrainingType.class));
+    }
+
+    @Override
+    public List<TrainingType> getAll() {
+        return repository.findAll().stream()
+            .map(entity -> conversionService.convert(entity, TrainingType.class))
+            .toList();
+    }
+}

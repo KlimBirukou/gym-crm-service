@@ -1,23 +1,24 @@
 package com.epam.gym.domain.user;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.experimental.Accessors;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
-import java.util.UUID;
 
 @Data
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(chain = true)
-public final class Trainee {
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
+public final class Trainee extends User {
 
-    private UUID uid;
-    private User user;
     private String address;
     private LocalDate birthdate;
 }

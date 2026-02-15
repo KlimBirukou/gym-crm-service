@@ -16,7 +16,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
-@Service("createTrainingValidator")
+/*@Service("createTrainingValidator")
 @RequiredArgsConstructor
 public class CreateTrainingValidator
     extends AbstractCompositeValidator<CreateTrainingDto>
@@ -44,4 +44,4 @@ public class CreateTrainingValidator
 
         );
     }
-}
+}*/

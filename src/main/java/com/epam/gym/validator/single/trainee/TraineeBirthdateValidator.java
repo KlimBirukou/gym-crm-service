@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import java.time.Clock;
 import java.time.LocalDate;
 
-@Service("traineeBirthdateValidator")
+/*@Service("traineeBirthdateValidator")
 @RequiredArgsConstructor
 public class TraineeBirthdateValidator
     implements IValidator<LocalDate> {
@@ -32,4 +32,4 @@ public class TraineeBirthdateValidator
             throw new DateValidationException(Trainee.class.getSimpleName());
         }
     }
-}
+}*/

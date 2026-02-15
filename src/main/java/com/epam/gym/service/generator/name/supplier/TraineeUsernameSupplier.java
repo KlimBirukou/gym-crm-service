@@ -1,8 +1,7 @@
 package com.epam.gym.service.generator.name.supplier;
 
 import com.epam.gym.domain.user.Trainee;
-import com.epam.gym.domain.user.User;
-import com.epam.gym.repository.user.trainee.ITraineeRepository;
+import com.epam.gym.repository.domain.trainee.ITraineeRepository;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,11 +18,6 @@ public class TraineeUsernameSupplier extends UserUsernameSupplier<Trainee> {
     @Override
     @Transactional
     protected List<Trainee> provideUsers(@NonNull String firstName, @NonNull String lastName) {
-        return traineeRepository.findByFirstNameAndLastName(firstName, lastName);
-    }
-
-    @Override
-    protected User extractUser(Trainee trainee) {
-        return trainee.getUser();
+        return traineeRepository.getByFirstAndNameLastName(firstName, lastName);
     }
 }

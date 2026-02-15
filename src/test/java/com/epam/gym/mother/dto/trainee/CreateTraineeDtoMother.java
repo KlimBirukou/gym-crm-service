@@ -1,6 +1,6 @@
 package com.epam.gym.mother.dto.trainee;
 
-import com.epam.gym.service.trainee.dto.CreateTraineeDto;
+import com.epam.gym.v1.service.trainee.dto.CreateTraineeDto;
 
 import java.time.LocalDate;
 

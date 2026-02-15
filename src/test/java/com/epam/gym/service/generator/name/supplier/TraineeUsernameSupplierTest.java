@@ -1,7 +1,7 @@
 package com.epam.gym.service.generator.name.supplier;
 
 import com.epam.gym.domain.user.Trainee;
-import com.epam.gym.repository.user.trainee.ITraineeRepository;
+import com.epam.gym.v1.repository.user.trainee.ITraineeRepository;
 import com.epam.gym.mother.TraineeMother;
 import com.epam.gym.mother.UsernameMother;
 import org.junit.jupiter.api.extension.ExtendWith;

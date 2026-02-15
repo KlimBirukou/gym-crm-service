@@ -1,11 +1,11 @@
 package com.epam.gym.service.trainig;
 
 import com.epam.gym.domain.training.Training;
-import com.epam.gym.repository.training.ITrainingRepository;
+import com.epam.gym.v1.repository.training.ITrainingRepository;
 import com.epam.gym.mother.TrainingMother;
 import com.epam.gym.mother.dto.training.CreateTrainingDtoMother;
-import com.epam.gym.service.training.TrainingService;
-import com.epam.gym.service.training.dto.CreateTrainingDto;
+import com.epam.gym.v1.service.training.TrainingService;
+import com.epam.gym.v1.service.training.dto.CreateTrainingDto;
 import com.epam.gym.validator.IValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

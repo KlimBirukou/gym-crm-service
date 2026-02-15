@@ -1,13 +1,10 @@
 package com.epam.gym.service.trainee;
 
 import com.epam.gym.domain.user.Trainee;
+import com.epam.gym.service.trainee.dto.ChangePasswordDto;
 import com.epam.gym.service.trainee.dto.CreateTraineeDto;
 import com.epam.gym.service.trainee.dto.UpdateTraineeDto;
-import com.epam.gym.service.user.dto.ChangePasswordDto;
-import com.epam.gym.service.user.dto.ToggleStatusDto;
 import lombok.NonNull;
-
-import java.util.UUID;
 
 public interface ITraineeService {
 
@@ -15,11 +12,11 @@ public interface ITraineeService {
 
     void update(@NonNull UpdateTraineeDto dto);
 
-    Trainee findByUsername(@NonNull String username);
-
     void changePassword(@NonNull ChangePasswordDto dto);
 
-    void toggleStatus(@NonNull ToggleStatusDto dto);
+    void toggleStatus(@NonNull String username);
 
-    void delete(@NonNull UUID uid);
+    void delete(@NonNull String username);
+
+    Trainee getByUsername(String username);
 }

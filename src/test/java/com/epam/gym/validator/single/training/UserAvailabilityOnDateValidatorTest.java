@@ -2,10 +2,10 @@ package com.epam.gym.validator.single.training;
 
 import com.epam.gym.domain.training.Training;
 import com.epam.gym.exception.EntityBusyOnDateException;
-import com.epam.gym.repository.training.ITrainingRepository;
+import com.epam.gym.v1.repository.training.ITrainingRepository;
 import com.epam.gym.mother.TrainingMother;
 import com.epam.gym.mother.dto.training.CreateTrainingDtoMother;
-import com.epam.gym.service.training.dto.CreateTrainingDto;
+import com.epam.gym.v1.service.training.dto.CreateTrainingDto;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;

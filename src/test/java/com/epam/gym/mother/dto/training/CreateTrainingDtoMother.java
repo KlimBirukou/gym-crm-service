@@ -1,7 +1,7 @@
 package com.epam.gym.mother.dto.training;
 
 import com.epam.gym.domain.training.TrainingType;
-import com.epam.gym.service.training.dto.CreateTrainingDto;
+import com.epam.gym.v1.service.training.dto.CreateTrainingDto;
 
 import java.time.Duration;
 import java.time.LocalDate;

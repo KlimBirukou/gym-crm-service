@@ -1,5 +1,6 @@
 package com.epam.gym.validator.composite.trainee;
 
+
 import com.epam.gym.service.trainee.dto.CreateTraineeDto;
 import com.epam.gym.validator.IValidator;
 import com.epam.gym.validator.base.AbstractCompositeValidator;
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 
-@Service("createTraineeValidator")
+/*@Service("createTraineeValidator")
 @RequiredArgsConstructor
 public class CreateTraineeValidator
     extends AbstractCompositeValidator<CreateTraineeDto>
@@ -31,4 +32,4 @@ public class CreateTraineeValidator
             dto -> traineeBirthdateValidator.validate(dto.birthdate())
         );
     }
-}
+}*/

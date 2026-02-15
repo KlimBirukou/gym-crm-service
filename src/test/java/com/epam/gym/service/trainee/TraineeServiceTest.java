@@ -2,14 +2,15 @@ package com.epam.gym.service.trainee;
 
 import com.epam.gym.domain.user.Trainee;
 import com.epam.gym.exception.DomainNotFoundException;
-import com.epam.gym.repository.user.trainee.ITraineeRepository;
+import com.epam.gym.v1.repository.user.trainee.ITraineeRepository;
 import com.epam.gym.mother.TraineeMother;
 import com.epam.gym.mother.dto.trainee.CreateTraineeDtoMother;
 import com.epam.gym.mother.dto.trainee.UpdateTraineeDtoMother;
 import com.epam.gym.service.generator.name.IUsernameGenerator;
 import com.epam.gym.service.generator.password.IPasswordGenerator;
-import com.epam.gym.service.trainee.dto.CreateTraineeDto;
-import com.epam.gym.service.trainee.dto.UpdateTraineeDto;
+import com.epam.gym.v1.service.trainee.TraineeService;
+import com.epam.gym.v1.service.trainee.dto.CreateTraineeDto;
+import com.epam.gym.v1.service.trainee.dto.UpdateTraineeDto;
 import com.epam.gym.validator.IValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

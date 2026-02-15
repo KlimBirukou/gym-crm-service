@@ -1,0 +1,20 @@
+package com.epam.gym.repository.domain.trainee;
+
+import com.epam.gym.domain.user.Trainee;
+import lombok.NonNull;
+
+import java.util.List;
+import java.util.Optional;
+
+public interface ITraineeRepository {
+
+    boolean existsByUsername(@NonNull String username);
+
+    Optional<Trainee> getByUsername(@NonNull String username);
+
+    void save(@NonNull Trainee trainee);
+
+    void deleteByUsername(@NonNull String username);
+
+    List<Trainee> getByFirstAndNameLastName(@NonNull String firstname, @NonNull String lastName);
+}

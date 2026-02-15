@@ -3,20 +3,20 @@ package com.epam.gym.domain.user;
 import com.epam.gym.domain.training.TrainingType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 import lombok.experimental.SuperBuilder;
-
-import java.util.UUID;
 
 @Data
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(chain = true)
-public final class Trainer {
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
+public final class Trainer extends User {
 
-    private UUID uid;
-    private User user;
     private TrainingType specialization;
 }

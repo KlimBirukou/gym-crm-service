@@ -11,7 +11,7 @@ import java.util.List;
 @Primary
 @Service
 @RequiredArgsConstructor
-public final class CompositeUsernameSupplier implements IUsernameSupplier {
+public class CompositeUsernameSupplier implements IUsernameSupplier {
 
     private final Collection<IUsernameSupplier> usernameSuppliers;
 
