@@ -1,8 +1,10 @@
 package com.epam.gym.repository.domain.assignment;
 
+import com.epam.gym.repository.entity.TraineeEntity;
 import com.epam.gym.repository.entity.TraineeTrainerEntity;
 import com.epam.gym.domain.user.Trainee;
 import com.epam.gym.domain.user.Trainer;
+import com.epam.gym.repository.entity.TrainerEntity;
 import com.epam.gym.repository.jpa.assignment.ITraineeEntityAssignmentTrainerEntityRepository;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +25,10 @@ public class JpaTraineeAssignmentTrainerRepository implements ITraineeAssignment
     @Override
     public void assign(@NonNull Trainee trainee, @NonNull Trainer trainer) {
         var entity = TraineeTrainerEntity.builder()
+            .trainee(conversionService.convert(trainee, TraineeEntity.class))
+            .trainer(conversionService.convert(trainer, TrainerEntity.class))
             .build();
+        repository.save(entity);
     }
 
     @Override

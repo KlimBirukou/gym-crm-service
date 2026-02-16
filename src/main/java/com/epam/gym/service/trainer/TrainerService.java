@@ -4,7 +4,6 @@ import com.epam.gym.service.generator.name.IUsernameGenerator;
 import com.epam.gym.service.generator.password.IPasswordGenerator;
 import com.epam.gym.domain.user.Trainer;
 import com.epam.gym.repository.domain.trainer.ITrainerRepository;
-import com.epam.gym.service.trainee.ITraineeService;
 import com.epam.gym.service.trainer.dto.ChangePasswordDto;
 import com.epam.gym.service.trainer.dto.CreateTrainerDto;
 import com.epam.gym.service.trainer.dto.UpdateTrainerDto;
@@ -29,17 +28,13 @@ public class TrainerService implements ITrainerService {
     @Override
     @Transactional
     public Trainer create(@NonNull CreateTrainerDto dto) {
-        var uid = UUID.randomUUID();
-        var password = passwordGenerator.generate();
-        var username = usernameGenerator.generate(dto.firstName(), dto.lastName());
-        var type = trainingTypeService.getByName(dto.specialization());
         var trainer = Trainer.builder()
-            .uid(uid)
+            .uid(UUID.randomUUID())
             .firstName(dto.firstName())
             .lastName(dto.lastName())
-            .username(username)
-            .password(password)
-            .specialization(type)
+            .username(usernameGenerator.generate(dto.firstName(), dto.lastName()))
+            .password(passwordGenerator.generate())
+            .specialization(trainingTypeService.getByName(dto.specialization()))
             .active(true)
             .build();
         trainerRepository.save(trainer);
@@ -70,7 +65,7 @@ public class TrainerService implements ITrainerService {
     @Transactional
     public void toggleStatus(@NonNull String username) {
         var trainer = getByUsername(username);
-        trainer.setActive(!trainer.isActive());
+        trainer.toggleActive();
         trainerRepository.save(trainer);
     }
 

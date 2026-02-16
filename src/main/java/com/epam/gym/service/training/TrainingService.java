@@ -1,6 +1,5 @@
 package com.epam.gym.service.training;
 
-
 import com.epam.gym.domain.training.Training;
 import com.epam.gym.domain.training.TrainingType;
 import com.epam.gym.domain.user.Trainee;
@@ -90,7 +89,8 @@ public class TrainingService implements ITrainingService {
     }
 
     private void validateDateAvailability(CreateTrainingDto dto, Trainee trainee, Trainer trainer) {
-        trainingRepository.getTrainingsOnDate(dto.date()).stream()
+        trainingRepository.getTrainingsOnDate(dto.date())
+            .stream()
             .filter(training ->
                 Objects.equals(training.getTraineeUid(), trainee.getUid())
                     || Objects.equals(training.getTrainerUid(), trainer.getUid()))

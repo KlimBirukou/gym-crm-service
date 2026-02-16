@@ -32,7 +32,7 @@ public class TraineeAssignmentTrainerService implements ITraineeAssignmentTraine
     @Transactional(readOnly = true)
     public void checkAssign(@NonNull String traineeUsername, @NonNull String trainerUsername) {
         if (!traineeAssignmentTrainerRepository.checkAssign(traineeUsername, trainerUsername)) {
-            throw new RuntimeException("Trainer is not assigned to this trainee");
+            throw new RuntimeException("Trainer is not assigned to this trainee"); //TODO: should it be a custom exception
         }
     }
 

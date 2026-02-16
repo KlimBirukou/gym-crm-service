@@ -24,13 +24,11 @@ databaseChangeLog:
                     unique: true
                     uniqueConstraintName: uk_training_type_name
 
-        - insert:
+        - loadData:
             schemaName: gym_schema
             tableName: training_type
+            file: db/data/training_types.csv
             columns:
-              - column: { name: name, value: "Strength" }
-              - column: { name: name, value: "Cardio" }
-              - column: { name: name, value: "Functional" }
-              - column: { name: name, value: "Stretching" }
-              - column: { name: name, value: "Hiit" }
-              - column: { name: name, value: "Circuit" }
+              - column:
+                  name: name
+                  type: STRING

@@ -6,7 +6,6 @@ import com.epam.gym.service.trainer.dto.CreateTrainerDto;
 import com.epam.gym.service.trainer.dto.UpdateTrainerDto;
 import lombok.NonNull;
 
-
 public interface ITrainerService {
 
     Trainer create(@NonNull CreateTrainerDto dto);

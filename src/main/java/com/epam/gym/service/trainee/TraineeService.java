@@ -7,7 +7,6 @@ import com.epam.gym.repository.domain.trainee.ITraineeRepository;
 import com.epam.gym.service.trainee.dto.ChangePasswordDto;
 import com.epam.gym.service.trainee.dto.CreateTraineeDto;
 import com.epam.gym.service.trainee.dto.UpdateTraineeDto;
-import com.epam.gym.service.trainer.ITrainerService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,15 +26,12 @@ public class TraineeService implements ITraineeService {
     @Override
     @Transactional
     public Trainee create(@NonNull CreateTraineeDto dto) {
-        var uid = UUID.randomUUID();
-        var password = passwordGenerator.generate();
-        var username = usernameGenerator.generate(dto.firstName(), dto.lastName());
         var trainee = Trainee.builder()
-            .uid(uid)
+            .uid(UUID.randomUUID())
             .firstName(dto.firstName())
             .lastName(dto.lastName())
-            .username(username)
-            .password(password)
+            .username(usernameGenerator.generate(dto.firstName(), dto.lastName()))
+            .password(passwordGenerator.generate())
             .birthdate(dto.birthdate())
             .address(dto.address())
             .active(true)
@@ -70,7 +66,7 @@ public class TraineeService implements ITraineeService {
     @Transactional(readOnly = true)
     public void toggleStatus(@NonNull String username) {
         var trainee = getByUsername(username);
-        trainee.setActive(!trainee.isActive());
+        trainee.toggleActive();
         traineeRepository.save(trainee);
     }
 
