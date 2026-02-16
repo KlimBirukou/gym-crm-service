@@ -6,6 +6,7 @@ import com.epam.gym.domain.user.Trainee;
 import com.epam.gym.domain.user.Trainer;
 import com.epam.gym.repository.domain.training.ITrainingRepository;
 import com.epam.gym.service.assignment.ITraineeAssignmentTrainerService;
+import com.epam.gym.service.assignment.dto.AssignDto;
 import com.epam.gym.service.trainee.ITraineeService;
 import com.epam.gym.service.trainer.ITrainerService;
 import com.epam.gym.service.training.dto.CreateTrainingDto;
@@ -43,7 +44,7 @@ public class TrainingService implements ITrainingService {
         if (!trainer.isActive()) {
             throw new RuntimeException("Trainer must be active");
         }
-        traineeAssignmentTrainerService.checkAssign(trainee.getUsername(), trainer.getUsername());
+        traineeAssignmentTrainerService.checkAssign(new AssignDto(dto.traineeUsername(), dto.trainerUsername()));
         var trainingType = trainingTypeService.getByName(dto.type());
         validateTrainingType(trainer, trainingType);
         validateDateAvailability(dto, trainee, trainer);

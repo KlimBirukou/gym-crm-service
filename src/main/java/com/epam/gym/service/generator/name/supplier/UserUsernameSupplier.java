@@ -1,11 +1,11 @@
 package com.epam.gym.service.generator.name.supplier;
 
-import com.epam.gym.domain.user.UserProfile;
+import com.epam.gym.domain.user.User;
 import lombok.NonNull;
 
 import java.util.List;
 
-public abstract class UserUsernameSupplier<T extends UserProfile> implements IUsernameSupplier {
+public abstract class UserUsernameSupplier<T extends User> implements IUsernameSupplier {
 
     protected abstract List<T> provideUsers(@NonNull String firstName, @NonNull String lastName);
 
@@ -13,7 +13,7 @@ public abstract class UserUsernameSupplier<T extends UserProfile> implements IUs
     public final List<String> supply(@NonNull String firstName, @NonNull String lastName) {
         return provideUsers(firstName, lastName)
             .stream()
-            .map(UserProfile::getUsername)
+            .map(User::getUsername)
             .toList();
     }
 }

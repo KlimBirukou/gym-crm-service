@@ -1,5 +1,6 @@
 package com.epam.gym.service.trainee;
 
+import com.epam.gym.service.auth.IPasswordService;
 import com.epam.gym.service.generator.name.IUsernameGenerator;
 import com.epam.gym.service.generator.password.IPasswordGenerator;
 import com.epam.gym.domain.user.Trainee;
@@ -12,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -22,6 +22,7 @@ public class TraineeService implements ITraineeService {
     private final IPasswordGenerator passwordGenerator;
     private final IUsernameGenerator usernameGenerator;
     private final ITraineeRepository traineeRepository;
+    private final IPasswordService passwordService;
 
     @Override
     @Transactional
@@ -31,7 +32,7 @@ public class TraineeService implements ITraineeService {
             .firstName(dto.firstName())
             .lastName(dto.lastName())
             .username(usernameGenerator.generate(dto.firstName(), dto.lastName()))
-            .password(passwordGenerator.generate())
+            .password(passwordService.hashPassword(passwordGenerator.generate()))
             .birthdate(dto.birthdate())
             .address(dto.address())
             .active(true)
@@ -55,15 +56,15 @@ public class TraineeService implements ITraineeService {
     @Transactional
     public void changePassword(@NonNull ChangePasswordDto dto) {
         var trainee = getByUsername(dto.username());
-        if (Objects.equals(trainee.getPassword(), dto.oldPassword())) {
+        if (!passwordService.checkPassword(dto.oldPassword(), trainee.getPassword())) {
             throw new RuntimeException("Wrong password");
         }
-        trainee.setPassword(dto.newPassword());
+        trainee.setPassword(passwordService.hashPassword(dto.newPassword()));
         traineeRepository.save(trainee);
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public void toggleStatus(@NonNull String username) {
         var trainee = getByUsername(username);
         trainee.toggleActive();
@@ -75,7 +76,6 @@ public class TraineeService implements ITraineeService {
     public void delete(@NonNull String username) {
         traineeRepository.deleteByUsername(username);
     }
-
 
     @Override
     @Transactional(readOnly = true)

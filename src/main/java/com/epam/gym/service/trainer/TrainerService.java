@@ -1,5 +1,6 @@
 package com.epam.gym.service.trainer;
 
+import com.epam.gym.service.auth.IPasswordService;
 import com.epam.gym.service.generator.name.IUsernameGenerator;
 import com.epam.gym.service.generator.password.IPasswordGenerator;
 import com.epam.gym.domain.user.Trainer;
@@ -13,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -24,6 +24,7 @@ public class TrainerService implements ITrainerService {
     private final IUsernameGenerator usernameGenerator;
     private final ITrainerRepository trainerRepository;
     private final ITrainingTypeService trainingTypeService;
+    private final IPasswordService passwordService;
 
     @Override
     @Transactional
@@ -33,7 +34,7 @@ public class TrainerService implements ITrainerService {
             .firstName(dto.firstName())
             .lastName(dto.lastName())
             .username(usernameGenerator.generate(dto.firstName(), dto.lastName()))
-            .password(passwordGenerator.generate())
+            .password(passwordService.hashPassword(passwordGenerator.generate()))
             .specialization(trainingTypeService.getByName(dto.specialization()))
             .active(true)
             .build();
@@ -54,10 +55,10 @@ public class TrainerService implements ITrainerService {
     @Transactional
     public void changePassword(@NonNull ChangePasswordDto dto) {
         var trainer = getByUsername(dto.username());
-        if (Objects.equals(trainer.getPassword(), dto.oldPassword())) {
+        if (!passwordService.checkPassword(dto.oldPassword(), trainer.getPassword())) {
             throw new RuntimeException("Wrong password");
         }
-        trainer.setPassword(dto.newPassword());
+        trainer.setPassword(passwordService.hashPassword(dto.newPassword()));
         trainerRepository.save(trainer);
     }
 

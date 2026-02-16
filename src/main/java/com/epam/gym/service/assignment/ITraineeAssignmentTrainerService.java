@@ -1,15 +1,16 @@
 package com.epam.gym.service.assignment;
 
 import com.epam.gym.domain.user.Trainer;
+import com.epam.gym.service.assignment.dto.AssignDto;
 import lombok.NonNull;
 
 import java.util.List;
 
 public interface ITraineeAssignmentTrainerService {
 
-    void assign(@NonNull String traineeUsername, @NonNull String trainerUsername);
+    void assign(@NonNull AssignDto dto);
 
-    void checkAssign(@NonNull String traineeUsername, @NonNull String trainerUsername);
+    void checkAssign(@NonNull AssignDto dto);
 
     List<Trainer> getAssignedTrainers(@NonNull String username);
 
