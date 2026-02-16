@@ -17,3 +17,6 @@ databaseChangeLog:
   - include:
       file: trainee-trainer-changelog.yaml
       relativeToChangeLogFile: true
+  - include:
+      file: init-data-changelog.yaml
+      relativeToChangeLogFile: true

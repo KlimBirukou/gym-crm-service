@@ -13,7 +13,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(chain = true)
-public class User {
+public class UserProfile {
 
     private UUID uid;
     private String firstName;

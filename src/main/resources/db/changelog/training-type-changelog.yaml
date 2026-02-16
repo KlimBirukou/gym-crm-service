@@ -23,12 +23,3 @@ databaseChangeLog:
                     nullable: false
                     unique: true
                     uniqueConstraintName: uk_training_type_name
-
-        - loadData:
-            schemaName: gym_schema
-            tableName: training_type
-            file: db/data/training_types.csv
-            columns:
-              - column:
-                  name: name
-                  type: STRING
