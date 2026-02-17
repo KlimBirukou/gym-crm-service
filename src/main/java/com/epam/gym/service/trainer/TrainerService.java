@@ -1,5 +1,7 @@
 package com.epam.gym.service.trainer;
 
+import com.epam.gym.exception.AuthException;
+import com.epam.gym.exception.not.found.TrainerNotFoundException;
 import com.epam.gym.service.auth.IPasswordService;
 import com.epam.gym.service.generator.name.IUsernameGenerator;
 import com.epam.gym.service.generator.password.IPasswordGenerator;
@@ -55,8 +57,8 @@ public class TrainerService implements ITrainerService {
     @Transactional
     public void changePassword(@NonNull ChangePasswordDto dto) {
         var trainer = getByUsername(dto.username());
-        if (!passwordService.checkPassword(dto.oldPassword(), trainer.getPassword())) {
-            throw new RuntimeException("Wrong password");
+        if (passwordService.checkPassword(dto.oldPassword(), trainer.getPassword())) {
+            throw new AuthException();
         }
         trainer.setPassword(passwordService.hashPassword(dto.newPassword()));
         trainerRepository.save(trainer);
@@ -74,6 +76,6 @@ public class TrainerService implements ITrainerService {
     @Transactional(readOnly = true)
     public Trainer getByUsername(String username) {
         return trainerRepository.getByUsername(username)
-            .orElseThrow(() -> new RuntimeException("Trainer %s not found".formatted(username)));
+            .orElseThrow(() -> new TrainerNotFoundException(username));
     }
 }

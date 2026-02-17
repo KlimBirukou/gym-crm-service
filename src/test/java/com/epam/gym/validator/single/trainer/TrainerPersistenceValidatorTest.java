@@ -1,6 +1,5 @@
 package com.epam.gym.validator.single.trainer;
 
-import com.epam.gym.exception.DomainNotFoundException;
 import com.epam.gym.v1.repository.user.trainer.ITrainerRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -1,7 +1,6 @@
 package com.epam.gym.service.trainee;
 
 import com.epam.gym.domain.user.Trainee;
-import com.epam.gym.exception.DomainNotFoundException;
 import com.epam.gym.v1.repository.user.trainee.ITraineeRepository;
 import com.epam.gym.mother.TraineeMother;
 import com.epam.gym.mother.dto.trainee.CreateTraineeDtoMother;

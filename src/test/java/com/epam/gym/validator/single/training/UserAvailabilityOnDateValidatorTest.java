@@ -1,7 +1,6 @@
 package com.epam.gym.validator.single.training;
 
 import com.epam.gym.domain.training.Training;
-import com.epam.gym.exception.EntityBusyOnDateException;
 import com.epam.gym.v1.repository.training.ITrainingRepository;
 import com.epam.gym.mother.TrainingMother;
 import com.epam.gym.mother.dto.training.CreateTrainingDtoMother;

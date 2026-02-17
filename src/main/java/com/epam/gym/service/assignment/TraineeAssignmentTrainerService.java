@@ -1,6 +1,9 @@
 package com.epam.gym.service.assignment;
 
 import com.epam.gym.domain.user.Trainer;
+import com.epam.gym.exception.not.active.TraineeNotActiveException;
+import com.epam.gym.exception.not.active.TrainerNotActiveException;
+import com.epam.gym.exception.not.assigned.NotAssignmentException;
 import com.epam.gym.repository.domain.assignment.ITraineeAssignmentTrainerRepository;
 import com.epam.gym.service.assignment.dto.AssignDto;
 import com.epam.gym.service.trainee.ITraineeService;
@@ -14,7 +17,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class TraineeAssignmentTrainerService implements ITraineeAssignmentTrainerService{
+public class TraineeAssignmentTrainerService implements ITraineeAssignmentTrainerService {
 
     private final ITraineeService traineeService;
     private final ITrainerService trainerService;
@@ -25,11 +28,11 @@ public class TraineeAssignmentTrainerService implements ITraineeAssignmentTraine
     public void assign(@NonNull AssignDto dto) {
         var trainee = traineeService.getByUsername(dto.traineeUsername());
         if (!trainee.isActive()) {
-            throw new RuntimeException("Trainee must be active");
+            throw new TraineeNotActiveException(trainee.getUsername());
         }
         var trainer = trainerService.getByUsername(dto.traineeUsername());
         if (!trainer.isActive()) {
-            throw new RuntimeException("Trainer must be active");
+            throw new TrainerNotActiveException(trainer.getUsername());
         }
         checkAssign(dto);
         traineeAssignmentTrainerRepository.assign(trainee, trainer);
@@ -39,7 +42,7 @@ public class TraineeAssignmentTrainerService implements ITraineeAssignmentTraine
     @Transactional(readOnly = true)
     public void checkAssign(@NonNull AssignDto dto) {
         if (!traineeAssignmentTrainerRepository.checkAssign(dto.traineeUsername(), dto.trainerUsername())) {
-            throw new RuntimeException("Trainer is not assigned to this trainee"); //TODO: should it be a custom exception
+            throw new NotAssignmentException(dto.trainerUsername(), dto.traineeUsername());
         }
     }
 

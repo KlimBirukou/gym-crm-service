@@ -4,6 +4,10 @@ import com.epam.gym.domain.training.Training;
 import com.epam.gym.domain.training.TrainingType;
 import com.epam.gym.domain.user.Trainee;
 import com.epam.gym.domain.user.Trainer;
+import com.epam.gym.exception.TrainingDateConflictException;
+import com.epam.gym.exception.TrainingTypeMismatchException;
+import com.epam.gym.exception.not.active.TraineeNotActiveException;
+import com.epam.gym.exception.not.active.TrainerNotActiveException;
 import com.epam.gym.repository.domain.training.ITrainingRepository;
 import com.epam.gym.service.assignment.ITraineeAssignmentTrainerService;
 import com.epam.gym.service.assignment.dto.AssignDto;
@@ -38,11 +42,11 @@ public class TrainingService implements ITrainingService {
     public Training create(@NonNull CreateTrainingDto dto) {
         var trainee = traineeService.getByUsername(dto.traineeUsername());
         if (!trainee.isActive()) {
-            throw new RuntimeException("Trainee must be active");
+            throw new TraineeNotActiveException(trainee.getUsername());
         }
         var trainer = trainerService.getByUsername(dto.trainerUsername());
         if (!trainer.isActive()) {
-            throw new RuntimeException("Trainer must be active");
+            throw new TrainerNotActiveException(trainer.getUsername());
         }
         traineeAssignmentTrainerService.checkAssign(new AssignDto(dto.traineeUsername(), dto.trainerUsername()));
         var trainingType = trainingTypeService.getByName(dto.type());
@@ -84,8 +88,7 @@ public class TrainingService implements ITrainingService {
 
     private void validateTrainingType(Trainer trainer, TrainingType trainingType) {
         if (!Objects.equals(trainer.getSpecialization(), trainingType)) {
-            throw new RuntimeException("Trainer %S cannot conduct a %s-type training"
-                .formatted(trainer.getUsername(), trainingType.getName()));
+            throw new TrainingTypeMismatchException(trainer.getUsername(), trainingType.getName());
         }
     }
 
@@ -97,7 +100,7 @@ public class TrainingService implements ITrainingService {
                     || Objects.equals(training.getTrainerUid(), trainer.getUid()))
             .findAny()
             .ifPresent(training -> {
-                throw new RuntimeException("Trainee or trainer already has a training on %s".formatted(dto.date()));
+                throw new TrainingDateConflictException(trainee.getUsername(), trainer.getUsername(), dto.date());
             });
     }
 

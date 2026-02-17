@@ -1,5 +1,7 @@
 package com.epam.gym.service.trainee;
 
+import com.epam.gym.exception.AuthException;
+import com.epam.gym.exception.not.found.TraineeNotFoundException;
 import com.epam.gym.service.auth.IPasswordService;
 import com.epam.gym.service.generator.name.IUsernameGenerator;
 import com.epam.gym.service.generator.password.IPasswordGenerator;
@@ -56,8 +58,8 @@ public class TraineeService implements ITraineeService {
     @Transactional
     public void changePassword(@NonNull ChangePasswordDto dto) {
         var trainee = getByUsername(dto.username());
-        if (!passwordService.checkPassword(dto.oldPassword(), trainee.getPassword())) {
-            throw new RuntimeException("Wrong password");
+        if (passwordService.checkPassword(dto.oldPassword(), trainee.getPassword())) {
+            throw new AuthException();
         }
         trainee.setPassword(passwordService.hashPassword(dto.newPassword()));
         traineeRepository.save(trainee);
@@ -81,6 +83,6 @@ public class TraineeService implements ITraineeService {
     @Transactional(readOnly = true)
     public Trainee getByUsername(String username) {
         return traineeRepository.getByUsername(username)
-            .orElseThrow(() -> new RuntimeException("Trainee %s not found".formatted(username)));
+            .orElseThrow(() -> new TraineeNotFoundException(username));
     }
 }
