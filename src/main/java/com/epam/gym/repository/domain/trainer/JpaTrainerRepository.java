@@ -42,7 +42,7 @@ public class JpaTrainerRepository implements ITrainerRepository {
     }
 
     @Override
-    public List<Trainer> getByFirstAndNameLastName(@NonNull String firstname, @NonNull String lastName) {
+    public List<Trainer> getByFirstNameAndLastName(@NonNull String firstname, @NonNull String lastName) {
         return repository.findByUserFirstNameAndUserLastName(firstname, lastName).stream()
             .map(entity -> conversionService.convert(entity, Trainer.class))
             .toList();

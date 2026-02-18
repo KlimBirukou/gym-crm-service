@@ -57,7 +57,7 @@ class TraineeUsernameSupplierTest {
     @ParameterizedTest
     @MethodSource("supplyTraineesFromRepository")
     void supply_shouldReturnExpectedResult(List<Trainee> trainees, List<String> usernames) {
-        when(traineeRepository.getByFirstAndNameLastName(FIRSTNAME, LASTNAME))
+        when(traineeRepository.getByFirstNameAndLastName(FIRSTNAME, LASTNAME))
             .thenReturn(trainees);
 
         var result = testObject.supply(FIRSTNAME, LASTNAME);

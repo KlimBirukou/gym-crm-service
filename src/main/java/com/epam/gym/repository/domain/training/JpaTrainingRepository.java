@@ -22,27 +22,29 @@ public class JpaTrainingRepository implements ITrainingRepository {
     private final ConversionService conversionService;
 
     @Override
-    public void save(Training training) {
+    public void save(@NonNull Training training) {
         var entity = conversionService.convert(training, TrainingEntity.class);
         repository.save(entity);
     }
 
     @Override
     public List<Training> getTraineeTrainings(@NonNull UUID traineeUid, @NonNull UUID trainingTypeUid) {
-        return  repository.findByTraineeUidAndTrainingTypeUid(traineeUid, trainingTypeUid).stream()
+        return repository.findByTraineeUidAndTrainingTypeUid(traineeUid, trainingTypeUid).stream()
             .map(entity -> conversionService.convert(entity, Training.class))
             .toList();
     }
 
     @Override
     public List<Training> getTrainerTrainings(@NonNull UUID trainerUid, @NonNull UUID trainingTypeUid) {
-        return  repository.findByTrainerUidAndTrainingTypeUid(trainerUid, trainingTypeUid).stream()
+        return repository.findByTrainerUidAndTrainingTypeUid(trainerUid, trainingTypeUid).stream()
             .map(entity -> conversionService.convert(entity, Training.class))
             .toList();
     }
 
     @Override
     public List<Training> getTrainingsOnDate(@NonNull LocalDate date) {
-        return List.of();
+        return repository.findByDate(date).stream()
+            .map(entity -> conversionService.convert(entity, Training.class))
+            .toList();
     }
 }

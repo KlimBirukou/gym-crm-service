@@ -16,5 +16,5 @@ public interface ITraineeRepository {
 
     void deleteByUsername(@NonNull String username);
 
-    List<Trainee> getByFirstAndNameLastName(@NonNull String firstname, @NonNull String lastName);
+    List<Trainee> getByFirstNameAndLastName(@NonNull String firstname, @NonNull String lastName);
 }

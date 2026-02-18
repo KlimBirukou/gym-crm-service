@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,5 +38,16 @@ public interface ITrainingEntityRepository extends JpaRepository<@NonNull Traini
     List<TrainingEntity> findByTrainerUidAndTrainingTypeUid(
         @Param("trainerUid") @NonNull UUID trainerUid,
         @Param("trainingTypeUid") @NonNull UUID trainingTypeUid
+    );
+
+    @Query("""
+        SELECT tg FROM TrainingEntity tg
+        JOIN FETCH tg.trainingType
+        JOIN FETCH tg.trainee
+        JOIN FETCH th.trainer
+        WHERE tg.date = :date
+        """)
+    List<TrainingEntity> findByDate(
+        @Param("date") @NonNull LocalDate date
     );
 }

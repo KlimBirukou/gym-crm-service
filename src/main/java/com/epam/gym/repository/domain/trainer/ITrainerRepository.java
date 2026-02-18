@@ -14,5 +14,5 @@ public interface ITrainerRepository {
 
     void save(@NonNull Trainer trainer);
 
-    List<Trainer> getByFirstAndNameLastName(@NonNull String firstname, @NonNull String lastName);
+    List<Trainer> getByFirstNameAndLastName(@NonNull String firstname, @NonNull String lastName);
 }

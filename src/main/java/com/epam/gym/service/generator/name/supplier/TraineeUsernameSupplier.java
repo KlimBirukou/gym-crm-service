@@ -18,6 +18,6 @@ public class TraineeUsernameSupplier extends UserUsernameSupplier<Trainee> {
     @Override
     @Transactional
     protected List<Trainee> provideUsers(@NonNull String firstName, @NonNull String lastName) {
-        return traineeRepository.getByFirstAndNameLastName(firstName, lastName);
+        return traineeRepository.getByFirstNameAndLastName(firstName, lastName);
     }
 }

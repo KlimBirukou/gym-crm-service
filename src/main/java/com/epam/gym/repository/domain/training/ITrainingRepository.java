@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public interface ITrainingRepository {
 
-    void save(Training training);
+    void save(@NonNull Training training);
 
     List<Training> getTraineeTrainings(@NonNull UUID traineeUid, @NonNull UUID trainingTypeUid);
 
