@@ -1,8 +1,6 @@
 package com.epam.gym.mother.dto.trainer;
 
-import com.epam.gym.v1.service.trainer.dto.CreateTrainerDto;
-
-public class CreateTrainerDtoMother {
+/*public class CreateTrainerDtoMother {
 
     public static CreateTrainerDto get(String firstname, String lastname, String specialization) {
         return new CreateTrainerDto(
@@ -11,4 +9,4 @@ public class CreateTrainerDtoMother {
             specialization
         );
     }
-}
+}*/

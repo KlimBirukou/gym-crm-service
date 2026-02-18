@@ -57,7 +57,7 @@ public class TrainerService implements ITrainerService {
     @Transactional
     public void changePassword(@NonNull ChangePasswordDto dto) {
         var trainer = getByUsername(dto.username());
-        if (passwordService.checkPassword(dto.oldPassword(), trainer.getPassword())) {
+        if (!passwordService.checkPassword(dto.oldPassword(), trainer.getPassword())) {
             throw new AuthException();
         }
         trainer.setPassword(passwordService.hashPassword(dto.newPassword()));
@@ -74,7 +74,7 @@ public class TrainerService implements ITrainerService {
 
     @Override
     @Transactional(readOnly = true)
-    public Trainer getByUsername(String username) {
+    public Trainer getByUsername(@NonNull String username) {
         return trainerRepository.getByUsername(username)
             .orElseThrow(() -> new TrainerNotFoundException(username));
     }

@@ -5,7 +5,6 @@ import com.epam.gym.exception.not.active.TraineeNotActiveException;
 import com.epam.gym.exception.not.active.TrainerNotActiveException;
 import com.epam.gym.exception.not.assigned.NotAssignmentException;
 import com.epam.gym.repository.domain.assignment.ITraineeAssignmentTrainerRepository;
-import com.epam.gym.service.assignment.dto.AssignDto;
 import com.epam.gym.service.trainee.ITraineeService;
 import com.epam.gym.service.trainer.ITrainerService;
 import lombok.NonNull;
@@ -25,24 +24,24 @@ public class TraineeAssignmentTrainerService implements ITraineeAssignmentTraine
 
     @Override
     @Transactional
-    public void assign(@NonNull AssignDto dto) {
-        var trainee = traineeService.getByUsername(dto.traineeUsername());
+    public void assign(@NonNull String traineeUsername, @NonNull String trainerUsername) {
+        var trainee = traineeService.getByUsername(traineeUsername);
         if (!trainee.isActive()) {
             throw new TraineeNotActiveException(trainee.getUsername());
         }
-        var trainer = trainerService.getByUsername(dto.traineeUsername());
+        var trainer = trainerService.getByUsername(trainerUsername);
         if (!trainer.isActive()) {
             throw new TrainerNotActiveException(trainer.getUsername());
         }
-        checkAssign(dto);
+        checkAssignExist(traineeUsername, trainerUsername);
         traineeAssignmentTrainerRepository.assign(trainee, trainer);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public void checkAssign(@NonNull AssignDto dto) {
-        if (!traineeAssignmentTrainerRepository.checkAssign(dto.traineeUsername(), dto.trainerUsername())) {
-            throw new NotAssignmentException(dto.trainerUsername(), dto.traineeUsername());
+    public void checkAssignExist(@NonNull String traineeUsername, @NonNull String trainerUsername) {
+        if (!traineeAssignmentTrainerRepository.checkAssign(traineeUsername, trainerUsername)) {
+            throw new NotAssignmentException(trainerUsername, traineeUsername);
         }
     }
 

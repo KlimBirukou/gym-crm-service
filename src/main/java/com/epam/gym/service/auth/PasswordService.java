@@ -17,6 +17,6 @@ public class PasswordService implements IPasswordService {
 
     @Override
     public boolean checkPassword(@NonNull String password, @NonNull String hashedPassword) {
-        return !checkpw(password, hashedPassword);
+        return checkpw(password, hashedPassword);
     }
 }

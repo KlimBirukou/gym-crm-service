@@ -16,5 +16,5 @@ public interface ITrainerService {
 
     void toggleStatus(@NonNull String username);
 
-    Trainer getByUsername(String username);
+    Trainer getByUsername(@NonNull String username);
 }

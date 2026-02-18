@@ -1,9 +1,9 @@
 package com.epam.gym.service.generator.name.supplier;
 
 import com.epam.gym.domain.user.Trainee;
-import com.epam.gym.v1.repository.user.trainee.ITraineeRepository;
 import com.epam.gym.mother.TraineeMother;
 import com.epam.gym.mother.UsernameMother;
+import com.epam.gym.repository.domain.trainee.ITraineeRepository;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -57,7 +57,7 @@ class TraineeUsernameSupplierTest {
     @ParameterizedTest
     @MethodSource("supplyTraineesFromRepository")
     void supply_shouldReturnExpectedResult(List<Trainee> trainees, List<String> usernames) {
-        when(traineeRepository.findByFirstNameAndLastName(FIRSTNAME, LASTNAME))
+        when(traineeRepository.getByFirstAndNameLastName(FIRSTNAME, LASTNAME))
             .thenReturn(trainees);
 
         var result = testObject.supply(FIRSTNAME, LASTNAME);

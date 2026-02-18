@@ -18,5 +18,5 @@ public interface ITraineeService {
 
     void delete(@NonNull String username);
 
-    Trainee getByUsername(String username);
+    Trainee getByUsername(@NonNull String username);
 }

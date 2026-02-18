@@ -58,7 +58,7 @@ public class TraineeService implements ITraineeService {
     @Transactional
     public void changePassword(@NonNull ChangePasswordDto dto) {
         var trainee = getByUsername(dto.username());
-        if (passwordService.checkPassword(dto.oldPassword(), trainee.getPassword())) {
+        if (!passwordService.checkPassword(dto.oldPassword(), trainee.getPassword())) {
             throw new AuthException();
         }
         trainee.setPassword(passwordService.hashPassword(dto.newPassword()));
@@ -81,7 +81,7 @@ public class TraineeService implements ITraineeService {
 
     @Override
     @Transactional(readOnly = true)
-    public Trainee getByUsername(String username) {
+    public Trainee getByUsername(@NonNull String username) {
         return traineeRepository.getByUsername(username)
             .orElseThrow(() -> new TraineeNotFoundException(username));
     }

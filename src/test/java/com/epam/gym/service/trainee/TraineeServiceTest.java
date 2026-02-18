@@ -1,16 +1,15 @@
 package com.epam.gym.service.trainee;
 
 import com.epam.gym.domain.user.Trainee;
-import com.epam.gym.v1.repository.user.trainee.ITraineeRepository;
-import com.epam.gym.mother.TraineeMother;
-import com.epam.gym.mother.dto.trainee.CreateTraineeDtoMother;
-import com.epam.gym.mother.dto.trainee.UpdateTraineeDtoMother;
+import com.epam.gym.exception.AuthException;
+import com.epam.gym.exception.not.found.TraineeNotFoundException;
+import com.epam.gym.repository.domain.trainee.ITraineeRepository;
+import com.epam.gym.service.auth.IPasswordService;
 import com.epam.gym.service.generator.name.IUsernameGenerator;
 import com.epam.gym.service.generator.password.IPasswordGenerator;
-import com.epam.gym.v1.service.trainee.TraineeService;
-import com.epam.gym.v1.service.trainee.dto.CreateTraineeDto;
-import com.epam.gym.v1.service.trainee.dto.UpdateTraineeDto;
-import com.epam.gym.validator.IValidator;
+import com.epam.gym.service.trainee.dto.ChangePasswordDto;
+import com.epam.gym.service.trainee.dto.CreateTraineeDto;
+import com.epam.gym.service.trainee.dto.UpdateTraineeDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,45 +25,61 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 @ExtendWith(MockitoExtension.class)
 class TraineeServiceTest {
 
-    private static final LocalDate DATE = LocalDate.of(2026, 1, 1);
+    private static final LocalDate DATE = LocalDate.of(2000, 1, 1);
+    private static final LocalDate NEW_DATE = LocalDate.of(1995, 6, 15);
     private static final UUID UID = UUID.randomUUID();
     private static final String FIRSTNAME = "firstname";
+    private static final String NEW_FIRSTNAME = "new_firstname";
     private static final String LASTNAME = "lastname";
+    private static final String NEW_LASTNAME = "new_lastname";
     private static final String USERNAME = "username";
     private static final String PASSWORD = "password";
+    private static final String HASHED_PASSWORD = "hashed_password";
+    private static final String NEW_PASSWORD = "new_password";
+    private static final String NEW_HASHED_PASSWORD = "new_hashed_password";
     private static final String ADDRESS = "address";
     private static final String NEW_ADDRESS = "new address";
-    private static final CreateTraineeDto CREATE_TRAINEE_DTO =
-        CreateTraineeDtoMother.get(FIRSTNAME, LASTNAME, ADDRESS, DATE);
-    private static final UpdateTraineeDto UPDATE_TRAINEE_DTO =
-        UpdateTraineeDtoMother.get(UID, NEW_ADDRESS);
-    private static final Trainee EXISTED_TRAINEE =
-        TraineeMother.get(UID, FIRSTNAME, LASTNAME, USERNAME);
 
-    @Mock
-    private IUsernameGenerator usernameGenerator;
+    private static final CreateTraineeDto CREATE_DTO = new CreateTraineeDto(
+        FIRSTNAME, LASTNAME, DATE, ADDRESS
+    );
+    private static final UpdateTraineeDto UPDATE_DTO = new UpdateTraineeDto(
+        USERNAME, NEW_FIRSTNAME, NEW_LASTNAME, NEW_DATE, NEW_ADDRESS
+    );
+    private static final ChangePasswordDto CHANGE_PASSWORD_DTO = new ChangePasswordDto(
+        USERNAME, PASSWORD, NEW_PASSWORD
+    );
+    private static final Trainee EXISTED_TRAINEE = Trainee.builder()
+        .uid(UID)
+        .firstName(FIRSTNAME)
+        .lastName(LASTNAME)
+        .username(USERNAME)
+        .password(HASHED_PASSWORD)
+        .birthdate(DATE)
+        .address(ADDRESS)
+        .active(true)
+        .build();
+
     @Mock
     private IPasswordGenerator passwordGenerator;
     @Mock
+    private IUsernameGenerator usernameGenerator;
+    @Mock
     private ITraineeRepository traineeRepository;
     @Mock
-    private IValidator<CreateTraineeDto> createTraineeValidator;
-    @Mock
-    private IValidator<UUID> deleteTraineeValidator;
+    private IPasswordService passwordService;
 
     @Captor
     private ArgumentCaptor<Trainee> traineeCaptor;
@@ -74,152 +89,212 @@ class TraineeServiceTest {
     @BeforeEach
     void setUp() {
         testObject = new TraineeService(
-            usernameGenerator,
             passwordGenerator,
+            usernameGenerator,
             traineeRepository,
-            createTraineeValidator,
-            deleteTraineeValidator
+            passwordService
         );
     }
 
     @Test
-    void create_shouldCreateTrainee_whenValidationPassed() {
-        doNothing().when(createTraineeValidator)
-            .validate(CREATE_TRAINEE_DTO);
-        doReturn(USERNAME).when(usernameGenerator)
-            .generate(FIRSTNAME, LASTNAME);
-        doReturn(PASSWORD).when(passwordGenerator)
-            .generate();
+    void create_shouldCreateTrainee() {
+        doReturn(USERNAME).when(usernameGenerator).generate(FIRSTNAME, LASTNAME);
+        doReturn(PASSWORD).when(passwordGenerator).generate();
+        doReturn(HASHED_PASSWORD).when(passwordService).hashPassword(PASSWORD);
 
-        var result = testObject.create(CREATE_TRAINEE_DTO);
+        var result = testObject.create(CREATE_DTO);
+
         verify(traineeRepository).save(traineeCaptor.capture());
         var saved = traineeCaptor.getValue();
 
-        assertNotNull(result);
-        assertNotNull(result.getUid());
-        assertEquals(CREATE_TRAINEE_DTO.firstName(), saved.getFirstName());
-        assertEquals(CREATE_TRAINEE_DTO.lastName(), saved.getLastName());
-        assertEquals(CREATE_TRAINEE_DTO.address(), saved.getAddress());
-        assertEquals(CREATE_TRAINEE_DTO.birthdate(), saved.getBirthdate());
+        assertSame(result, saved);
+        assertNotNull(saved.getUid());
+        assertEquals(FIRSTNAME, saved.getFirstName());
+        assertEquals(LASTNAME, saved.getLastName());
+        assertEquals(DATE, saved.getBirthdate());
+        assertEquals(ADDRESS, saved.getAddress());
         assertEquals(USERNAME, saved.getUsername());
-        assertEquals(PASSWORD, saved.getPassword());
+        assertEquals(HASHED_PASSWORD, saved.getPassword());
         assertTrue(saved.isActive());
 
-        assertEquals(result.getUid(), saved.getUid());
-
-        verify(createTraineeValidator, times(1))
-            .validate(CREATE_TRAINEE_DTO);
-        verify(usernameGenerator, times(1))
-            .generate(FIRSTNAME, LASTNAME);
-        verify(passwordGenerator, times(1))
-            .generate();
-        verify(traineeRepository, times(1))
-            .save(saved);
-        verifyNoInteractions(deleteTraineeValidator);
-        verifyNoMoreInteractions(createTraineeValidator, usernameGenerator, passwordGenerator, traineeRepository);
-    }
-
-    @Test
-    void create_shouldThrowException_whenValidationFailed() {
-        doThrow(new RuntimeException()).when(createTraineeValidator)
-            .validate(CREATE_TRAINEE_DTO);
-
-        assertThrows(RuntimeException.class,
-            () -> testObject.create(CREATE_TRAINEE_DTO));
-
-        verify(createTraineeValidator, times(1))
-            .validate(CREATE_TRAINEE_DTO);
-        verifyNoInteractions(usernameGenerator, passwordGenerator, traineeRepository, deleteTraineeValidator);
-        verifyNoMoreInteractions(createTraineeValidator);
+        assertNoUnexpectedInteractions();
     }
 
     @ParameterizedTest
     @NullSource
-    void create_shouldThrowException_whenDataNull(CreateTraineeDto dto) {
-        assertThrows(NullPointerException.class,
-            () -> testObject.create(dto));
+    void create_shouldThrowException_whenArgumentNull(CreateTraineeDto dto) {
+        assertThrows(NullPointerException.class, () -> testObject.create(dto));
+
+        assertNoUnexpectedInteractions();
     }
+
 
     @Test
     void update_shouldUpdateTrainee_whenTraineeExist() {
-        doReturn(Optional.of(EXISTED_TRAINEE)).when(traineeRepository)
-            .findByUid(UID);
+        doReturn(Optional.of(EXISTED_TRAINEE)).when(traineeRepository).getByUsername(USERNAME);
 
-        testObject.update(UPDATE_TRAINEE_DTO);
+        testObject.update(UPDATE_DTO);
+
         verify(traineeRepository).save(traineeCaptor.capture());
         var saved = traineeCaptor.getValue();
 
-        assertEquals(UID, saved.getUid());
-        assertEquals(FIRSTNAME, saved.getFirstName());
-        assertEquals(LASTNAME, saved.getLastName());
+        assertEquals(NEW_FIRSTNAME, saved.getFirstName());
+        assertEquals(NEW_LASTNAME, saved.getLastName());
         assertEquals(NEW_ADDRESS, saved.getAddress());
-        assertEquals(DATE, saved.getBirthdate());
+        assertEquals(NEW_DATE, saved.getBirthdate());
+        assertEquals(UID, saved.getUid());
         assertEquals(USERNAME, saved.getUsername());
-        assertEquals(PASSWORD, saved.getPassword());
+        assertEquals(HASHED_PASSWORD, saved.getPassword());
         assertTrue(saved.isActive());
 
-        verify(traineeRepository, times(1))
-            .findByUid(UID);
-        verify(traineeRepository, times(1))
-            .save(saved);
-        verifyNoInteractions(createTraineeValidator, usernameGenerator, passwordGenerator, deleteTraineeValidator);
-        verifyNoMoreInteractions(traineeRepository);
+        assertNoUnexpectedInteractions();
     }
 
     @Test
     void update_shouldThrowException_whenTraineeNotExist() {
-        doReturn(Optional.empty()).when(traineeRepository)
-            .findByUid(UID);
+        doReturn(Optional.empty()).when(traineeRepository).getByUsername(USERNAME);
 
-        assertThrows(DomainNotFoundException.class,
-            () -> testObject.update(UPDATE_TRAINEE_DTO));
+        assertThrows(TraineeNotFoundException.class, () -> testObject.update(UPDATE_DTO));
 
-        verify(traineeRepository, times(1))
-            .findByUid(UID);
-        verifyNoInteractions(createTraineeValidator, usernameGenerator, passwordGenerator, deleteTraineeValidator);
-        verifyNoMoreInteractions(traineeRepository);
+        assertNoUnexpectedInteractions();
     }
 
     @ParameterizedTest
     @NullSource
-    void update_shouldThrowException_whenDataNull(UpdateTraineeDto dto) {
-        assertThrows(NullPointerException.class,
-            () -> testObject.update(dto));
+    void update_shouldThrowException_whenArgumentNull(UpdateTraineeDto dto) {
+        assertThrows(NullPointerException.class, () -> testObject.update(dto));
+
+        assertNoUnexpectedInteractions();
+    }
+
+
+    @Test
+    void changePassword_shouldUpdatePassword_whenOldPasswordMatch() {
+        doReturn(Optional.of(EXISTED_TRAINEE)).when(traineeRepository).getByUsername(USERNAME);
+        doReturn(true).when(passwordService).checkPassword(PASSWORD, HASHED_PASSWORD);
+        doReturn(NEW_HASHED_PASSWORD).when(passwordService).hashPassword(NEW_PASSWORD);
+
+        testObject.changePassword(CHANGE_PASSWORD_DTO);
+
+        verify(traineeRepository).save(traineeCaptor.capture());
+        var saved = traineeCaptor.getValue();
+
+        assertEquals(NEW_HASHED_PASSWORD, saved.getPassword());
+        assertEquals(UID, saved.getUid());
+        assertEquals(USERNAME, saved.getUsername());
+        assertTrue(saved.isActive());
+
+        assertNoUnexpectedInteractions();
     }
 
     @Test
-    void delete_shouldDeleteTrainee_whenValidationPassed() {
-        doNothing().when(deleteTraineeValidator)
-            .validate(UID);
+    void changePassword_shouldThrowException_whenOldPasswordNotMatch() {
+        doReturn(Optional.of(EXISTED_TRAINEE)).when(traineeRepository).getByUsername(USERNAME);
+        doReturn(false).when(passwordService).checkPassword(PASSWORD, HASHED_PASSWORD);
 
-        testObject.delete(UID);
+        assertThrows(AuthException.class, () -> testObject.changePassword(CHANGE_PASSWORD_DTO));
 
-        verify(deleteTraineeValidator, times(1))
-            .validate(UID);
-        verify(traineeRepository, times(1))
-            .deleteByUid(UID);
-        verifyNoInteractions(createTraineeValidator, usernameGenerator, passwordGenerator);
-        verifyNoMoreInteractions(deleteTraineeValidator, traineeRepository);
-    }
-
-    @Test
-    void delete_shouldThrowException_whenValidationFailed() {
-        doThrow(new RuntimeException()).when(deleteTraineeValidator)
-            .validate(UID);
-
-        assertThrows(RuntimeException.class,
-            () -> testObject.delete(UID));
-
-        verify(deleteTraineeValidator, times(1))
-            .validate(UID);
-        verifyNoInteractions(createTraineeValidator, usernameGenerator, passwordGenerator, traineeRepository);
-        verifyNoMoreInteractions(deleteTraineeValidator);
+        assertNoUnexpectedInteractions();
     }
 
     @ParameterizedTest
     @NullSource
-    void delete_shouldThrowException_whenUidNull(UUID uid) {
-        assertThrows(NullPointerException.class,
-            () -> testObject.delete(uid));
+    void changePassword_shouldThrowException_whenArgumentNull(ChangePasswordDto dto) {
+        assertThrows(NullPointerException.class, () -> testObject.changePassword(dto));
+
+        assertNoUnexpectedInteractions();
+    }
+
+
+    @Test
+    void toggleStatus_shouldDeactivate_whenTraineeIsActive() {
+        doReturn(Optional.of(EXISTED_TRAINEE)).when(traineeRepository).getByUsername(USERNAME);
+
+        testObject.toggleStatus(USERNAME);
+
+        verify(traineeRepository).save(traineeCaptor.capture());
+        assertFalse(traineeCaptor.getValue().isActive());
+
+        assertNoUnexpectedInteractions();
+    }
+
+    @Test
+    void toggleStatus_shouldActivate_whenTraineeIsInactive() {
+        var inactiveTrainee = Trainee.builder()
+            .uid(UID)
+            .username(USERNAME)
+            .active(false)
+            .build();
+        doReturn(Optional.of(inactiveTrainee)).when(traineeRepository).getByUsername(USERNAME);
+
+        testObject.toggleStatus(USERNAME);
+
+        verify(traineeRepository).save(traineeCaptor.capture());
+        assertTrue(traineeCaptor.getValue().isActive());
+
+        assertNoUnexpectedInteractions();
+    }
+
+    @ParameterizedTest
+    @NullSource
+    void toggleStatus_shouldThrowNullPointerException_whenArgumentNull(String username) {
+        assertThrows(NullPointerException.class, () -> testObject.toggleStatus(username));
+
+        assertNoUnexpectedInteractions();
+    }
+
+
+    @Test
+    void delete_shouldDeleteTrainee() {
+        testObject.delete(USERNAME);
+
+        verify(traineeRepository).deleteByUsername(USERNAME);
+        assertNoUnexpectedInteractions();
+    }
+
+    @ParameterizedTest
+    @NullSource
+    void delete_shouldThrowException_whenArgumentNull(String username) {
+        assertThrows(NullPointerException.class, () -> testObject.delete(username));
+
+        assertNoUnexpectedInteractions();
+    }
+
+
+    @Test
+    void getByUsername_shouldReturnTrainee_whenTraineeExists() {
+        doReturn(Optional.of(EXISTED_TRAINEE)).when(traineeRepository).getByUsername(USERNAME);
+
+        var result = testObject.getByUsername(USERNAME);
+
+        assertSame(EXISTED_TRAINEE, result);
+        assertNoUnexpectedInteractions();
+    }
+
+    @Test
+    void getByUsername_shouldThrowException_whenTraineeNotExists() {
+        doReturn(Optional.empty()).when(traineeRepository).getByUsername(USERNAME);
+
+        assertThrows(TraineeNotFoundException.class, () -> testObject.getByUsername(USERNAME));
+
+        assertNoUnexpectedInteractions();
+    }
+
+    @ParameterizedTest
+    @NullSource
+    void getByUsername_shouldThrowException_whenArgumentNull(String username) {
+        assertThrows(NullPointerException.class, () -> testObject.getByUsername(username));
+
+        assertNoUnexpectedInteractions();
+    }
+
+
+    private void assertNoUnexpectedInteractions() {
+        verifyNoMoreInteractions(
+            passwordGenerator,
+            usernameGenerator,
+            traineeRepository,
+            passwordService
+        );
     }
 }
