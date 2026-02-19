@@ -31,15 +31,6 @@ class TrainingTypeServiceTest {
     private static final String TYPE_NAME_2 = "type_name_2";
     private static final String UNKNOW_TYPE_NAME = "unknow_type_name";
 
-    private static final TrainingType TRAINING_TYPE_1 = TrainingType.builder()
-        .uid(UUID.randomUUID())
-        .name(TYPE_NAME_1)
-        .build();
-    private static final TrainingType TRAINING_TYPE_2 = TrainingType.builder()
-        .uid(UUID.randomUUID())
-        .name(TYPE_NAME_2)
-        .build();
-
     @Mock
     private ITrainingTypeRepository trainingTypeRepository;
 
@@ -52,11 +43,12 @@ class TrainingTypeServiceTest {
 
     @Test
     void getByName_shouldReturnTrainingType_whenTypeExist() {
-        doReturn(Optional.of(TRAINING_TYPE_1)).when(trainingTypeRepository).getByName(TYPE_NAME_1);
+        var type = getType1();
+        doReturn(Optional.of(type)).when(trainingTypeRepository).getByName(TYPE_NAME_1);
 
         var result = testObject.getByName(TYPE_NAME_1);
 
-        assertSame(TRAINING_TYPE_1, result);
+        assertSame(type, result);
 
         verifyNoMoreInteractions(trainingTypeRepository);
     }
@@ -82,8 +74,8 @@ class TrainingTypeServiceTest {
     private static Stream<Arguments> provideTestData() {
         return Stream.of(
             Arguments.of(List.of(), 0),
-            Arguments.of(List.of(TRAINING_TYPE_1), 1),
-            Arguments.of(List.of(TRAINING_TYPE_1, TRAINING_TYPE_2), 2)
+            Arguments.of(List.of(getType1()), 1),
+            Arguments.of(List.of(getType1(), getType2()), 2)
         );
     }
 
@@ -98,5 +90,19 @@ class TrainingTypeServiceTest {
         assertEquals(list, result);
 
         verifyNoMoreInteractions(trainingTypeRepository);
+    }
+
+    private static TrainingType getType1() {
+        return TrainingType.builder()
+            .uid(UUID.randomUUID())
+            .name(TYPE_NAME_1)
+            .build();
+    }
+
+    private static TrainingType getType2() {
+        return TrainingType.builder()
+            .uid(UUID.randomUUID())
+            .name(TYPE_NAME_2)
+            .build();
     }
 }

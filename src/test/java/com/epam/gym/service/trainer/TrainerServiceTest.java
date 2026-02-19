@@ -50,29 +50,6 @@ class TrainerServiceTest {
     private static final String NEW_HASHED_PASSWORD = "new_hashed_password";
     private static final String SPECIALIZATION_NAME = "specialization_name";
 
-    private static final CreateTrainerDto CREATE_DTO = new CreateTrainerDto(
-        FIRSTNAME, LASTNAME, SPECIALIZATION_NAME
-    );
-    private static final UpdateTrainerDto UPDATE_DTO = new UpdateTrainerDto(
-        USERNAME, NEW_FIRSTNAME, NEW_LASTNAME
-    );
-    private static final ChangePasswordDto CHANGE_PASSWORD_DTO = new ChangePasswordDto(
-        USERNAME, PASSWORD, NEW_PASSWORD
-    );
-    private static final TrainingType TRAINING_TYPE = TrainingType.builder()
-        .uid(UID)
-        .name(SPECIALIZATION_NAME)
-        .build();
-    private static final Trainer EXISTED_TRAINER = Trainer.builder()
-        .uid(UID)
-        .firstName(FIRSTNAME)
-        .lastName(LASTNAME)
-        .username(USERNAME)
-        .password(HASHED_PASSWORD)
-        .specialization(TRAINING_TYPE)
-        .active(true)
-        .build();
-
     @Mock
     private IUsernameGenerator usernameGenerator;
     @Mock
@@ -102,12 +79,14 @@ class TrainerServiceTest {
 
     @Test
     void create_shouldCreateTrainer_whenAlways() {
+        var trainingType = getTrainingType();
+        var createTrainerDto = getCreateTrainerDto();
         doReturn(USERNAME).when(usernameGenerator).generate(FIRSTNAME, LASTNAME);
         doReturn(PASSWORD).when(passwordGenerator).generate();
-        doReturn(TRAINING_TYPE).when(trainingTypeService).getByName(SPECIALIZATION_NAME);
+        doReturn(trainingType).when(trainingTypeService).getByName(SPECIALIZATION_NAME);
         doReturn(HASHED_PASSWORD).when(passwordService).hashPassword(PASSWORD);
 
-        var result = testObject.create(CREATE_DTO);
+        var result = testObject.create(createTrainerDto);
 
         verify(trainerRepository).save(trainerCaptor.capture());
         var saved = trainerCaptor.getValue();
@@ -116,7 +95,7 @@ class TrainerServiceTest {
         assertNotNull(saved.getUid());
         assertEquals(FIRSTNAME, saved.getFirstName());
         assertEquals(LASTNAME, saved.getLastName());
-        assertEquals(TRAINING_TYPE, saved.getSpecialization());
+        assertEquals(trainingType, saved.getSpecialization());
         assertEquals(USERNAME, saved.getUsername());
         assertEquals(HASHED_PASSWORD, saved.getPassword());
         assertTrue(saved.isActive());
@@ -135,16 +114,19 @@ class TrainerServiceTest {
 
     @Test
     void update_shouldUpdateTrainer_whenTrainerExist() {
-        doReturn(Optional.of(EXISTED_TRAINER)).when(trainerRepository).getByUsername(USERNAME);
+        var trainer = getTrainer();
+        var trainerType = getTrainingType();
+        var updateTrainerDto = getUpdateTrainerDto();
+        doReturn(Optional.of(trainer)).when(trainerRepository).getByUsername(USERNAME);
 
-        testObject.update(UPDATE_DTO);
+        testObject.update(updateTrainerDto);
 
         verify(trainerRepository).save(trainerCaptor.capture());
         var saved = trainerCaptor.getValue();
 
         assertEquals(NEW_FIRSTNAME, saved.getFirstName());
         assertEquals(NEW_LASTNAME, saved.getLastName());
-        assertEquals(TRAINING_TYPE, saved.getSpecialization());
+        assertEquals(trainerType, saved.getSpecialization());
         assertEquals(UID, saved.getUid());
         assertEquals(USERNAME, saved.getUsername());
         assertEquals(HASHED_PASSWORD, saved.getPassword());
@@ -155,9 +137,10 @@ class TrainerServiceTest {
 
     @Test
     void update_shouldThrowException_whenTrainerNotExist() {
+        var updateTrainerDto = getUpdateTrainerDto();
         doReturn(Optional.empty()).when(trainerRepository).getByUsername(USERNAME);
 
-        assertThrows(TrainerNotFoundException.class, () -> testObject.update(UPDATE_DTO));
+        assertThrows(TrainerNotFoundException.class, () -> testObject.update(updateTrainerDto));
 
         assertNoUnexpectedInteractions();
     }
@@ -173,11 +156,13 @@ class TrainerServiceTest {
 
     @Test
     void changePassword_shouldUpdatePassword_whenOldPasswordMatch() {
-        doReturn(Optional.of(EXISTED_TRAINER)).when(trainerRepository).getByUsername(USERNAME);
+        var trainee = getTrainer();
+        var changePasswordDto = getChangePasswordDto();
+        doReturn(Optional.of(trainee)).when(trainerRepository).getByUsername(USERNAME);
         doReturn(true).when(passwordService).checkPassword(PASSWORD, HASHED_PASSWORD);
         doReturn(NEW_HASHED_PASSWORD).when(passwordService).hashPassword(NEW_PASSWORD);
 
-        testObject.changePassword(CHANGE_PASSWORD_DTO);
+        testObject.changePassword(changePasswordDto);
 
         verify(trainerRepository).save(trainerCaptor.capture());
         var saved = trainerCaptor.getValue();
@@ -192,10 +177,12 @@ class TrainerServiceTest {
 
     @Test
     void changePassword_shouldThrowException_whenOldPasswordNotMatch() {
-        doReturn(Optional.of(EXISTED_TRAINER)).when(trainerRepository).getByUsername(USERNAME);
+        var trainee = getTrainer();
+        var changePasswordDto = getChangePasswordDto();
+        doReturn(Optional.of(trainee)).when(trainerRepository).getByUsername(USERNAME);
         doReturn(false).when(passwordService).checkPassword(PASSWORD, HASHED_PASSWORD);
 
-        assertThrows(AuthException.class, () -> testObject.changePassword(CHANGE_PASSWORD_DTO));
+        assertThrows(AuthException.class, () -> testObject.changePassword(changePasswordDto));
 
         assertNoUnexpectedInteractions();
     }
@@ -211,7 +198,8 @@ class TrainerServiceTest {
 
     @Test
     void toggleStatus_shouldDeactivate_whenTrainerIsActive() {
-        doReturn(Optional.of(EXISTED_TRAINER)).when(trainerRepository).getByUsername(USERNAME);
+        var trainee = getTrainer();
+        doReturn(Optional.of(trainee)).when(trainerRepository).getByUsername(USERNAME);
 
         testObject.toggleStatus(USERNAME);
 
@@ -249,11 +237,12 @@ class TrainerServiceTest {
 
     @Test
     void getByUsername_shouldReturnTrainer_whenTrainerExists() {
-        doReturn(Optional.of(EXISTED_TRAINER)).when(trainerRepository).getByUsername(USERNAME);
+        var trainee = getTrainer();
+        doReturn(Optional.of(trainee)).when(trainerRepository).getByUsername(USERNAME);
 
         var result = testObject.getByUsername(USERNAME);
 
-        assertSame(EXISTED_TRAINER, result);
+        assertSame(trainee, result);
         assertNoUnexpectedInteractions();
     }
 
@@ -274,6 +263,42 @@ class TrainerServiceTest {
         assertNoUnexpectedInteractions();
     }
 
+    private static CreateTrainerDto getCreateTrainerDto() {
+        return new CreateTrainerDto(
+            FIRSTNAME, LASTNAME, SPECIALIZATION_NAME
+        );
+    }
+
+    private static UpdateTrainerDto getUpdateTrainerDto() {
+        return new UpdateTrainerDto(
+            USERNAME, NEW_FIRSTNAME, NEW_LASTNAME
+        );
+    }
+
+    private static ChangePasswordDto getChangePasswordDto() {
+        return new ChangePasswordDto(
+            USERNAME, PASSWORD, NEW_PASSWORD
+        );
+    }
+
+    private static TrainingType getTrainingType() {
+        return TrainingType.builder()
+            .uid(UID)
+            .name(SPECIALIZATION_NAME)
+            .build();
+    }
+
+    private static Trainer getTrainer() {
+        return Trainer.builder()
+            .uid(UID)
+            .firstName(FIRSTNAME)
+            .lastName(LASTNAME)
+            .username(USERNAME)
+            .password(HASHED_PASSWORD)
+            .specialization(getTrainingType())
+            .active(true)
+            .build();
+    }
 
     private void assertNoUnexpectedInteractions() {
         verifyNoMoreInteractions(

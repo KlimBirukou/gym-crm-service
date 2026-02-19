@@ -52,26 +52,6 @@ class TraineeServiceTest {
     private static final String ADDRESS = "address";
     private static final String NEW_ADDRESS = "new address";
 
-    private static final CreateTraineeDto CREATE_DTO = new CreateTraineeDto(
-        FIRSTNAME, LASTNAME, DATE, ADDRESS
-    );
-    private static final UpdateTraineeDto UPDATE_DTO = new UpdateTraineeDto(
-        USERNAME, NEW_FIRSTNAME, NEW_LASTNAME, NEW_DATE, NEW_ADDRESS
-    );
-    private static final ChangePasswordDto CHANGE_PASSWORD_DTO = new ChangePasswordDto(
-        USERNAME, PASSWORD, NEW_PASSWORD
-    );
-    private static final Trainee EXISTED_TRAINEE = Trainee.builder()
-        .uid(UID)
-        .firstName(FIRSTNAME)
-        .lastName(LASTNAME)
-        .username(USERNAME)
-        .password(HASHED_PASSWORD)
-        .birthdate(DATE)
-        .address(ADDRESS)
-        .active(true)
-        .build();
-
     @Mock
     private IPasswordGenerator passwordGenerator;
     @Mock
@@ -98,11 +78,12 @@ class TraineeServiceTest {
 
     @Test
     void create_shouldCreateTrainee() {
+        var createTraineeDto = getCreateTraineeDto();
         doReturn(USERNAME).when(usernameGenerator).generate(FIRSTNAME, LASTNAME);
         doReturn(PASSWORD).when(passwordGenerator).generate();
         doReturn(HASHED_PASSWORD).when(passwordService).hashPassword(PASSWORD);
 
-        var result = testObject.create(CREATE_DTO);
+        var result = testObject.create(createTraineeDto);
 
         verify(traineeRepository).save(traineeCaptor.capture());
         var saved = traineeCaptor.getValue();
@@ -131,9 +112,11 @@ class TraineeServiceTest {
 
     @Test
     void update_shouldUpdateTrainee_whenTraineeExist() {
-        doReturn(Optional.of(EXISTED_TRAINEE)).when(traineeRepository).getByUsername(USERNAME);
+        var trainee = getTrainee();
+        var updateTraineeDto = getUpdateTraineeDto();
+        doReturn(Optional.of(trainee)).when(traineeRepository).getByUsername(USERNAME);
 
-        testObject.update(UPDATE_DTO);
+        testObject.update(updateTraineeDto);
 
         verify(traineeRepository).save(traineeCaptor.capture());
         var saved = traineeCaptor.getValue();
@@ -152,9 +135,10 @@ class TraineeServiceTest {
 
     @Test
     void update_shouldThrowException_whenTraineeNotExist() {
+        var updateTraineeDto = getUpdateTraineeDto();
         doReturn(Optional.empty()).when(traineeRepository).getByUsername(USERNAME);
 
-        assertThrows(TraineeNotFoundException.class, () -> testObject.update(UPDATE_DTO));
+        assertThrows(TraineeNotFoundException.class, () -> testObject.update(updateTraineeDto));
 
         assertNoUnexpectedInteractions();
     }
@@ -170,11 +154,13 @@ class TraineeServiceTest {
 
     @Test
     void changePassword_shouldUpdatePassword_whenOldPasswordMatch() {
-        doReturn(Optional.of(EXISTED_TRAINEE)).when(traineeRepository).getByUsername(USERNAME);
+        var trainee = getTrainee();
+        var changePasswordDto = getChangePasswordDto();
+        doReturn(Optional.of(trainee)).when(traineeRepository).getByUsername(USERNAME);
         doReturn(true).when(passwordService).checkPassword(PASSWORD, HASHED_PASSWORD);
         doReturn(NEW_HASHED_PASSWORD).when(passwordService).hashPassword(NEW_PASSWORD);
 
-        testObject.changePassword(CHANGE_PASSWORD_DTO);
+        testObject.changePassword(changePasswordDto);
 
         verify(traineeRepository).save(traineeCaptor.capture());
         var saved = traineeCaptor.getValue();
@@ -189,10 +175,12 @@ class TraineeServiceTest {
 
     @Test
     void changePassword_shouldThrowException_whenOldPasswordNotMatch() {
-        doReturn(Optional.of(EXISTED_TRAINEE)).when(traineeRepository).getByUsername(USERNAME);
+        var trainee = getTrainee();
+        var changePasswordDto = getChangePasswordDto();
+        doReturn(Optional.of(trainee)).when(traineeRepository).getByUsername(USERNAME);
         doReturn(false).when(passwordService).checkPassword(PASSWORD, HASHED_PASSWORD);
 
-        assertThrows(AuthException.class, () -> testObject.changePassword(CHANGE_PASSWORD_DTO));
+        assertThrows(AuthException.class, () -> testObject.changePassword(changePasswordDto));
 
         assertNoUnexpectedInteractions();
     }
@@ -208,7 +196,8 @@ class TraineeServiceTest {
 
     @Test
     void toggleStatus_shouldDeactivate_whenTraineeIsActive() {
-        doReturn(Optional.of(EXISTED_TRAINEE)).when(traineeRepository).getByUsername(USERNAME);
+        var trainee = getTrainee();
+        doReturn(Optional.of(trainee)).when(traineeRepository).getByUsername(USERNAME);
 
         testObject.toggleStatus(USERNAME);
 
@@ -263,11 +252,12 @@ class TraineeServiceTest {
 
     @Test
     void getByUsername_shouldReturnTrainee_whenTraineeExists() {
-        doReturn(Optional.of(EXISTED_TRAINEE)).when(traineeRepository).getByUsername(USERNAME);
+        var trainee = getTrainee();
+        doReturn(Optional.of(trainee)).when(traineeRepository).getByUsername(USERNAME);
 
         var result = testObject.getByUsername(USERNAME);
 
-        assertSame(EXISTED_TRAINEE, result);
+        assertSame(trainee, result);
         assertNoUnexpectedInteractions();
     }
 
@@ -288,6 +278,36 @@ class TraineeServiceTest {
         assertNoUnexpectedInteractions();
     }
 
+    private static CreateTraineeDto getCreateTraineeDto() {
+        return new CreateTraineeDto(
+            FIRSTNAME, LASTNAME, DATE, ADDRESS
+        );
+    }
+
+    private static UpdateTraineeDto getUpdateTraineeDto() {
+        return new UpdateTraineeDto(
+            USERNAME, NEW_FIRSTNAME, NEW_LASTNAME, NEW_DATE, NEW_ADDRESS
+        );
+    }
+
+    private static ChangePasswordDto getChangePasswordDto() {
+        return new ChangePasswordDto(
+            USERNAME, PASSWORD, NEW_PASSWORD
+        );
+    }
+
+    private static Trainee getTrainee() {
+        return Trainee.builder()
+            .uid(UID)
+            .firstName(FIRSTNAME)
+            .lastName(LASTNAME)
+            .username(USERNAME)
+            .password(HASHED_PASSWORD)
+            .birthdate(DATE)
+            .address(ADDRESS)
+            .active(true)
+            .build();
+    }
 
     private void assertNoUnexpectedInteractions() {
         verifyNoMoreInteractions(
