@@ -12,7 +12,6 @@ import java.util.Set;
 public class ConversionConfiguration {
 
     @Bean
-    //TODO: remove during the REST module task.
     public ConversionService conversionService(Set<Converter<?, ?>> converters) {
         var factory = new ConversionServiceFactoryBean();
         factory.setConverters(converters);
