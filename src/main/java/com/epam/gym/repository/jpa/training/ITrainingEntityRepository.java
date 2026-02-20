@@ -44,7 +44,7 @@ public interface ITrainingEntityRepository extends JpaRepository<@NonNull Traini
         SELECT tg FROM TrainingEntity tg
         JOIN FETCH tg.trainingType
         JOIN FETCH tg.trainee
-        JOIN FETCH th.trainer
+        JOIN FETCH tg.trainer
         WHERE tg.date = :date
         """)
     List<TrainingEntity> findByDate(
