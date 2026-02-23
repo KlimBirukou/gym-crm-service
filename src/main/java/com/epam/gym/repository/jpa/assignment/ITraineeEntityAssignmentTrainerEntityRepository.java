@@ -33,4 +33,3 @@ public interface ITraineeEntityAssignmentTrainerEntityRepository extends JpaRepo
         """)
     List<TrainerEntity> getUnassignedTrainers(@Param("username") @NonNull String username);
 }
-
