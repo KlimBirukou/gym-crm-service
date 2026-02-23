@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class UsernameFactory implements IUsernameFactory {
 
+    private static final String MESSAGE = "Suffix must be positive";
+
     @Override
     public String create(@NonNull String firstName, @NonNull String lastName) {
         return String.join(GymApplication.DEFAULT_USERNAME_DELIMITER, firstName, lastName);
@@ -15,7 +17,7 @@ public class UsernameFactory implements IUsernameFactory {
     @Override
     public String create(@NonNull String firstName, @NonNull String lastName, int suffix) {
         if (suffix < 0) {
-            throw new IllegalArgumentException("Suffix must be positive");
+            throw new IllegalArgumentException(MESSAGE);
         }
         return String.join(GymApplication.DEFAULT_USERNAME_DELIMITER, firstName, lastName, String.valueOf(suffix + 1));
     }

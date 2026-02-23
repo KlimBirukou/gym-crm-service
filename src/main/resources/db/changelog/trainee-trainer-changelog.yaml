@@ -1,0 +1,45 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2026-02-10-02
+      author: Klim Birukou <klim_birukou@epam.com>
+      changes:
+        - createTable:
+            tableName: trainee_trainer
+            schemaName: gym_schema
+            remarks: Join table between trainee and trainer
+            columns:
+              - column:
+                  name: uid
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_trainee_trainer
+                    nullable: false
+              - column:
+                  name: trainee_uid
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: trainer_uid
+                  type: uuid
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            baseTableName: trainee_trainer
+            baseColumnNames: trainee_uid
+            referencedTableName: trainee
+            referencedColumnNames: uid
+            constraintName: fk_trainee_trainer_to_trainee
+            onDelete: CASCADE
+            onUpdate: CASCADE
+        - addForeignKeyConstraint:
+            baseTableName: trainee_trainer
+            baseColumnNames: trainer_uid
+            referencedTableName: trainer
+            referencedColumnNames: uid
+            constraintName: fk_trainee_trainer_to_trainer
+            onDelete: CASCADE
+            onUpdate: CASCADE

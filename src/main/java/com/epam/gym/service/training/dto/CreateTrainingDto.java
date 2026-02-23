@@ -1,19 +1,16 @@
 package com.epam.gym.service.training.dto;
 
-import com.epam.gym.domain.training.TrainingType;
 import lombok.NonNull;
 
-import java.time.Duration;
 import java.time.LocalDate;
-import java.util.UUID;
 
 public record CreateTrainingDto(
 
-    @NonNull UUID traineeUid,
-    @NonNull UUID trainerUid,
+    @NonNull String traineeUsername,
+    @NonNull String trainerUsername,
     @NonNull String name,
-    @NonNull TrainingType type,
+    @NonNull String type,
     @NonNull LocalDate date,
-    @NonNull Duration duration
+    int durationInMinutes
 ) {
 }

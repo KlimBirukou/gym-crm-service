@@ -1,11 +1,20 @@
 package com.epam.gym.domain.training;
 
-public enum TrainingType {
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
-    STRENGTH,
-    CARDIO,
-    FUNCTIONAL,
-    STRETCHING,
-    HIIT,
-    CIRCUIT
+import java.util.UUID;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Accessors(chain = true)
+public class TrainingType {
+
+    private UUID uid;
+    private String name;
 }

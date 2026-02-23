@@ -20,7 +20,7 @@ public class TraineeMother {
             .username(username)
             .password(PASSWORD)
             .birthdate(DATE)
-            .isActive(true)
+            .active(true)
             .build();
     }
 }

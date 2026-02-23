@@ -1,0 +1,44 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2026-02-04-03
+      author: Klim Birukou <klim_birukou@epam.com>
+      changes:
+        - createTable:
+            tableName: trainer
+            schemaName: gym_schema
+            remarks: Stores trainer-specific information with one-to-one relation to user
+            columns:
+              - column:
+                  name: uid
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_trainer
+                    nullable: false
+              - column:
+                  name: training_type_uid
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_uid
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: uk_trainer_user_uid
+
+        - addForeignKeyConstraint:
+            baseTableName: trainer
+            baseColumnNames: training_type_uid
+            referencedTableName: training_type
+            referencedColumnNames: uid
+            constraintName: fk_trainer_to_training_type
+        - addForeignKeyConstraint:
+            baseTableName: trainer
+            baseColumnNames: user_uid
+            referencedTableName: user
+            referencedColumnNames: uid
+            constraintName: fk_trainer_to_user
+            onDelete: CASCADE
+            onUpdate: CASCADE

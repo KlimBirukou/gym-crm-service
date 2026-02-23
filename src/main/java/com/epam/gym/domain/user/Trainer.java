@@ -1,5 +1,6 @@
 package com.epam.gym.domain.user;
 
+import com.epam.gym.domain.training.TrainingType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -17,5 +18,5 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 public final class Trainer extends User {
 
-    private String specialization;
+    private TrainingType specialization;
 }

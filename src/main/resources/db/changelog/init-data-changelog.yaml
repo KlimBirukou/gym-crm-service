@@ -1,0 +1,20 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2026-02-16-01
+      author: Klim Birukou <klim_birukou@epam.com>
+      changes:
+        - sqlFile:
+            path: ../data/training_type_init.sql
+            relativeToChangelogFile: true
+        - sqlFile:
+            path: ../data/trainee_init.sql
+            relativeToChangelogFile: true
+        - sqlFile:
+            path: ../data/trainer_init.sql
+            relativeToChangelogFile: true
+        - sqlFile:
+            path: ../data/assignment_init.sql
+            relativeToChangelogFile: true
+        - sqlFile:
+            path: ../data/training_init.sql
+            relativeToChangelogFile: true
