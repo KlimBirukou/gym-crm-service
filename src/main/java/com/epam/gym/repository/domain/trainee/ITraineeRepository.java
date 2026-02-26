@@ -5,6 +5,7 @@ import lombok.NonNull;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public interface ITraineeRepository {
 
@@ -17,4 +18,6 @@ public interface ITraineeRepository {
     void deleteByUsername(@NonNull String username);
 
     List<Trainee> getByFirstNameAndLastName(@NonNull String firstname, @NonNull String lastName);
+
+    List<Trainee> findAllByUids(@NonNull List<UUID> uids);
 }

@@ -1,11 +1,11 @@
 package com.epam.gym.service.training;
 
 import com.epam.gym.domain.training.Training;
-import com.epam.gym.domain.training.TrainingType;
 import com.epam.gym.domain.user.Trainee;
 import com.epam.gym.domain.user.Trainer;
-import com.epam.gym.exception.TrainingDateConflictException;
-import com.epam.gym.exception.TrainingTypeMismatchException;
+import com.epam.gym.exception.conflict.DateConflictException;
+import com.epam.gym.exception.conflict.TraineeDateConflictException;
+import com.epam.gym.exception.conflict.TrainerDateConflictException;
 import com.epam.gym.exception.not.active.TraineeNotActiveException;
 import com.epam.gym.exception.not.active.TrainerNotActiveException;
 import com.epam.gym.repository.domain.training.ITrainingRepository;
@@ -13,15 +13,14 @@ import com.epam.gym.service.assignment.ITraineeAssignmentTrainerService;
 import com.epam.gym.service.trainee.ITraineeService;
 import com.epam.gym.service.trainer.ITrainerService;
 import com.epam.gym.service.training.dto.CreateTrainingDto;
-import com.epam.gym.service.training.dto.TrainingsCriteriaDto;
-import com.epam.gym.service.type.ITrainingTypeService;
+import com.epam.gym.service.training.dto.TraineeTrainingsDto;
+import com.epam.gym.service.training.dto.TrainerTrainingsDto;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -33,7 +32,6 @@ public class TrainingService implements ITrainingService {
     private final ITrainingRepository trainingRepository;
     private final ITraineeService traineeService;
     private final ITrainerService trainerService;
-    private final ITrainingTypeService trainingTypeService;
     private final ITraineeAssignmentTrainerService traineeAssignmentTrainerService;
 
     @Override
@@ -48,8 +46,6 @@ public class TrainingService implements ITrainingService {
             throw new TrainerNotActiveException(trainer.getUsername());
         }
         traineeAssignmentTrainerService.checkAssignExist(dto.traineeUsername(), dto.trainerUsername());
-        var trainingType = trainingTypeService.getByName(dto.type());
-        validateTrainingType(trainer, trainingType);
         validateDateAvailability(dto, trainee, trainer);
         var uid = UUID.randomUUID();
         var training = Training.builder()
@@ -57,7 +53,7 @@ public class TrainingService implements ITrainingService {
             .traineeUid(trainee.getUid())
             .trainerUid(trainer.getUid())
             .name(dto.name())
-            .trainingType(trainingType)
+            .trainingType(trainer.getSpecialization())
             .date(dto.date())
             .duration(Duration.ofMinutes(dto.durationInMinutes()))
             .build();
@@ -67,44 +63,40 @@ public class TrainingService implements ITrainingService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Training> getTraineeTrainings(@NonNull TrainingsCriteriaDto dto) {
+    public List<Training> getTraineeTrainings(@NonNull TraineeTrainingsDto dto) {
+
         var trainee = traineeService.getByUsername(dto.username());
-        var trainingType = trainingTypeService.getByName(dto.trainingType());
-        return trainingRepository.getTraineeTrainings(trainee.getUid(), trainingType.getUid()).stream()
-            .filter(training -> inDateRange(training.getDate(), dto.from(), dto.to()))
-            .toList();
+        return trainingRepository.getTraineeTrainings(
+            trainee.getUid(),
+            dto.from(),
+            dto.to(),
+            dto.trainerUsername(),
+            dto.trainingTypeName()
+        );
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Training> getTrainerTrainings(@NonNull TrainingsCriteriaDto dto) {
-        var trainer = trainerService.getByUsername(dto.username());
-        var trainingType = trainingTypeService.getByName(dto.trainingType());
-        return trainingRepository.getTrainerTrainings(trainer.getUid(), trainingType.getUid()).stream()
-            .filter(training -> inDateRange(training.getDate(), dto.from(), dto.to()))
-            .toList();
-    }
+    public List<Training> getTrainerTrainings(@NonNull TrainerTrainingsDto dto) {
 
-    private void validateTrainingType(Trainer trainer, TrainingType trainingType) {
-        if (!Objects.equals(trainer.getSpecialization(), trainingType)) {
-            throw new TrainingTypeMismatchException(trainer.getUsername(), trainingType.getName());
-        }
+        var trainer = trainerService.getByUsername(dto.username());
+        return trainingRepository.getTrainerTrainings(
+            trainer.getUid(),
+            dto.from(),
+            dto.to(),
+            dto.traineeUsername()
+        );
     }
 
     private void validateDateAvailability(CreateTrainingDto dto, Trainee trainee, Trainer trainer) {
         trainingRepository.getTrainingsOnDate(dto.date())
-            .stream()
-            .filter(training ->
-                Objects.equals(training.getTraineeUid(), trainee.getUid())
-                    || Objects.equals(training.getTrainerUid(), trainer.getUid()))
-            .findAny()
-            .ifPresent(training -> {
-                throw new TrainingDateConflictException(trainee.getUsername(), trainer.getUsername(), dto.date());
+            .forEach(training -> {
+                if (Objects.equals(training.getTrainerUid(), trainee.getUid())) {
+                    throw new TraineeDateConflictException(trainee.getUsername(), dto.date());
+                }
+                if (Objects.equals(training.getTrainerUid(), trainer.getUid())) {
+                    throw new TrainerDateConflictException(trainer.getUsername(), dto.date());
+                }
             });
-    }
-
-    private boolean inDateRange(LocalDate trainingDate, LocalDate from, LocalDate to) {
-        return !trainingDate.isBefore(from)
-            && !trainingDate.isAfter(to);
     }
 }

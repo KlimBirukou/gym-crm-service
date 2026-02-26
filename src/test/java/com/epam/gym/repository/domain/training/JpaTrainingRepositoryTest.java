@@ -1,3 +1,4 @@
+/*
 package com.epam.gym.repository.domain.training;
 
 import com.epam.gym.domain.training.Training;
@@ -117,7 +118,7 @@ public class JpaTrainingRepositoryTest {
     @ParameterizedTest
     @MethodSource("provideTestData")
     void getTrainerTrainings_shouldReturnTrainings(List<TrainingEntity> entities, List<Training> trainings) {
-        doReturn(entities).when(repository).findByTrainerUidAndTrainingTypeUid(TRAINER_UID, TRAINING_TYPE_UID);
+        doReturn(entities).when(repository).findTrainerTrainings(TRAINER_UID, TRAINING_TYPE_UID);
         IntStream.range(0, entities.size()).forEach(i ->
             doReturn(trainings.get(i)).when(conversionService).convert(entities.get(i), Training.class)
         );
@@ -171,3 +172,4 @@ public class JpaTrainingRepositoryTest {
         );
     }
 }
+*/

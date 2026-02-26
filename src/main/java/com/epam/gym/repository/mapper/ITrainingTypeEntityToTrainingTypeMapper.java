@@ -13,5 +13,5 @@ public interface ITrainingTypeEntityToTrainingTypeMapper extends Converter<@NonN
     @Override
     TrainingType convert(@NonNull TrainingTypeEntity entity);
 
-    TrainingTypeEntity invertConvert(@NonNull TrainingType type);
+    TrainingTypeEntity convert(@NonNull TrainingType type);
 }

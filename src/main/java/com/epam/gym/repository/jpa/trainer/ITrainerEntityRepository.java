@@ -30,4 +30,6 @@ public interface ITrainerEntityRepository extends JpaRepository<@NonNull Trainer
     List<TrainerEntity> findByTraineeUid(@Param("traineeUid") @NonNull UUID trainerUid);
 
     List<TrainerEntity> findByUserFirstNameAndUserLastName(@NonNull String firstName, @NonNull String lastName);
+
+    List<TrainerEntity> findAllByUidIn(@NonNull List<UUID> uids);
 }

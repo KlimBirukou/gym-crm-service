@@ -31,5 +31,5 @@ public interface ITraineeEntityToTraineeMapper extends Converter<@NonNull Traine
     @Mapping(target = "user.active", source = "active")
     @Mapping(target = "address", source = "address")
     @Mapping(target = "birthdate", source = "birthdate")
-    TraineeEntity invertConvert(@NonNull Trainee trainee);
+    TraineeEntity convert(@NonNull Trainee trainee);
 }

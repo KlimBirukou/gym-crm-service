@@ -16,35 +16,45 @@ public interface ITrainingEntityRepository extends JpaRepository<@NonNull Traini
 
     @Query("""
         SELECT tg FROM TrainingEntity tg
-        JOIN FETCH tg.trainingType
-        JOIN FETCH tg.trainee
-        JOIN FETCH tg.trainer
-        WHERE tg.trainingType.uid = :trainingTypeUid
-        AND tg.trainee.uid = :traineeUid
+            JOIN FETCH tg.trainingType
+            JOIN FETCH tg.trainee
+            JOIN FETCH tg.trainer tr
+        WHERE tg.trainee.uid = :traineeUid
+            AND (:from IS NULL OR tg.date >= :from)
+            AND (:to IS NULL OR tg.date <= :to)
+            AND (:trainerUsername IS NULL OR tr.user.username = :trainerUsername)
+            AND (:trainingTypeName IS NULL OR tg.trainingType.name = :trainingTypeName)
         """)
-    List<TrainingEntity> findByTraineeUidAndTrainingTypeUid(
+    List<TrainingEntity> findTraineeTrainings(
         @Param("traineeUid") @NonNull UUID traineeUid,
-        @Param("trainingTypeUid") @NonNull UUID trainingTypeUid
+        @Param("from") LocalDate from,
+        @Param("to") LocalDate to,
+        @Param("trainerUsername") String trainerUsername,
+        @Param("trainingTypeName") String trainingTypeName
     );
 
     @Query("""
         SELECT tg FROM TrainingEntity tg
-        JOIN FETCH tg.trainingType
-        JOIN FETCH tg.trainee
-        JOIN FETCH tg.trainer
-        WHERE tg.trainingType.uid = :trainingTypeUid
-        AND tg.trainer.uid = :trainerUid
+            JOIN FETCH tg.trainingType
+            JOIN FETCH tg.trainee te
+            JOIN FETCH tg.trainer
+        WHERE tg.trainer.uid = :trainerUid
+            AND (:from IS NULL OR tg.date >= :from)
+            AND (:to IS NULL OR tg.date <= :to)
+            AND (:traineeUsername IS NULL OR te.user.username = :traineeUsername)
         """)
-    List<TrainingEntity> findByTrainerUidAndTrainingTypeUid(
+    List<TrainingEntity> findTrainerTrainings(
         @Param("trainerUid") @NonNull UUID trainerUid,
-        @Param("trainingTypeUid") @NonNull UUID trainingTypeUid
+        @Param("from") LocalDate from,
+        @Param("to") LocalDate to,
+        @Param("traineeUsername") String traineeUsername
     );
 
     @Query("""
         SELECT tg FROM TrainingEntity tg
-        JOIN FETCH tg.trainingType
-        JOIN FETCH tg.trainee
-        JOIN FETCH tg.trainer
+            JOIN FETCH tg.trainingType
+            JOIN FETCH tg.trainee
+            JOIN FETCH tg.trainer
         WHERE tg.date = :date
         """)
     List<TrainingEntity> findByDate(

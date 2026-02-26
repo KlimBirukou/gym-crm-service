@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -77,5 +78,14 @@ public class TrainerService implements ITrainerService {
     public Trainer getByUsername(@NonNull String username) {
         return trainerRepository.getByUsername(username)
             .orElseThrow(() -> new TrainerNotFoundException(username));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Trainer> getByUids(@NonNull List<UUID> uids) {
+        if (uids.isEmpty()) {
+            return List.of();
+        }
+        return trainerRepository.findAllByUids(uids);
     }
 }

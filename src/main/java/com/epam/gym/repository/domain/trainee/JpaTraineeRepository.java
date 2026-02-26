@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 @Primary
@@ -49,8 +50,17 @@ public class JpaTraineeRepository implements ITraineeRepository {
 
 
     @Override
+    @Transactional(readOnly = true)
     public List<Trainee> getByFirstNameAndLastName(@NonNull String firstname, @NonNull String lastName) {
         return repository.findByUserFirstNameAndUserLastName(firstname, lastName).stream()
+            .map(entity -> conversionService.convert(entity, Trainee.class))
+            .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Trainee> findAllByUids(@NonNull List<UUID> uids) {
+        return repository.findAllByUidIn(uids).stream()
             .map(entity -> conversionService.convert(entity, Trainee.class))
             .toList();
     }

@@ -29,5 +29,5 @@ public interface ITrainerEntityToTrainerMapper extends Converter<@NonNull Traine
     @Mapping(target = "user.password", source = "password")
     @Mapping(target = "user.active", source = "active")
     @Mapping(target = "specialization", source = "specialization")
-    TrainerEntity invertConvert(@NonNull Trainer domain);
+    TrainerEntity convert(@NonNull Trainer domain);
 }

@@ -6,6 +6,9 @@ import com.epam.gym.service.trainer.dto.CreateTrainerDto;
 import com.epam.gym.service.trainer.dto.UpdateTrainerDto;
 import lombok.NonNull;
 
+import java.util.List;
+import java.util.UUID;
+
 public interface ITrainerService {
 
     Trainer create(@NonNull CreateTrainerDto dto);
@@ -17,4 +20,6 @@ public interface ITrainerService {
     void toggleStatus(@NonNull String username);
 
     Trainer getByUsername(@NonNull String username);
+
+    List<Trainer> getByUids(@NonNull List<UUID> uids);
 }

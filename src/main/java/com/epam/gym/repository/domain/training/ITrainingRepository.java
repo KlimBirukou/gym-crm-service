@@ -11,9 +11,18 @@ public interface ITrainingRepository {
 
     void save(@NonNull Training training);
 
-    List<Training> getTraineeTrainings(@NonNull UUID traineeUid, @NonNull UUID trainingTypeUid);
+    List<Training> getTraineeTrainings(@NonNull UUID traineeUid,
+                                       LocalDate from,
+                                       LocalDate to,
+                                       String traineeUsername,
+                                       String trainingTypeName
+    );
 
-    List<Training> getTrainerTrainings(@NonNull UUID trainerUid, @NonNull UUID trainingTypeUid);
+    List<Training> getTrainerTrainings(@NonNull UUID trainerUid,
+                                       LocalDate from,
+                                       LocalDate to,
+                                       String traineeUsername
+    );
 
     List<Training> getTrainingsOnDate(@NonNull LocalDate date);
 }

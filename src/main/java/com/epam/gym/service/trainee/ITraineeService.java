@@ -6,6 +6,9 @@ import com.epam.gym.service.trainee.dto.CreateTraineeDto;
 import com.epam.gym.service.trainee.dto.UpdateTraineeDto;
 import lombok.NonNull;
 
+import java.util.List;
+import java.util.UUID;
+
 public interface ITraineeService {
 
     Trainee create(@NonNull CreateTraineeDto dto);
@@ -19,4 +22,6 @@ public interface ITraineeService {
     void delete(@NonNull String username);
 
     Trainee getByUsername(@NonNull String username);
+
+    List<Trainee> getByUids(@NonNull List<UUID> uids);
 }
