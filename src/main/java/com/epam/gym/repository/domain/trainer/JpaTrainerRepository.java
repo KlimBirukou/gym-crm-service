@@ -1,8 +1,10 @@
 package com.epam.gym.repository.domain.trainer;
 
+import com.epam.gym.exception.not.found.TrainerNotFoundException;
 import com.epam.gym.repository.entity.TrainerEntity;
 import com.epam.gym.domain.user.Trainer;
 import com.epam.gym.repository.jpa.trainer.ITrainerEntityRepository;
+import com.epam.gym.repository.mapper.ITrainerEntityToTrainerMapper;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
@@ -21,6 +23,7 @@ public class JpaTrainerRepository implements ITrainerRepository {
 
     private final ITrainerEntityRepository repository;
     private final ConversionService conversionService;
+    private final ITrainerEntityToTrainerMapper mapper;
 
     @Override
     @Transactional(readOnly = true)
@@ -39,6 +42,15 @@ public class JpaTrainerRepository implements ITrainerRepository {
     @Transactional
     public void save(@NonNull Trainer trainer) {
         var entity = conversionService.convert(trainer, TrainerEntity.class);
+        repository.save(entity);
+    }
+
+    @Override
+    @Transactional
+    public void update(@NonNull Trainer trainer) {
+        var entity = repository.findByUserUsername(trainer.getUsername())
+            .orElseThrow(() -> new TrainerNotFoundException(trainer.getUsername()));
+        mapper.updateEntity(trainer, entity);
         repository.save(entity);
     }
 

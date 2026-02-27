@@ -15,6 +15,8 @@ public interface ITrainerRepository {
 
     void save(@NonNull Trainer trainer);
 
+    void update(@NonNull Trainer trainer);
+
     List<Trainer> getByFirstNameAndLastName(@NonNull String firstname, @NonNull String lastName);
 
     List<Trainer> findAllByUids(@NonNull List<UUID> uids);

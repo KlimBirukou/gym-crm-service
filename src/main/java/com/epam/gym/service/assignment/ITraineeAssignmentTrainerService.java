@@ -1,5 +1,6 @@
 package com.epam.gym.service.assignment;
 
+import com.epam.gym.domain.user.Trainee;
 import com.epam.gym.domain.user.Trainer;
 import lombok.NonNull;
 
@@ -11,7 +12,9 @@ public interface ITraineeAssignmentTrainerService {
 
     void checkAssignExist(@NonNull String traineeUsername, @NonNull String trainerUsername);
 
-    List<Trainer> getAssignedTrainers(@NonNull String username);
+    List<Trainee> getAssignedTrainees(@NonNull String trainerUsername);
 
-    List<Trainer> getUnassignedTrainers(@NonNull String username);
+    List<Trainer> getAssignedTrainers(@NonNull String traineeUsername);
+
+    List<Trainer> getUnassignedTrainers(@NonNull String traineeUsername);
 }

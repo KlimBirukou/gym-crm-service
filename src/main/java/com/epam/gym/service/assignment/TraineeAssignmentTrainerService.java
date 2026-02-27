@@ -1,5 +1,6 @@
 package com.epam.gym.service.assignment;
 
+import com.epam.gym.domain.user.Trainee;
 import com.epam.gym.domain.user.Trainer;
 import com.epam.gym.exception.not.active.TraineeNotActiveException;
 import com.epam.gym.exception.not.active.TrainerNotActiveException;
@@ -29,12 +30,12 @@ public class TraineeAssignmentTrainerService implements ITraineeAssignmentTraine
         if (!trainee.isActive()) {
             throw new TraineeNotActiveException(trainee.getUsername());
         }
-        var trainer = trainerService.getByUsername(trainerUsername);
+        /*var trainer = trainerService.getByUsername(trainerUsername);
         if (!trainer.isActive()) {
             throw new TrainerNotActiveException(trainer.getUsername());
         }
         checkAssignExist(traineeUsername, trainerUsername);
-        traineeAssignmentTrainerRepository.assign(trainee, trainer);
+        traineeAssignmentTrainerRepository.assign(trainee, trainer);*/
     }
 
     @Override
@@ -47,13 +48,19 @@ public class TraineeAssignmentTrainerService implements ITraineeAssignmentTraine
 
     @Override
     @Transactional(readOnly = true)
-    public List<Trainer> getAssignedTrainers(@NonNull String username) {
-        return traineeAssignmentTrainerRepository.getAssignedTrainers(username);
+    public List<Trainee> getAssignedTrainees(@NonNull String trainerUsername) {
+        return traineeAssignmentTrainerRepository.getAssignedTrainees(trainerUsername);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Trainer> getUnassignedTrainers(@NonNull String username) {
-        return traineeAssignmentTrainerRepository.getUnassignedTrainers(username);
+    public List<Trainer> getAssignedTrainers(@NonNull String traineeUsername) {
+        return traineeAssignmentTrainerRepository.getAssignedTrainers(traineeUsername);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Trainer> getUnassignedTrainers(@NonNull String traineeUsername) {
+        return traineeAssignmentTrainerRepository.getUnassignedTrainers(traineeUsername);
     }
 }

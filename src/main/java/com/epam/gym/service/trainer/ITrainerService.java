@@ -13,11 +13,11 @@ public interface ITrainerService {
 
     Trainer create(@NonNull CreateTrainerDto dto);
 
-    void update(@NonNull UpdateTrainerDto dto);
+    Trainer update(@NonNull UpdateTrainerDto dto);
 
     void changePassword(@NonNull ChangePasswordDto dto);
 
-    void toggleStatus(@NonNull String username);
+    void changeStatus(@NonNull String username, boolean status);
 
     Trainer getByUsername(@NonNull String username);
 

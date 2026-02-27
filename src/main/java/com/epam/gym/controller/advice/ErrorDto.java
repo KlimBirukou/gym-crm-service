@@ -1,4 +1,4 @@
-package com.epam.gym.controlller.advice;
+package com.epam.gym.controller.advice;
 
 import lombok.Builder;
 import lombok.NonNull;

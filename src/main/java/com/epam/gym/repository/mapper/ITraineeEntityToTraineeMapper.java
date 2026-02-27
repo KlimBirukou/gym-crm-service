@@ -4,8 +4,10 @@ import com.epam.gym.configuration.IMapStructConfiguration;
 import com.epam.gym.repository.entity.TraineeEntity;
 import com.epam.gym.domain.user.Trainee;
 import lombok.NonNull;
+import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.extensions.spring.DelegatingConverter;
 import org.springframework.core.convert.converter.Converter;
 
 @Mapper(config = IMapStructConfiguration.class)
@@ -22,6 +24,8 @@ public interface ITraineeEntityToTraineeMapper extends Converter<@NonNull Traine
     @Mapping(target = "birthdate", source = "birthdate")
     Trainee convert(@NonNull TraineeEntity entity);
 
+    @InheritInverseConfiguration
+    @DelegatingConverter
     @Mapping(target = "uid", source = "uid")
     @Mapping(target = "user.uid", ignore = true)
     @Mapping(target = "user.firstName", source = "firstName")

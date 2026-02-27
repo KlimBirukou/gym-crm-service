@@ -47,11 +47,12 @@ public class TrainerService implements ITrainerService {
 
     @Override
     @Transactional
-    public void update(@NonNull UpdateTrainerDto dto) {
+    public Trainer update(@NonNull UpdateTrainerDto dto) {
         var trainer = getByUsername(dto.username());
         trainer.setFirstName(dto.firstName());
         trainer.setLastName(dto.lastName());
-        trainerRepository.save(trainer);
+        trainerRepository.update(trainer);
+        return trainer;
     }
 
     @Override
@@ -62,15 +63,15 @@ public class TrainerService implements ITrainerService {
             throw new AuthException();
         }
         trainer.setPassword(passwordService.hashPassword(dto.newPassword()));
-        trainerRepository.save(trainer);
+        trainerRepository.update(trainer);
     }
 
     @Override
     @Transactional
-    public void toggleStatus(@NonNull String username) {
+    public void changeStatus(@NonNull String username, boolean status) {
         var trainer = getByUsername(username);
-        trainer.toggleActive();
-        trainerRepository.save(trainer);
+        trainer.setActive(status);
+        trainerRepository.update(trainer);
     }
 
     @Override

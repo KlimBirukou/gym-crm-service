@@ -1,5 +1,6 @@
 package com.epam.gym.repository.jpa.assignment;
 
+import com.epam.gym.repository.entity.TraineeEntity;
 import com.epam.gym.repository.entity.TraineeTrainerEntity;
 import com.epam.gym.repository.entity.TrainerEntity;
 import lombok.NonNull;
@@ -17,19 +18,26 @@ public interface ITraineeEntityAssignmentTrainerEntityRepository extends JpaRepo
     boolean existsByTraineeUserUsernameAndTrainerUserUsername(@NonNull String traineeUsername, @NonNull String trainerUsername);
 
     @Query("""
+        SELECT tte.trainee FROM TraineeTrainerEntity tte
+        JOIN FETCH tte.trainee.user
+        WHERE tte.trainer.user.username = :trainerUsername
+        """)
+    List<TraineeEntity> getAssignedTrainees(@Param("trainerUsername") @NonNull String trainerUsername);
+
+    @Query("""
         SELECT tte.trainer FROM TraineeTrainerEntity tte
         JOIN FETCH tte.trainer.user
-        WHERE tte.trainer.user.username = :username
+        WHERE tte.trainer.user.username = :traineeUsername
         """)
-    List<TrainerEntity> getAssignedTrainers(@Param("username") @NonNull String username);
+    List<TrainerEntity> getAssignedTrainers(@Param("traineeUsername") @NonNull String traineeUsername);
 
     @Query("""
         SELECT tr FROM TrainerEntity tr
         JOIN FETCH tr.user
         WHERE tr.user.username NOT IN (
            SELECT tte.trainer.user.username FROM TraineeTrainerEntity tte
-           WHERE tte.trainee.user.username = :username
+           WHERE tte.trainee.user.username = :traineeUsername
         )
         """)
-    List<TrainerEntity> getUnassignedTrainers(@Param("username") @NonNull String username);
+    List<TrainerEntity> getUnassignedTrainers(@Param("traineeUsername") @NonNull String traineeUsername);
 }

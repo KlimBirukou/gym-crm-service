@@ -1,11 +1,11 @@
-package com.epam.gym.controlller.rest.training;
+package com.epam.gym.controller.rest.training;
 
-import com.epam.gym.controlller.rest.training.dto.req.CreateTrainingRequest;
-import com.epam.gym.controlller.rest.training.dto.req.GetTraineeTrainingsRequest;
-import com.epam.gym.controlller.rest.training.dto.req.GetTrainerTrainingRequest;
-import com.epam.gym.controlller.rest.training.dto.res.TraineeTrainingResponse;
-import com.epam.gym.controlller.rest.training.dto.res.TrainerTrainingsResponse;
-import com.epam.gym.controlller.rest.training.dto.res.TrainingTypeResponse;
+import com.epam.gym.controller.rest.training.dto.request.CreateTrainingRequest;
+import com.epam.gym.controller.rest.training.dto.request.GetTraineeTrainingsRequest;
+import com.epam.gym.controller.rest.training.dto.request.GetTrainerTrainingRequest;
+import com.epam.gym.controller.rest.training.dto.response.TraineeTrainingResponse;
+import com.epam.gym.controller.rest.training.dto.response.TrainerTrainingsResponse;
+import com.epam.gym.controller.rest.training.dto.response.TrainingTypeResponse;
 import com.epam.gym.facade.training.ITrainingFacade;
 import jakarta.validation.Valid;
 import lombok.NonNull;

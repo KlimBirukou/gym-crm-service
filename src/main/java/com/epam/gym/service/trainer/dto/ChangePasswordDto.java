@@ -1,7 +1,9 @@
 package com.epam.gym.service.trainer.dto;
 
+import lombok.Builder;
 import lombok.NonNull;
 
+@Builder
 public record ChangePasswordDto(
 
     @NonNull String username,

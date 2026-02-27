@@ -1,10 +1,10 @@
-package com.epam.gym.service.trainer.dto;
+package com.epam.gym.controller.rest.trainer.dto.response;
 
 import lombok.Builder;
 import lombok.NonNull;
 
 @Builder
-public record UpdateTrainerDto(
+public record ShortUserProfileResponse(
 
     @NonNull String username,
     @NonNull String firstName,

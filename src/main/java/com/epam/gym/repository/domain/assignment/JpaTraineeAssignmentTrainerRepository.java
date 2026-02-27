@@ -37,15 +37,22 @@ public class JpaTraineeAssignmentTrainerRepository implements ITraineeAssignment
     }
 
     @Override
-    public List<Trainer> getAssignedTrainers(@NonNull String username) {
-        return repository.getAssignedTrainers(username).stream()
+    public List<Trainee> getAssignedTrainees(@NonNull String trainerUsername) {
+        return repository.getAssignedTrainees(trainerUsername).stream()
+            .map(entity -> conversionService.convert(entity, Trainee.class))
+            .toList();
+    }
+
+    @Override
+    public List<Trainer> getAssignedTrainers(@NonNull String traineeUsername) {
+        return repository.getAssignedTrainers(traineeUsername).stream()
             .map(entity -> conversionService.convert(entity, Trainer.class))
             .toList();
     }
 
     @Override
-    public List<Trainer> getUnassignedTrainers(@NonNull String username) {
-        return repository.getUnassignedTrainers(username).stream()
+    public List<Trainer> getUnassignedTrainers(@NonNull String traineeUsername) {
+        return repository.getUnassignedTrainers(traineeUsername).stream()
             .map(entity -> conversionService.convert(entity, Trainer.class))
             .toList();
     }

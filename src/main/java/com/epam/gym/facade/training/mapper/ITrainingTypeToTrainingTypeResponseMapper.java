@@ -1,7 +1,7 @@
 package com.epam.gym.facade.training.mapper;
 
 import com.epam.gym.configuration.IMapStructConfiguration;
-import com.epam.gym.controlller.rest.training.dto.res.TrainingTypeResponse;
+import com.epam.gym.controller.rest.training.dto.response.TrainingTypeResponse;
 import com.epam.gym.domain.training.TrainingType;
 import lombok.NonNull;
 import org.mapstruct.Mapper;

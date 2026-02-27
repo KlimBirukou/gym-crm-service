@@ -1,4 +1,4 @@
-package com.epam.gym.controlller.rest.training.dto.req;
+package com.epam.gym.controller.rest.training.dto.request;
 
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
@@ -13,18 +13,14 @@ public record CreateTrainingRequest(
 
     @NotBlank(message = "Trainee username is required")
     String traineeUsername,
-
     @NotBlank(message = "Trainer username is required")
     String trainerUsername,
-
     @NotBlank(message = "Training name is required")
     String name,
-
     @NotNull(message = "Training date is required")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @Future(message = "Training date cannot be in the past")
     LocalDate date,
-
     @NotNull(message = "Training duration is required")
     Integer durationInMinutes
 ) {

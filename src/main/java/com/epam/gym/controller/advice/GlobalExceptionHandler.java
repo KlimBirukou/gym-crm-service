@@ -1,4 +1,4 @@
-package com.epam.gym.controlller.advice;
+package com.epam.gym.controller.advice;
 
 import com.epam.gym.exception.conflict.DateConflictException;
 import com.epam.gym.exception.not.active.NotActiveException;

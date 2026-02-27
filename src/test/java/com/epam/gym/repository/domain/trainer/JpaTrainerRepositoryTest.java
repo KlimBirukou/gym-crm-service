@@ -45,13 +45,13 @@ public class JpaTrainerRepositoryTest {
 
     private JpaTrainerRepository testObject;
 
-    @BeforeEach
-    void setUp() {
-        testObject = new JpaTrainerRepository(
-            repository,
-            conversionService
-        );
-    }
+//    @BeforeEach
+//    void setUp() {
+//        testObject = new JpaTrainerRepository(
+//            repository,
+//            conversionService
+//        );
+//    }
 
     private static Stream<Boolean> provideBooleanData() {
         return Stream.of(true, false);
