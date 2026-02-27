@@ -46,13 +46,14 @@ public class TraineeService implements ITraineeService {
 
     @Override
     @Transactional
-    public void update(@NonNull UpdateTraineeDto dto) {
+    public Trainee update(@NonNull UpdateTraineeDto dto) {
         var trainee = getByUsername(dto.username());
         trainee.setFirstName(dto.firstName());
         trainee.setLastName(dto.lastName());
         trainee.setAddress(dto.address());
         trainee.setBirthdate(dto.birthdate());
-        traineeRepository.save(trainee);
+        traineeRepository.update(trainee);
+        return trainee;
     }
 
     @Override
@@ -63,15 +64,15 @@ public class TraineeService implements ITraineeService {
             throw new AuthException();
         }
         trainee.setPassword(passwordService.hashPassword(dto.newPassword()));
-        traineeRepository.save(trainee);
+        traineeRepository.update(trainee);
     }
 
     @Override
     @Transactional
-    public void toggleStatus(@NonNull String username) {
+    public void changeStatus(@NonNull String username, boolean status) {
         var trainee = getByUsername(username);
-        trainee.toggleActive();
-        traineeRepository.save(trainee);
+        trainee.setActive(status);
+        traineeRepository.update(trainee);
     }
 
     @Override

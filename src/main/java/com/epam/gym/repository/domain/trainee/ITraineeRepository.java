@@ -15,6 +15,8 @@ public interface ITraineeRepository {
 
     void save(@NonNull Trainee trainee);
 
+    void update(@NonNull Trainee trainee);
+
     void deleteByUsername(@NonNull String username);
 
     List<Trainee> getByFirstNameAndLastName(@NonNull String firstname, @NonNull String lastName);

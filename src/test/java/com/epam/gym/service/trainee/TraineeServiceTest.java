@@ -199,7 +199,7 @@ class TraineeServiceTest {
         var trainee = getTrainee();
         doReturn(Optional.of(trainee)).when(traineeRepository).getByUsername(USERNAME);
 
-        testObject.toggleStatus(USERNAME);
+        testObject.changeStatus(USERNAME);
 
         verify(traineeRepository).save(traineeCaptor.capture());
         assertFalse(traineeCaptor.getValue().isActive());
@@ -216,7 +216,7 @@ class TraineeServiceTest {
             .build();
         doReturn(Optional.of(inactiveTrainee)).when(traineeRepository).getByUsername(USERNAME);
 
-        testObject.toggleStatus(USERNAME);
+        testObject.changeStatus(USERNAME);
 
         verify(traineeRepository).save(traineeCaptor.capture());
         assertTrue(traineeCaptor.getValue().isActive());
@@ -227,7 +227,7 @@ class TraineeServiceTest {
     @ParameterizedTest
     @NullSource
     void toggleStatus_shouldThrowNullPointerException_whenArgumentNull(String username) {
-        assertThrows(NullPointerException.class, () -> testObject.toggleStatus(username));
+        assertThrows(NullPointerException.class, () -> testObject.changeStatus(username));
 
         assertNoUnexpectedInteractions();
     }

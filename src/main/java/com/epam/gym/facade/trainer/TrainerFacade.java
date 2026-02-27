@@ -30,7 +30,7 @@ public class TrainerFacade implements ITrainerFacade {
     public TrainerResponse getProfile(@NonNull String username) {
         log.info("Get trainer. Started. Username={}", username);
         var trainer = trainerService.getByUsername(username);
-        var response = buildTrainerResponse(username, trainer);
+        var response = buildTrainerResponse(trainer);
         log.info("Get trainer. Finished. Response={}", response);
         return response;
     }
@@ -45,7 +45,7 @@ public class TrainerFacade implements ITrainerFacade {
             .lastName(request.lastName())
             .build();
         var trainer = trainerService.update(dto);
-        var response = buildTrainerResponse(dto.username(), trainer);
+        var response = buildTrainerResponse(trainer);
         log.info("Update trainer. Finished. Response={}", response);
         return response;
     }
@@ -58,14 +58,14 @@ public class TrainerFacade implements ITrainerFacade {
         log.info("Change trainer status. Finished. Username={}, status={}", username, active);
     }
 
-    private TrainerResponse buildTrainerResponse(String username, Trainer trainer) {
+    private TrainerResponse buildTrainerResponse(Trainer trainer) {
         return TrainerResponse.builder()
             .username(trainer.getUsername())
             .firstName(trainer.getFirstName())
             .lastName(trainer.getLastName())
             .specialization(trainer.getSpecialization().getName())
             .active(trainer.isActive())
-            .trainees(buildTraineesList(username))
+            .trainees(buildTraineesList(trainer.getUsername()))
             .build();
     }
 

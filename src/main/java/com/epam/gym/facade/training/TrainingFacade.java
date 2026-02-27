@@ -70,7 +70,7 @@ public class TrainingFacade implements ITrainingFacade {
                 .trainerUsername(trainersMap.get(item.getTrainerUid()))
                 .build())
             .toList();
-        log.info("Get trainee trainings. Finished. Found {} records: \n{}", response.size(), response);
+        log.info("Get trainee trainings. Finished. Found {} records: {}", response.size(), response);
         return response;
     }
 
@@ -96,7 +96,7 @@ public class TrainingFacade implements ITrainingFacade {
                 .traineeUsername(traineesMap.get(item.getTraineeUid()))
                 .build())
             .toList();
-        log.info("Get trainer trainings. Finished. Found {} records: \n{}", response.size(), response);
+        log.info("Get trainer trainings. Finished. Found {} records: {}", response.size(), response);
         return response;
     }
 

@@ -27,7 +27,7 @@ public interface ITraineeEntityAssignmentTrainerEntityRepository extends JpaRepo
     @Query("""
         SELECT tte.trainer FROM TraineeTrainerEntity tte
         JOIN FETCH tte.trainer.user
-        WHERE tte.trainer.user.username = :traineeUsername
+        WHERE tte.trainee.user.username = :traineeUsername
         """)
     List<TrainerEntity> getAssignedTrainers(@Param("traineeUsername") @NonNull String traineeUsername);
 

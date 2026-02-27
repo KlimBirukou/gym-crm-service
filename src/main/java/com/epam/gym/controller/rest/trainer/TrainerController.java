@@ -47,6 +47,6 @@ public class TrainerController {
         @RequestParam Boolean active
     ) {
         trainerFacade.changeStatus(username, active);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

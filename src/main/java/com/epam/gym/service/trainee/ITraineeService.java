@@ -13,11 +13,11 @@ public interface ITraineeService {
 
     Trainee create(@NonNull CreateTraineeDto dto);
 
-    void update(@NonNull UpdateTraineeDto dto);
+    Trainee update(@NonNull UpdateTraineeDto dto);
 
     void changePassword(@NonNull ChangePasswordDto dto);
 
-    void toggleStatus(@NonNull String username);
+    void changeStatus(@NonNull String username, boolean status);
 
     void delete(@NonNull String username);
 
