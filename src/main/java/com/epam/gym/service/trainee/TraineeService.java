@@ -30,17 +30,19 @@ public class TraineeService implements ITraineeService {
     @Override
     @Transactional
     public Trainee create(@NonNull CreateTraineeDto dto) {
+        var password = passwordGenerator.generate();
         var trainee = Trainee.builder()
             .uid(UUID.randomUUID())
             .firstName(dto.firstName())
             .lastName(dto.lastName())
             .username(usernameGenerator.generate(dto.firstName(), dto.lastName()))
-            .password(passwordService.hashPassword(passwordGenerator.generate()))
+            .password(passwordService.hashPassword(password))
             .birthdate(dto.birthdate())
             .address(dto.address())
             .active(true)
             .build();
         traineeRepository.save(trainee);
+        trainee.setPassword(password);
         return trainee;
     }
 

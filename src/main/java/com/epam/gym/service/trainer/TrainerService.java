@@ -32,16 +32,18 @@ public class TrainerService implements ITrainerService {
     @Override
     @Transactional
     public Trainer create(@NonNull CreateTrainerDto dto) {
+        var password = passwordGenerator.generate();
         var trainer = Trainer.builder()
             .uid(UUID.randomUUID())
             .firstName(dto.firstName())
             .lastName(dto.lastName())
             .username(usernameGenerator.generate(dto.firstName(), dto.lastName()))
-            .password(passwordService.hashPassword(passwordGenerator.generate()))
+            .password(passwordService.hashPassword(password))
             .specialization(trainingTypeService.getByName(dto.specialization()))
             .active(true)
             .build();
         trainerRepository.save(trainer);
+        trainer.setPassword(password);
         return trainer;
     }
 
