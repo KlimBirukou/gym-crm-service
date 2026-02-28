@@ -30,12 +30,12 @@ public class TraineeAssignmentTrainerService implements ITraineeAssignmentTraine
         if (!trainee.isActive()) {
             throw new TraineeNotActiveException(trainee.getUsername());
         }
-        /*var trainer = trainerService.getByUsername(trainerUsername);
+        var trainer = trainerService.getByUsername(trainerUsername);
         if (!trainer.isActive()) {
             throw new TrainerNotActiveException(trainer.getUsername());
         }
         checkAssignExist(traineeUsername, trainerUsername);
-        traineeAssignmentTrainerRepository.assign(trainee, trainer);*/
+        traineeAssignmentTrainerRepository.assign(trainee, trainer);
     }
 
     @Override
@@ -48,19 +48,17 @@ public class TraineeAssignmentTrainerService implements ITraineeAssignmentTraine
 
     @Override
     @Transactional(readOnly = true)
-    public List<Trainee> getAssignedTrainees(@NonNull String trainerUsername) {
-        return traineeAssignmentTrainerRepository.getAssignedTrainees(trainerUsername);
+    public List<Trainee> getTrainees(@NonNull String trainerUsername,
+                                     @NonNull Boolean assigned,
+                                     @NonNull Boolean active) {
+        return traineeAssignmentTrainerRepository.getTrainees(trainerUsername, assigned, active);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Trainer> getAssignedTrainers(@NonNull String traineeUsername) {
-        return traineeAssignmentTrainerRepository.getAssignedTrainers(traineeUsername);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<Trainer> getUnassignedTrainers(@NonNull String traineeUsername) {
-        return traineeAssignmentTrainerRepository.getUnassignedTrainers(traineeUsername);
+    public List<Trainer> getTrainers(@NonNull String traineeUsername,
+                                     @NonNull Boolean assigned,
+                                     @NonNull Boolean active) {
+        return traineeAssignmentTrainerRepository.getTrainer(traineeUsername, assigned, active);
     }
 }

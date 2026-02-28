@@ -1,9 +1,10 @@
 package com.epam.gym.facade.trainee;
 
 import com.epam.gym.controller.rest.trainee.dto.request.UpdateTraineeRequest;
-import com.epam.gym.controller.rest.trainee.dto.response.ShortTrainerProfileResponse;
+import com.epam.gym.controller.rest.trainee.dto.response.TrainerProfileResponse;
 import com.epam.gym.controller.rest.trainee.dto.response.TraineeResponse;
 import com.epam.gym.domain.user.Trainee;
+import com.epam.gym.domain.user.Trainer;
 import com.epam.gym.service.assignment.ITraineeAssignmentTrainerService;
 import com.epam.gym.service.trainee.TraineeService;
 import com.epam.gym.service.trainee.dto.UpdateTraineeDto;
@@ -35,6 +36,14 @@ public class TraineeFacade implements ITraineeFacade {
         return response;
     }
 
+    @Override
+    public List<TrainerProfileResponse> getTrainers(@NonNull String username, @NonNull Boolean assigned) {
+        log.info("Get trainers: username={}, assigned={}", username, assigned);
+        var trainers = assignmentService.getTrainers(username, assigned, true);
+        var response = mapToTrainerProfiles(trainers);
+        log.info("Found {} trainers: username={}, assigned={}", response.size(), username, assigned);
+        return response;
+    }
 
     @Override
     @Transactional
@@ -77,14 +86,18 @@ public class TraineeFacade implements ITraineeFacade {
             .birthdate(trainee.getBirthdate())
             .address(trainee.getAddress())
             .active(trainee.isActive())
-            .trainers(buildTrainersList(trainee.getUsername()))
+            .trainers(getAssignedActiveTrainers(trainee.getUsername()))
             .build();
     }
 
-    private List<ShortTrainerProfileResponse> buildTrainersList(String username) {
-        return assignmentService.getAssignedTrainers(username)
-            .stream()
-            .map(trainer -> conversionService.convert(trainer, ShortTrainerProfileResponse.class))
+    private List<TrainerProfileResponse> getAssignedActiveTrainers(String username) {
+        var trainers = assignmentService.getTrainers(username, true, true);
+        return mapToTrainerProfiles(trainers);
+    }
+
+    private List<TrainerProfileResponse> mapToTrainerProfiles(List<Trainer> trainers) {
+        return trainers.stream()
+            .map(trainer -> conversionService.convert(trainer, TrainerProfileResponse.class))
             .toList();
     }
 }

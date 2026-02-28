@@ -1,8 +1,9 @@
 package com.epam.gym.facade.trainer;
 
 import com.epam.gym.controller.rest.trainer.dto.request.UpdateTrainerRequest;
-import com.epam.gym.controller.rest.trainer.dto.response.ShortUserProfileResponse;
+import com.epam.gym.controller.rest.trainer.dto.response.TraineeProfileResponse;
 import com.epam.gym.controller.rest.trainer.dto.response.TrainerResponse;
+import com.epam.gym.domain.user.Trainee;
 import com.epam.gym.domain.user.Trainer;
 import com.epam.gym.service.assignment.ITraineeAssignmentTrainerService;
 import com.epam.gym.service.trainer.ITrainerService;
@@ -65,14 +66,18 @@ public class TrainerFacade implements ITrainerFacade {
             .lastName(trainer.getLastName())
             .specialization(trainer.getSpecialization().getName())
             .active(trainer.isActive())
-            .trainees(buildTraineesList(trainer.getUsername()))
+            .trainees(getAssignedActiveTrainees(trainer.getUsername()))
             .build();
     }
 
-    private List<ShortUserProfileResponse> buildTraineesList(String username) {
-        return assignmentService.getAssignedTrainees(username)
-            .stream()
-            .map(trainee -> conversionService.convert(trainee, ShortUserProfileResponse.class))
+    private List<TraineeProfileResponse> getAssignedActiveTrainees(String username) {
+        var trainees = assignmentService.getTrainees(username, true, true);
+        return mapToTraineeProfile(trainees);
+    }
+
+    private List<TraineeProfileResponse> mapToTraineeProfile(List<Trainee> trainees) {
+        return trainees.stream()
+            .map(trainee -> conversionService.convert(trainee, TraineeProfileResponse.class))
             .toList();
     }
 }

@@ -1,6 +1,7 @@
 package com.epam.gym.controller.rest.trainee;
 
 import com.epam.gym.controller.rest.trainee.dto.request.UpdateTraineeRequest;
+import com.epam.gym.controller.rest.trainee.dto.response.TrainerProfileResponse;
 import com.epam.gym.controller.rest.trainee.dto.response.TraineeResponse;
 import com.epam.gym.facade.trainee.ITraineeFacade;
 import jakarta.validation.Valid;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/trainee")
 @RequiredArgsConstructor
@@ -31,6 +34,15 @@ public class TraineeController {
     ) {
         var trainee = traineeFacade.getProfile(username);
         return ResponseEntity.ok(trainee);
+    }
+
+    @GetMapping("/{username}/trainers")
+    public ResponseEntity<@NonNull List<TrainerProfileResponse>> getTrainers(
+        @PathVariable String username,
+        @RequestParam Boolean assigned
+    ) {
+        var trainers = traineeFacade.getTrainers(username, assigned);
+        return ResponseEntity.ok(trainers);
     }
 
     @PutMapping("/{username}")
@@ -58,5 +70,4 @@ public class TraineeController {
         traineeFacade.delete(username);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
-
 }

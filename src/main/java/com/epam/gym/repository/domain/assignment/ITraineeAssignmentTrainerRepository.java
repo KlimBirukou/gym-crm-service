@@ -12,9 +12,11 @@ public interface ITraineeAssignmentTrainerRepository {
 
     boolean checkAssign(@NonNull String traineeUsername, @NonNull String trainerUsername);
 
-    List<Trainee> getAssignedTrainees(@NonNull String trainerUsername);
+    List<Trainee> getTrainees(@NonNull String trainerUsername,
+                             @NonNull Boolean assigned,
+                             @NonNull Boolean active);
 
-    List<Trainer> getAssignedTrainers(@NonNull String traineeUsername);
-
-    List<Trainer> getUnassignedTrainers(@NonNull String traineeUsername);
+    List<Trainer> getTrainer(@NonNull String traineeUsername,
+                             @NonNull Boolean assigned,
+                             @NonNull Boolean active);
 }

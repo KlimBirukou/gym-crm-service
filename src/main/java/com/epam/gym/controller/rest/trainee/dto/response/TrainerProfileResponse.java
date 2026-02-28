@@ -4,7 +4,7 @@ import lombok.Builder;
 import lombok.NonNull;
 
 @Builder
-public record ShortTrainerProfileResponse(
+public record TrainerProfileResponse(
 
     @NonNull String username,
     @NonNull String firstName,

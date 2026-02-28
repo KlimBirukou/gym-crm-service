@@ -15,6 +15,6 @@ public record TraineeResponse(
     @NonNull LocalDate birthdate,
     @NonNull String address,
     @NonNull Boolean active,
-    @NonNull List<ShortTrainerProfileResponse> trainers
+    @NonNull List<TrainerProfileResponse> trainers
 ) {
 }

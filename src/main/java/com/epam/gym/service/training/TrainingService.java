@@ -3,7 +3,6 @@ package com.epam.gym.service.training;
 import com.epam.gym.domain.training.Training;
 import com.epam.gym.domain.user.Trainee;
 import com.epam.gym.domain.user.Trainer;
-import com.epam.gym.exception.conflict.DateConflictException;
 import com.epam.gym.exception.conflict.TraineeDateConflictException;
 import com.epam.gym.exception.conflict.TrainerDateConflictException;
 import com.epam.gym.exception.not.active.TraineeNotActiveException;

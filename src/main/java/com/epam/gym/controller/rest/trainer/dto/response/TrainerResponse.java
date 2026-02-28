@@ -13,6 +13,6 @@ public record TrainerResponse(
     @NonNull String lastName,
     @NonNull String specialization,
     @NonNull Boolean active,
-    @NonNull List<ShortUserProfileResponse> trainees
+    @NonNull List<TraineeProfileResponse> trainees
 ) {
 }
