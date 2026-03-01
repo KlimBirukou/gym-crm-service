@@ -1,4 +1,4 @@
-package com.epam.gym.exception.conflict;
+package com.epam.gym.exception.conflict.date;
 
 import com.epam.gym.domain.user.Trainee;
 

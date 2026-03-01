@@ -3,10 +3,11 @@ package com.epam.gym.service.training;
 import com.epam.gym.domain.training.Training;
 import com.epam.gym.domain.user.Trainee;
 import com.epam.gym.domain.user.Trainer;
-import com.epam.gym.exception.conflict.TraineeDateConflictException;
-import com.epam.gym.exception.conflict.TrainerDateConflictException;
+import com.epam.gym.exception.conflict.date.TraineeDateConflictException;
+import com.epam.gym.exception.conflict.date.TrainerDateConflictException;
 import com.epam.gym.exception.not.active.TraineeNotActiveException;
 import com.epam.gym.exception.not.active.TrainerNotActiveException;
+import com.epam.gym.exception.not.assigned.NotAssignmentException;
 import com.epam.gym.repository.domain.training.ITrainingRepository;
 import com.epam.gym.service.assignment.ITraineeAssignmentTrainerService;
 import com.epam.gym.service.trainee.ITraineeService;
@@ -44,7 +45,9 @@ public class TrainingService implements ITrainingService {
         if (!trainer.isActive()) {
             throw new TrainerNotActiveException(trainer.getUsername());
         }
-        traineeAssignmentTrainerService.checkAssignExist(dto.traineeUsername(), dto.trainerUsername());
+        if (traineeAssignmentTrainerService.checkAssignExist(dto.traineeUsername(), dto.trainerUsername())) {
+            throw new NotAssignmentException(dto.trainerUsername(), dto.traineeUsername());
+        }
         validateDateAvailability(dto, trainee, trainer);
         var uid = UUID.randomUUID();
         var training = Training.builder()

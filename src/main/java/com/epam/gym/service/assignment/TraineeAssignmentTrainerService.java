@@ -2,6 +2,7 @@ package com.epam.gym.service.assignment;
 
 import com.epam.gym.domain.user.Trainee;
 import com.epam.gym.domain.user.Trainer;
+import com.epam.gym.exception.conflict.assignment.AlreadyAssignedException;
 import com.epam.gym.exception.not.active.TraineeNotActiveException;
 import com.epam.gym.exception.not.active.TrainerNotActiveException;
 import com.epam.gym.exception.not.assigned.NotAssignmentException;
@@ -34,16 +35,16 @@ public class TraineeAssignmentTrainerService implements ITraineeAssignmentTraine
         if (!trainer.isActive()) {
             throw new TrainerNotActiveException(trainer.getUsername());
         }
-        checkAssignExist(traineeUsername, trainerUsername);
+        if (checkAssignExist(traineeUsername, trainerUsername)) {
+            throw new AlreadyAssignedException(traineeUsername, trainerUsername);
+        }
         traineeAssignmentTrainerRepository.assign(trainee, trainer);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public void checkAssignExist(@NonNull String traineeUsername, @NonNull String trainerUsername) {
-        if (!traineeAssignmentTrainerRepository.checkAssign(traineeUsername, trainerUsername)) {
-            throw new NotAssignmentException(trainerUsername, traineeUsername);
-        }
+    public boolean checkAssignExist(@NonNull String traineeUsername, @NonNull String trainerUsername) {
+        return traineeAssignmentTrainerRepository.checkAssign(traineeUsername, trainerUsername);
     }
 
     @Override

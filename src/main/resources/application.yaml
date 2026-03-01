@@ -8,6 +8,8 @@ spring:
     training:
       min-days: 1
       max-month: 3
+  jackson:
+    property-naming-strategy: SNAKE_CASE
 
   datasource:
     url: jdbc:postgresql://localhost:5432/gym_db?currentSchema=gym_schema

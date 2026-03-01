@@ -1,6 +1,7 @@
 package com.epam.gym.controller.advice;
 
-import com.epam.gym.exception.conflict.DateConflictException;
+import com.epam.gym.exception.conflict.assignment.AlreadyAssignedException;
+import com.epam.gym.exception.conflict.date.DateConflictException;
 import com.epam.gym.exception.not.active.NotActiveException;
 import com.epam.gym.exception.not.assigned.NotAssignmentException;
 import com.epam.gym.exception.not.found.NotFoundException;
@@ -34,6 +35,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler
     public ResponseEntity<@NonNull Object> handleException(DateConflictException exception, WebRequest request) {
+        var status = HttpStatus.CONFLICT;
+        var errorDto = ErrorDto.builder()
+            .error(status.name())
+            .description(exception.getMessage())
+            .build();
+        return super.handleExceptionInternal(exception, errorDto, new HttpHeaders(), status, request);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<@NonNull Object> handleException(AlreadyAssignedException exception, WebRequest request) {
         var status = HttpStatus.CONFLICT;
         var errorDto = ErrorDto.builder()
             .error(status.name())

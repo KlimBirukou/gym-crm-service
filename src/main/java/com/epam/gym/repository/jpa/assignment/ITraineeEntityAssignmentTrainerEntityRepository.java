@@ -23,20 +23,14 @@ public interface ITraineeEntityAssignmentTrainerEntityRepository
         SELECT te
         FROM TraineeEntity te
         JOIN FETCH te.user u
-        WHERE (
-            (:assigned = TRUE
-                AND EXISTS
-                    (SELECT 1
-                    FROM TraineeTrainerEntity tte
-                    WHERE tte.trainee = te
-                        AND tte.trainer.user.username = :trainerUsername))
-            OR (:assigned = FALSE
-                AND NOT EXISTS
-                    (SELECT 1
-                    FROM TraineeTrainerEntity tte
-                    WHERE tte.trainer.user.username = :trainerUsername))
-        )
-        AND (:active = FALSE OR u.active = TRUE)
+        LEFT JOIN TraineeTrainerEntity tte
+             ON tte.trainee = te
+             AND tte.trainer.user.username = :trainerUsername
+             WHERE (
+                 (:assigned = TRUE AND tte.trainer IS NOT NULL)
+                 OR
+                 (:assigned = FALSE AND tte.trainer IS NULL))
+        AND u.active = :active
         """)
     List<TraineeEntity> getTrainees(
         @Param("trainerUsername") @NonNull String trainerUsername,
@@ -49,21 +43,14 @@ public interface ITraineeEntityAssignmentTrainerEntityRepository
         FROM TrainerEntity tr
         JOIN FETCH tr.user u
         JOIN FETCH tr.specialization
-        WHERE (
-            (:assigned = TRUE
-                AND EXISTS
-                    (SELECT 1
-                    FROM TraineeTrainerEntity tte
-                    WHERE tte.trainer = tr
-                        AND tte.trainee.user.username = : traineeUsername))
-            OR (:assigned = FALSE
-                AND NOT EXISTS
-                    (SELECT 1
-                    FROM TraineeTrainerEntity tte
-                    WHERE tte.trainer = tr
-                        AND tte.trainee.user.username = :traineeUsername))
-        )
-        AND (:active = FALSE OR u.active = TRUE)
+        LEFT JOIN TraineeTrainerEntity tte
+             ON tte.trainer = tr
+             AND tte.trainee.user.username = :traineeUsername
+             WHERE (
+                 (:assigned = TRUE AND tte.trainee IS NOT NULL)
+                 OR
+                 (:assigned = FALSE AND tte.trainee IS NULL))
+        AND u.active = :active
         """)
     List<TrainerEntity> getTrainers(
         @Param("traineeUsername") @NonNull String traineeUsername,
