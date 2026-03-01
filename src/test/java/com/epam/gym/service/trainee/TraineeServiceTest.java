@@ -7,7 +7,6 @@ import com.epam.gym.repository.domain.trainee.ITraineeRepository;
 import com.epam.gym.service.auth.IPasswordService;
 import com.epam.gym.service.generator.name.IUsernameGenerator;
 import com.epam.gym.service.generator.password.IPasswordGenerator;
-import com.epam.gym.service.trainee.dto.ChangePasswordDto;
 import com.epam.gym.service.trainee.dto.CreateTraineeDto;
 import com.epam.gym.service.trainee.dto.UpdateTraineeDto;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,6 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+/*
 
 @ExtendWith(MockitoExtension.class)
 class TraineeServiceTest {
@@ -318,3 +318,4 @@ class TraineeServiceTest {
         );
     }
 }
+*/

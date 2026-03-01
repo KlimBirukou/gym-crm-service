@@ -1,5 +1,6 @@
 package com.epam.gym.controller.rest.auth;
 
+import com.epam.gym.controller.rest.auth.dto.request.ChangePasswordRequest;
 import com.epam.gym.controller.rest.auth.dto.request.LoginRequest;
 import com.epam.gym.controller.rest.auth.dto.request.RegisterTraineeRequest;
 import com.epam.gym.controller.rest.auth.dto.request.RegisterTrainerRequest;
@@ -10,8 +11,8 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -47,5 +48,13 @@ public class AuthController {
         return result
             ? ResponseEntity.status(HttpStatus.OK).build()
             : ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    @PutMapping("/change-password")
+    public ResponseEntity<@NonNull Void> changePassword(
+        @Valid @RequestBody ChangePasswordRequest request
+    ) {
+        authFacade.changePassword(request);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

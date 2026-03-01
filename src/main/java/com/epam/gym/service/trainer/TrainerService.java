@@ -7,7 +7,6 @@ import com.epam.gym.service.generator.name.IUsernameGenerator;
 import com.epam.gym.service.generator.password.IPasswordGenerator;
 import com.epam.gym.domain.user.Trainer;
 import com.epam.gym.repository.domain.trainer.ITrainerRepository;
-import com.epam.gym.service.trainer.dto.ChangePasswordDto;
 import com.epam.gym.service.trainer.dto.CreateTrainerDto;
 import com.epam.gym.service.trainer.dto.UpdateTrainerDto;
 import com.epam.gym.service.type.ITrainingTypeService;
@@ -55,25 +54,6 @@ public class TrainerService implements ITrainerService {
         trainer.setLastName(dto.lastName());
         trainerRepository.update(trainer);
         return trainer;
-    }
-
-    @Override
-    @Transactional
-    public void changePassword(@NonNull ChangePasswordDto dto) {
-        var trainer = getByUsername(dto.username());
-        if (!passwordService.checkPassword(dto.oldPassword(), trainer.getPassword())) {
-            throw new AuthException();
-        }
-        trainer.setPassword(passwordService.hashPassword(dto.newPassword()));
-        trainerRepository.update(trainer);
-    }
-
-    @Override
-    @Transactional
-    public void changeStatus(@NonNull String username, boolean status) {
-        var trainer = getByUsername(username);
-        trainer.setActive(status);
-        trainerRepository.update(trainer);
     }
 
     @Override

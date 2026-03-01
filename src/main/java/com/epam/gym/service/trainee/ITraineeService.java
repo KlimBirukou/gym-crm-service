@@ -1,7 +1,6 @@
 package com.epam.gym.service.trainee;
 
 import com.epam.gym.domain.user.Trainee;
-import com.epam.gym.service.trainee.dto.ChangePasswordDto;
 import com.epam.gym.service.trainee.dto.CreateTraineeDto;
 import com.epam.gym.service.trainee.dto.UpdateTraineeDto;
 import lombok.NonNull;
@@ -14,10 +13,6 @@ public interface ITraineeService {
     Trainee create(@NonNull CreateTraineeDto dto);
 
     Trainee update(@NonNull UpdateTraineeDto dto);
-
-    void changePassword(@NonNull ChangePasswordDto dto);
-
-    void changeStatus(@NonNull String username, boolean status);
 
     void delete(@NonNull String username);
 

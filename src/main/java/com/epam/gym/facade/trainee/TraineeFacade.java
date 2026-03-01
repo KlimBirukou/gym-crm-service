@@ -8,6 +8,7 @@ import com.epam.gym.domain.user.Trainer;
 import com.epam.gym.service.assignment.ITraineeAssignmentTrainerService;
 import com.epam.gym.service.trainee.TraineeService;
 import com.epam.gym.service.trainee.dto.UpdateTraineeDto;
+import com.epam.gym.service.user.IUserService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +26,7 @@ public class TraineeFacade implements ITraineeFacade {
     private final ITraineeAssignmentTrainerService assignmentService;
     private final TraineeService traineeService;
     private final ConversionService conversionService;
+    private final IUserService userService;
 
     @Override
     @Transactional(readOnly = true)
@@ -66,7 +68,7 @@ public class TraineeFacade implements ITraineeFacade {
     @Transactional
     public void changeStatus(@NonNull String username, boolean active) {
         log.info("Change trainee status. Started. Username={}, status={}", username, active);
-        traineeService.changeStatus(username, active);
+        userService.changeStatus(username, active);
         log.info("Change trainee status. Finished. Username={}, status={}", username, active);
     }
 

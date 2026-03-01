@@ -1,5 +1,6 @@
 package com.epam.gym.facade.auth;
 
+import com.epam.gym.controller.rest.auth.dto.request.ChangePasswordRequest;
 import com.epam.gym.controller.rest.auth.dto.request.LoginRequest;
 import com.epam.gym.controller.rest.auth.dto.request.RegisterTraineeRequest;
 import com.epam.gym.controller.rest.auth.dto.request.RegisterTrainerRequest;
@@ -15,4 +16,6 @@ public interface IAuthFacade {
     boolean login(@NonNull LoginRequest request);
 
     void logout();
+
+    void changePassword(@NonNull ChangePasswordRequest request);
 }

@@ -1,30 +1,5 @@
 package com.epam.gym.service.trainer;
 
-import com.epam.gym.domain.training.TrainingType;
-import com.epam.gym.domain.user.Trainer;
-import com.epam.gym.exception.AuthException;
-import com.epam.gym.exception.not.found.TrainerNotFoundException;
-import com.epam.gym.repository.domain.trainer.ITrainerRepository;
-import com.epam.gym.service.auth.IPasswordService;
-import com.epam.gym.service.generator.name.IUsernameGenerator;
-import com.epam.gym.service.generator.password.IPasswordGenerator;
-import com.epam.gym.service.trainer.dto.ChangePasswordDto;
-import com.epam.gym.service.trainer.dto.CreateTrainerDto;
-import com.epam.gym.service.trainer.dto.UpdateTrainerDto;
-import com.epam.gym.service.type.ITrainingTypeService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullSource;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.Optional;
-import java.util.UUID;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -33,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 /*
 @ExtendWith(MockitoExtension.class)
