@@ -5,7 +5,7 @@ import com.epam.gym.domain.user.Trainer;
 import com.epam.gym.repository.entity.TraineeEntity;
 import com.epam.gym.repository.entity.TraineeTrainerEntity;
 import com.epam.gym.repository.entity.TrainerEntity;
-import com.epam.gym.repository.jpa.assignment.ITraineeEntityAssignmentTrainerEntityRepository;
+import com.epam.gym.repository.jpa.assignment.IAssignmentRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -45,18 +45,18 @@ public class JpaTraineeAssignmentTrainerRepositoryTest {
     private static final TrainerEntity TRAINER_ENTITY_2 = new TrainerEntity();
 
     @Mock
-    private ITraineeEntityAssignmentTrainerEntityRepository repository;
+    private IAssignmentRepository repository;
     @Mock
     private ConversionService conversionService;
 
     @Captor
     private ArgumentCaptor<TraineeTrainerEntity> trainerEntityArgumentCaptor;
 
-    private JpaTraineeAssignmentTrainerRepository testObject;
+    private JpaAssignmentRepository testObject;
 
     @BeforeEach
     void setUp() {
-        testObject = new JpaTraineeAssignmentTrainerRepository(
+        testObject = new JpaAssignmentRepository(
             repository,
             conversionService
         );

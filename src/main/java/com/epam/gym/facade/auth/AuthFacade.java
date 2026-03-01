@@ -6,6 +6,7 @@ import com.epam.gym.controller.rest.auth.dto.request.RegisterTraineeRequest;
 import com.epam.gym.controller.rest.auth.dto.request.RegisterTrainerRequest;
 import com.epam.gym.controller.rest.auth.dto.response.RegistrationResponse;
 import com.epam.gym.domain.user.User;
+import com.epam.gym.exception.AuthException;
 import com.epam.gym.service.auth.IPasswordService;
 import com.epam.gym.service.trainee.ITraineeService;
 import com.epam.gym.service.trainee.dto.CreateTraineeDto;
@@ -18,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -31,6 +33,7 @@ public class AuthFacade implements IAuthFacade {
     private final ConversionService conversionService;
 
     @Override
+    @Transactional
     public RegistrationResponse registerTrainee(@NonNull RegisterTraineeRequest request) {
         log.info("Register trainee. Started. Request={}", request);
         var dto = conversionService.convert(request, CreateTraineeDto.class);
@@ -44,6 +47,7 @@ public class AuthFacade implements IAuthFacade {
     }
 
     @Override
+    @Transactional
     public RegistrationResponse registerTrainer(@NonNull RegisterTrainerRequest request) {
         log.info("Register trainer. Started. Request={}", request);
         var dto = conversionService.convert(request, CreateTrainerDto.class);
@@ -57,15 +61,20 @@ public class AuthFacade implements IAuthFacade {
     }
 
     @Override
-    public boolean login(@NonNull LoginRequest request) {
+    @Transactional
+    public void login(@NonNull LoginRequest request) {
         log.info("Login. Started. Username={}", request.username());
         // TODO implement in Spring Security module
         User user = userService.getByUsername(request.username());
-        log.info("Login. Finished. Username={}", request.username());
-        return  (passwordService.checkPassword(request.password(), user.getPassword()));
+        if (!passwordService.checkPassword(request.password(), user.getPassword())) {
+            log.info("Login. Finished. Denied. Username={}", request.username());
+            throw new AuthException();
+        }
+        log.info("Login. Finished. Successful. Username={}", request.username());
     }
 
     @Override
+    @Transactional
     public void logout() {
         log.info("Logout. Started.");
         // TODO implement in Spring Security module
@@ -73,6 +82,7 @@ public class AuthFacade implements IAuthFacade {
     }
 
     @Override
+    @Transactional
     public void changePassword(@NonNull ChangePasswordRequest request) {
         log.info("Change password. Started. Username={}", request.username());
         var dto = conversionService.convert(request, ChangePasswordDto.class);

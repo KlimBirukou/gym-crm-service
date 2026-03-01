@@ -1,14 +1,11 @@
 package com.epam.gym.controller.rest.trainee;
 
 import com.epam.gym.controller.rest.trainee.dto.request.UpdateTraineeRequest;
-import com.epam.gym.controller.rest.trainee.dto.response.TrainerProfileResponse;
 import com.epam.gym.controller.rest.trainee.dto.response.TraineeResponse;
 import com.epam.gym.facade.trainee.ITraineeFacade;
 import jakarta.validation.Valid;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -17,9 +14,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/trainee")
@@ -29,45 +25,36 @@ public class TraineeController {
     private final ITraineeFacade traineeFacade;
 
     @GetMapping("{username}")
-    public ResponseEntity<@NonNull TraineeResponse> getTrainee(
+    @ResponseStatus(HttpStatus.OK)
+    public TraineeResponse getTrainee(
         @PathVariable String username
     ) {
-        var trainee = traineeFacade.getProfile(username);
-        return ResponseEntity.ok(trainee);
-    }
-
-    @GetMapping("/{username}/trainers")
-    public ResponseEntity<@NonNull List<TrainerProfileResponse>> getTrainers(
-        @PathVariable String username,
-        @RequestParam Boolean assigned
-    ) {
-        var trainers = traineeFacade.getTrainers(username, assigned);
-        return ResponseEntity.ok(trainers);
+        return traineeFacade.getProfile(username);
     }
 
     @PutMapping("/{username}")
-    public ResponseEntity<?> updateTrainee(
+    @ResponseStatus(HttpStatus.OK)
+    public TraineeResponse updateTrainee(
         @PathVariable String username,
         @Valid @RequestBody UpdateTraineeRequest request
     ) {
-        var trainee = traineeFacade.updateTrainee(username, request);
-        return ResponseEntity.ok(trainee);
+        return traineeFacade.updateTrainee(username, request);
     }
 
     @PatchMapping("/status/{username}")
-    public ResponseEntity<@NonNull Void> toggleStatus(
+    @ResponseStatus(HttpStatus.OK)
+    public void toggleStatus(
         @PathVariable String username,
         @RequestParam Boolean active
     ) {
         traineeFacade.changeStatus(username, active);
-        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @DeleteMapping("/{username}")
-    public ResponseEntity<@NonNull Void> deleteTrainee(
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteTrainee(
         @PathVariable String username
     ) {
         traineeFacade.delete(username);
-        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

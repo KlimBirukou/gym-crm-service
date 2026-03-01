@@ -1,6 +1,5 @@
 package com.epam.gym.repository.mapper;
 
-import aQute.bnd.annotation.licenses.MPL_2_0;
 import com.epam.gym.configuration.IMapStructConfiguration;
 import com.epam.gym.repository.entity.TraineeEntity;
 import com.epam.gym.domain.user.Trainee;

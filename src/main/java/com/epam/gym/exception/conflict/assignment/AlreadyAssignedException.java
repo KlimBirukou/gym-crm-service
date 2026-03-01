@@ -1,10 +1,12 @@
 package com.epam.gym.exception.conflict.assignment;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@Getter
+@RequiredArgsConstructor
 public class AlreadyAssignedException extends RuntimeException {
 
-    public static final String MESSAGE = "Trainee [%s] already assigned to trainer [%s]";
-
-    public AlreadyAssignedException(String traineeIdentifier, String trainerIdentifier) {
-        super(MESSAGE.formatted(traineeIdentifier, trainerIdentifier));
-    }
+    private final String traineeUsername;
+    private final String trainerUsername;
 }

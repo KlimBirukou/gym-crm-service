@@ -1,6 +1,5 @@
 package com.epam.gym.service.trainer;
 
-import com.epam.gym.exception.AuthException;
 import com.epam.gym.exception.not.found.TrainerNotFoundException;
 import com.epam.gym.service.auth.IPasswordService;
 import com.epam.gym.service.generator.name.IUsernameGenerator;
@@ -49,7 +48,8 @@ public class TrainerService implements ITrainerService {
     @Override
     @Transactional
     public Trainer update(@NonNull UpdateTrainerDto dto) {
-        var trainer = getByUsername(dto.username());
+        var trainer = trainerRepository.getByUsername(dto.username())
+            .orElseThrow(() -> new TrainerNotFoundException(dto.username()));
         trainer.setFirstName(dto.firstName());
         trainer.setLastName(dto.lastName());
         trainerRepository.update(trainer);
@@ -57,14 +57,14 @@ public class TrainerService implements ITrainerService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public Trainer getByUsername(@NonNull String username) {
         return trainerRepository.getByUsername(username)
             .orElseThrow(() -> new TrainerNotFoundException(username));
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public List<Trainer> getByUids(@NonNull List<UUID> uids) {
         if (uids.isEmpty()) {
             return List.of();

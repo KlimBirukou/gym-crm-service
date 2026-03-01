@@ -30,7 +30,7 @@ public class JpaTrainingRepository implements ITrainingRepository {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public List<Training> getTraineeTrainings(@NonNull UUID traineeUid,
                                               LocalDate from,
                                               LocalDate to,
@@ -43,7 +43,7 @@ public class JpaTrainingRepository implements ITrainingRepository {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public List<Training> getTrainerTrainings(@NonNull UUID trainerUid,
                                               LocalDate from,
                                               LocalDate to,
@@ -55,7 +55,7 @@ public class JpaTrainingRepository implements ITrainingRepository {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public List<Training> getTrainingsOnDate(@NonNull LocalDate date) {
         return repository.findByDate(date).stream()
             .map(entity -> conversionService.convert(entity, Training.class))

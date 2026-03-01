@@ -13,7 +13,7 @@ public interface IAuthFacade {
 
     RegistrationResponse registerTrainer(@NonNull RegisterTrainerRequest request);
 
-    boolean login(@NonNull LoginRequest request);
+    void login(@NonNull LoginRequest request);
 
     void logout();
 

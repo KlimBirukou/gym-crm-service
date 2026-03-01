@@ -3,12 +3,13 @@ package com.epam.gym.facade.assignment;
 import com.epam.gym.controller.rest.assignment.dto.request.AssignRequest;
 import com.epam.gym.controller.rest.trainee.dto.response.TrainerProfileResponse;
 import com.epam.gym.controller.rest.trainer.dto.response.TraineeProfileResponse;
-import com.epam.gym.service.assignment.ITraineeAssignmentTrainerService;
+import com.epam.gym.service.assignment.IAssignmentService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -17,10 +18,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AssignmentFacade implements IAssignmentFacade {
 
-    private final ITraineeAssignmentTrainerService assignmentService;
+    private final IAssignmentService assignmentService;
     private final ConversionService conversionService;
 
     @Override
+    @Transactional
     public List<TraineeProfileResponse> getTrainees(@NonNull String username,
                                                     @NonNull Boolean assigned,
                                                     @NonNull Boolean active) {
@@ -34,6 +36,7 @@ public class AssignmentFacade implements IAssignmentFacade {
     }
 
     @Override
+    @Transactional
     public List<TrainerProfileResponse> getTrainers(@NonNull String username,
                                                     @NonNull Boolean assigned,
                                                     @NonNull Boolean active) {
@@ -47,6 +50,7 @@ public class AssignmentFacade implements IAssignmentFacade {
     }
 
     @Override
+    @Transactional
     public void assign(@NonNull AssignRequest request) {
         log.info("Assign. Started. Trainee username={}, trainer username={}",
             request.traineeUsername(), request.trainerUsername());

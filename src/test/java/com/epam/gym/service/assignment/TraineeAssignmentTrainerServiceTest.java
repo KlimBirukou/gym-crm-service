@@ -1,31 +1,9 @@
 package com.epam.gym.service.assignment;
 
-import com.epam.gym.domain.user.Trainee;
-import com.epam.gym.domain.user.Trainer;
-import com.epam.gym.exception.not.active.TraineeNotActiveException;
-import com.epam.gym.exception.not.active.TrainerNotActiveException;
-import com.epam.gym.exception.not.assigned.NotAssignmentException;
-import com.epam.gym.repository.domain.assignment.ITraineeAssignmentTrainerRepository;
-import com.epam.gym.service.trainee.ITraineeService;
-import com.epam.gym.service.trainer.ITrainerService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.NullSource;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.List;
-import java.util.stream.Stream;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 /*@ExtendWith(MockitoExtension.class)
 class TraineeAssignmentTrainerServiceTest {

@@ -5,7 +5,7 @@ import com.epam.gym.controller.rest.trainee.dto.response.TrainerProfileResponse;
 import com.epam.gym.controller.rest.trainee.dto.response.TraineeResponse;
 import com.epam.gym.domain.user.Trainee;
 import com.epam.gym.domain.user.Trainer;
-import com.epam.gym.service.assignment.ITraineeAssignmentTrainerService;
+import com.epam.gym.service.assignment.IAssignmentService;
 import com.epam.gym.service.trainee.TraineeService;
 import com.epam.gym.service.trainee.dto.UpdateTraineeDto;
 import com.epam.gym.service.user.IUserService;
@@ -23,27 +23,18 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TraineeFacade implements ITraineeFacade {
 
-    private final ITraineeAssignmentTrainerService assignmentService;
+    private final IAssignmentService assignmentService;
     private final TraineeService traineeService;
     private final ConversionService conversionService;
     private final IUserService userService;
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public TraineeResponse getProfile(@NonNull String username) {
         log.info("Get trainee. Started. Username={}", username);
         var trainee = traineeService.getByUsername(username);
         var response = buildTraineeResponse(trainee);
         log.info("Get trainee. Finished. Response={}", response);
-        return response;
-    }
-
-    @Override
-    public List<TrainerProfileResponse> getTrainers(@NonNull String username, @NonNull Boolean assigned) {
-        log.info("Get trainers: username={}, assigned={}", username, assigned);
-        var trainers = assignmentService.getTrainers(username, assigned, true);
-        var response = mapToTrainerProfiles(trainers);
-        log.info("Found {} trainers: username={}, assigned={}", response.size(), username, assigned);
         return response;
     }
 

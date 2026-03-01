@@ -47,7 +47,8 @@ public class TraineeService implements ITraineeService {
     @Override
     @Transactional
     public Trainee update(@NonNull UpdateTraineeDto dto) {
-        var trainee = getByUsername(dto.username());
+        var trainee = traineeRepository.getByUsername(dto.username())
+            .orElseThrow(() -> new TraineeNotFoundException(dto.username()));
         trainee.setFirstName(dto.firstName());
         trainee.setLastName(dto.lastName());
         trainee.setAddress(dto.address());
@@ -63,14 +64,14 @@ public class TraineeService implements ITraineeService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public Trainee getByUsername(@NonNull String username) {
         return traineeRepository.getByUsername(username)
             .orElseThrow(() -> new TraineeNotFoundException(username));
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public List<Trainee> getByUids(@NonNull List<UUID> uids) {
         if (uids.isEmpty()) {
             return List.of();

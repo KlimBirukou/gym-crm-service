@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface ITraineeEntityAssignmentTrainerEntityRepository
+public interface IAssignmentRepository
     extends JpaRepository<@NonNull TraineeTrainerEntity, @NonNull UUID> {
 
     boolean existsByTraineeUserUsernameAndTrainerUserUsername(@NonNull String traineeUsername,

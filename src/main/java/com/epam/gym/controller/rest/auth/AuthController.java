@@ -7,14 +7,13 @@ import com.epam.gym.controller.rest.auth.dto.request.RegisterTrainerRequest;
 import com.epam.gym.controller.rest.auth.dto.response.RegistrationResponse;
 import com.epam.gym.facade.auth.IAuthFacade;
 import jakarta.validation.Valid;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -25,36 +24,34 @@ public class AuthController {
     private final IAuthFacade authFacade;
 
     @PostMapping("/registration/trainee")
-    public ResponseEntity<@NonNull RegistrationResponse> registerTrainee(
+    @ResponseStatus(HttpStatus.CREATED)
+    public RegistrationResponse registerTrainee(
         @Valid @RequestBody RegisterTraineeRequest request
     ) {
-        var response = authFacade.registerTrainee(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return authFacade.registerTrainee(request);
     }
 
     @PostMapping("/registration/trainer")
-    public ResponseEntity<@NonNull RegistrationResponse> registerTrainer(
+    @ResponseStatus(HttpStatus.CREATED)
+    public RegistrationResponse registerTrainer(
         @Valid @RequestBody RegisterTrainerRequest request
     ) {
-        var response = authFacade.registerTrainer(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return authFacade.registerTrainer(request);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<@NonNull Void> login(
+    @ResponseStatus(HttpStatus.OK)
+    public void login(
         @Valid @RequestBody LoginRequest request
     ) {
-        var result = authFacade.login(request);
-        return result
-            ? ResponseEntity.status(HttpStatus.OK).build()
-            : ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        authFacade.login(request);
     }
 
     @PutMapping("/change-password")
-    public ResponseEntity<@NonNull Void> changePassword(
+    @ResponseStatus(HttpStatus.OK)
+    public void changePassword(
         @Valid @RequestBody ChangePasswordRequest request
     ) {
         authFacade.changePassword(request);
-        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

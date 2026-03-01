@@ -6,7 +6,7 @@ import lombok.NonNull;
 
 import java.util.List;
 
-public interface ITraineeAssignmentTrainerService {
+public interface IAssignmentService {
 
     void assign(@NonNull String traineeUsername, @NonNull String trainerUsername);
 

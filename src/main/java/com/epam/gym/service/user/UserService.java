@@ -19,7 +19,7 @@ public class UserService implements IUserService {
     private final IPasswordService passwordService;
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public User getByUsername(@NonNull String username) {
         return userRepository.getByUsername(username)
             .orElseThrow(() -> new UserNotFoundException(username));
@@ -28,7 +28,8 @@ public class UserService implements IUserService {
     @Override
     @Transactional
     public void changePassword(@NonNull ChangePasswordDto dto) {
-        var user = getByUsername(dto.username());
+        var user = userRepository.getByUsername(dto.username())
+            .orElseThrow(() -> new UserNotFoundException(dto.username()));
         if (!passwordService.checkPassword(dto.oldPassword(), user.getPassword())) {
             throw new AuthException();
         }
@@ -39,7 +40,8 @@ public class UserService implements IUserService {
     @Override
     @Transactional
     public void changeStatus(@NonNull String username, @NonNull Boolean status) {
-        var user = getByUsername(username);
+        var user = userRepository.getByUsername(username)
+            .orElseThrow(() -> new UserNotFoundException(username));
         user.setActive(status);
         userRepository.update(user);
     }

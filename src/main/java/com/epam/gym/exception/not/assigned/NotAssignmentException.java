@@ -1,10 +1,12 @@
 package com.epam.gym.exception.not.assigned;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@Getter
+@RequiredArgsConstructor
 public class NotAssignmentException extends RuntimeException {
 
-    public static final String MESSAGE = "Trainer [%s] not assigned to [%s] trainee";
-
-    public NotAssignmentException(String trainerIdentifier, String traineeIdentifier) {
-        super(MESSAGE.formatted(trainerIdentifier, traineeIdentifier));
-    }
+    private final String traineeUsername;
+    private final String trainerUsername;
 }

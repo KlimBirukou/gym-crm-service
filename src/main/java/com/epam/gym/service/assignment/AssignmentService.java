@@ -5,8 +5,7 @@ import com.epam.gym.domain.user.Trainer;
 import com.epam.gym.exception.conflict.assignment.AlreadyAssignedException;
 import com.epam.gym.exception.not.active.TraineeNotActiveException;
 import com.epam.gym.exception.not.active.TrainerNotActiveException;
-import com.epam.gym.exception.not.assigned.NotAssignmentException;
-import com.epam.gym.repository.domain.assignment.ITraineeAssignmentTrainerRepository;
+import com.epam.gym.repository.domain.assignment.IAssignmentRepository;
 import com.epam.gym.service.trainee.ITraineeService;
 import com.epam.gym.service.trainer.ITrainerService;
 import lombok.NonNull;
@@ -18,11 +17,11 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class TraineeAssignmentTrainerService implements ITraineeAssignmentTrainerService {
+public class AssignmentService implements IAssignmentService {
 
     private final ITraineeService traineeService;
     private final ITrainerService trainerService;
-    private final ITraineeAssignmentTrainerRepository traineeAssignmentTrainerRepository;
+    private final IAssignmentRepository traineeAssignmentTrainerRepository;
 
     @Override
     @Transactional
@@ -35,20 +34,20 @@ public class TraineeAssignmentTrainerService implements ITraineeAssignmentTraine
         if (!trainer.isActive()) {
             throw new TrainerNotActiveException(trainer.getUsername());
         }
-        if (checkAssignExist(traineeUsername, trainerUsername)) {
+        if (traineeAssignmentTrainerRepository.checkAssign(traineeUsername, trainerUsername)) {
             throw new AlreadyAssignedException(traineeUsername, trainerUsername);
         }
         traineeAssignmentTrainerRepository.assign(trainee, trainer);
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public boolean checkAssignExist(@NonNull String traineeUsername, @NonNull String trainerUsername) {
         return traineeAssignmentTrainerRepository.checkAssign(traineeUsername, trainerUsername);
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public List<Trainee> getTrainees(@NonNull String trainerUsername,
                                      @NonNull Boolean assigned,
                                      @NonNull Boolean active) {
@@ -56,7 +55,7 @@ public class TraineeAssignmentTrainerService implements ITraineeAssignmentTraine
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public List<Trainer> getTrainers(@NonNull String traineeUsername,
                                      @NonNull Boolean assigned,
                                      @NonNull Boolean active) {

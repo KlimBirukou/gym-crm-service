@@ -9,7 +9,7 @@ import com.epam.gym.exception.not.active.TraineeNotActiveException;
 import com.epam.gym.exception.not.active.TrainerNotActiveException;
 import com.epam.gym.exception.not.assigned.NotAssignmentException;
 import com.epam.gym.repository.domain.training.ITrainingRepository;
-import com.epam.gym.service.assignment.ITraineeAssignmentTrainerService;
+import com.epam.gym.service.assignment.IAssignmentService;
 import com.epam.gym.service.trainee.ITraineeService;
 import com.epam.gym.service.trainer.ITrainerService;
 import com.epam.gym.service.training.dto.CreateTrainingDto;
@@ -32,7 +32,7 @@ public class TrainingService implements ITrainingService {
     private final ITrainingRepository trainingRepository;
     private final ITraineeService traineeService;
     private final ITrainerService trainerService;
-    private final ITraineeAssignmentTrainerService traineeAssignmentTrainerService;
+    private final IAssignmentService traineeAssignmentTrainerService;
 
     @Override
     @Transactional
@@ -64,9 +64,8 @@ public class TrainingService implements ITrainingService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public List<Training> getTraineeTrainings(@NonNull TraineeTrainingsDto dto) {
-
         var trainee = traineeService.getByUsername(dto.username());
         return trainingRepository.getTraineeTrainings(
             trainee.getUid(),
@@ -78,9 +77,8 @@ public class TrainingService implements ITrainingService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public List<Training> getTrainerTrainings(@NonNull TrainerTrainingsDto dto) {
-
         var trainer = trainerService.getByUsername(dto.username());
         return trainingRepository.getTrainerTrainings(
             trainer.getUid(),

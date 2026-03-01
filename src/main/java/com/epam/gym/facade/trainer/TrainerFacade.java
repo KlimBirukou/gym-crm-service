@@ -5,7 +5,7 @@ import com.epam.gym.controller.rest.trainer.dto.response.TraineeProfileResponse;
 import com.epam.gym.controller.rest.trainer.dto.response.TrainerResponse;
 import com.epam.gym.domain.user.Trainee;
 import com.epam.gym.domain.user.Trainer;
-import com.epam.gym.service.assignment.ITraineeAssignmentTrainerService;
+import com.epam.gym.service.assignment.IAssignmentService;
 import com.epam.gym.service.trainer.ITrainerService;
 import com.epam.gym.service.trainer.dto.UpdateTrainerDto;
 import com.epam.gym.service.user.IUserService;
@@ -23,13 +23,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TrainerFacade implements ITrainerFacade {
 
-    private final ITraineeAssignmentTrainerService assignmentService;
+    private final IAssignmentService assignmentService;
     private final ITrainerService trainerService;
     private final ConversionService conversionService;
     private final IUserService userService;
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public TrainerResponse getProfile(@NonNull String username) {
         log.info("Get trainer. Started. Username={}", username);
         var trainer = trainerService.getByUsername(username);
