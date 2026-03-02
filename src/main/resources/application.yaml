@@ -1,22 +1,20 @@
+# Application
 spring:
   application:
     name: gym
-  validation:
-    trainee:
-      min-years: 18
-      max-years: 100
-    training:
-      min-days: 1
-      max-month: 3
+
+  # Json
   jackson:
     property-naming-strategy: SNAKE_CASE
 
+  # Database
   datasource:
     url: jdbc:postgresql://localhost:5432/gym_db?currentSchema=gym_schema
     username: gym_user
     password: HXGLca@\X$@9I$K
     driver-class-name: org.postgresql.Driver
 
+  # JPA/Hibernate
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
@@ -29,23 +27,50 @@ spring:
         jdbc:
           lob:
             non_contextual_creation: true
+      order_inserts: true
+      order_updates: true
+      batch_size: 20
 
+  # Liquibase
   liquibase:
     default-schema: gym_schema
     change-log: classpath:db/changelog/main-changelog.yaml
     enabled: true
 
-storage:
-  data:
-    trainee:
-      file: classpath:data/trainee.json
-    trainer:
-      file: classpath:data/trainer.json
-    training:
-      file: classpath:data/training.json
-
+# Actuator
 management:
   endpoints:
     web:
       exposure:
         include: "*"
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: always
+  info:
+    env:
+      enabled: true
+
+# Logging
+logging:
+  level:
+    root: INFO
+    com.epam.gym: DEBUG
+    org.hibernate.SQL: ERROR
+    org.hibernate.type.descriptor.sql.BasicBinder: ERROR
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %highlight(%-5level) %cyan(%logger{36}) - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"
+
+# Swagger/OpenApi
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+
+server:
+  servlet:
+    context-path: /api

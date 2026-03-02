@@ -20,10 +20,10 @@ public interface ITrainingEntityRepository extends JpaRepository<@NonNull Traini
             JOIN FETCH tg.trainee
             JOIN FETCH tg.trainer tr
         WHERE tg.trainee.uid = :traineeUid
-            AND (:from IS NULL OR tg.date >= :from)
-            AND (:to IS NULL OR tg.date <= :to)
-            AND (:trainerUsername IS NULL OR tr.user.username = :trainerUsername)
-            AND (:trainingTypeName IS NULL OR tg.trainingType.name = :trainingTypeName)
+            AND (tg.date >= COALESCE(:from, tg.date))
+            AND (tg.date <= COALESCE(:to, tg.date))
+            AND (tr.user.username = COALESCE(:trainerUsername, tr.user.username))
+            AND (tg.trainingType.name = COALESCE(:trainingTypeName, tg.trainingType.name))
         """)
     List<TrainingEntity> findTraineeTrainings(
         @Param("traineeUid") @NonNull UUID traineeUid,
@@ -39,9 +39,9 @@ public interface ITrainingEntityRepository extends JpaRepository<@NonNull Traini
             JOIN FETCH tg.trainee te
             JOIN FETCH tg.trainer
         WHERE tg.trainer.uid = :trainerUid
-            AND (:from IS NULL OR tg.date >= :from)
-            AND (:to IS NULL OR tg.date <= :to)
-            AND (:traineeUsername IS NULL OR te.user.username = :traineeUsername)
+            AND (tg.date >= COALESCE(:from, tg.date))
+            AND (tg.date <= COALESCE(:to, tg.date))
+            AND (te.user.username = COALESCE(:traineeUsername, te.user.username))
         """)
     List<TrainingEntity> findTrainerTrainings(
         @Param("trainerUid") @NonNull UUID trainerUid,

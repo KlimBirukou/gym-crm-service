@@ -51,6 +51,7 @@ public class AssignmentService implements IAssignmentService {
     public List<Trainee> getTrainees(@NonNull String trainerUsername,
                                      @NonNull Boolean assigned,
                                      @NonNull Boolean active) {
+        trainerService.getByUsername(trainerUsername);
         return traineeAssignmentTrainerRepository.getTrainees(trainerUsername, assigned, active);
     }
 
@@ -59,6 +60,7 @@ public class AssignmentService implements IAssignmentService {
     public List<Trainer> getTrainers(@NonNull String traineeUsername,
                                      @NonNull Boolean assigned,
                                      @NonNull Boolean active) {
+        traineeService.getByUsername(traineeUsername);
         return traineeAssignmentTrainerRepository.getTrainer(traineeUsername, assigned, active);
     }
 }

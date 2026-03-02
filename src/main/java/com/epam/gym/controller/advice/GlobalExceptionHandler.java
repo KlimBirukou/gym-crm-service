@@ -50,7 +50,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<@NonNull Object> handleException(NotActiveException exception, WebRequest request) {
         var message = NOT_ACTIVE_MESSAGE.formatted(exception.getEntityName(), exception.getIdentifier());
         log.warn(message);
-        var status = HttpStatus.NOT_FOUND;
+        var status = HttpStatus.UNPROCESSABLE_CONTENT;
         var errorDto = ErrorDto.builder()
             .error(status.name())
             .description(message)
@@ -129,6 +129,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<@NonNull Object> handleGeneralException(Exception exception, WebRequest request) {
         var status = HttpStatus.INTERNAL_SERVER_ERROR;
+        log.error("Unexpected error", exception);
         var errorDto = ErrorDto.builder()
             .error(status.name())
             .description(MESSAGE_500)

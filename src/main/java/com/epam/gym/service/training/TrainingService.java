@@ -45,7 +45,7 @@ public class TrainingService implements ITrainingService {
         if (!trainer.isActive()) {
             throw new TrainerNotActiveException(trainer.getUsername());
         }
-        if (traineeAssignmentTrainerService.checkAssignExist(dto.traineeUsername(), dto.trainerUsername())) {
+        if (!traineeAssignmentTrainerService.checkAssignExist(dto.traineeUsername(), dto.trainerUsername())) {
             throw new NotAssignmentException(dto.trainerUsername(), dto.traineeUsername());
         }
         validateDateAvailability(dto, trainee, trainer);
@@ -91,7 +91,7 @@ public class TrainingService implements ITrainingService {
     private void validateDateAvailability(CreateTrainingDto dto, Trainee trainee, Trainer trainer) {
         trainingRepository.getTrainingsOnDate(dto.date())
             .forEach(training -> {
-                if (Objects.equals(training.getTrainerUid(), trainee.getUid())) {
+                if (Objects.equals(training.getTraineeUid(), trainee.getUid())) {
                     throw new TraineeDateConflictException(trainee.getUsername(), dto.date());
                 }
                 if (Objects.equals(training.getTrainerUid(), trainer.getUid())) {

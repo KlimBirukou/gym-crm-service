@@ -7,45 +7,29 @@ import com.epam.gym.controller.rest.training.dto.response.TraineeTrainingRespons
 import com.epam.gym.controller.rest.training.dto.response.TrainerTrainingsResponse;
 import com.epam.gym.controller.rest.training.dto.response.TrainingTypeResponse;
 import com.epam.gym.facade.training.ITrainingFacade;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/training")
 @RequiredArgsConstructor
-public class TrainingController {
+public class TrainingController implements ITrainingController {
 
     private final ITrainingFacade trainingFacade;
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public void createTraining(
-        @Valid @RequestBody CreateTrainingRequest request
-    ) {
+    @Override
+    public void createTraining(CreateTrainingRequest request) {
         trainingFacade.create(request);
     }
 
-    @GetMapping("/trainee/username/{username}")
-    @ResponseStatus(HttpStatus.OK)
-    public List<TraineeTrainingResponse> getTraineeTrainings(
-        @PathVariable String username,
-        @RequestParam(required = false) LocalDate from,
-        @RequestParam(required = false) LocalDate to,
-        @RequestParam(required = false) String trainerUsername,
-        @RequestParam(required = false) String trainingTypeName
-    ) {
+    @Override
+    public List<TraineeTrainingResponse> getTraineeTrainings(String username,
+                                                             LocalDate from,
+                                                             LocalDate to,
+                                                             String trainerUsername,
+                                                             String trainingTypeName) {
         var request = GetTraineeTrainingsRequest.builder()
             .username(username)
             .from(from)
@@ -56,14 +40,11 @@ public class TrainingController {
         return trainingFacade.getTraineeTrainings(request);
     }
 
-    @GetMapping("/trainer/username/{username}")
-    @ResponseStatus(HttpStatus.OK)
-    public List<TrainerTrainingsResponse> getTrainerTrainings(
-        @PathVariable String username,
-        @RequestParam(required = false) LocalDate from,
-        @RequestParam(required = false) LocalDate to,
-        @RequestParam(required = false) String traineeUsername
-    ) {
+    @Override
+    public List<TrainerTrainingsResponse> getTrainerTrainings(String username,
+                                                              LocalDate from,
+                                                              LocalDate to,
+                                                              String traineeUsername) {
         var request = GetTrainerTrainingRequest.builder()
             .username(username)
             .from(from)
@@ -73,8 +54,7 @@ public class TrainingController {
         return trainingFacade.getTrainerTrainings(request);
     }
 
-    @GetMapping("/types")
-    @ResponseStatus(HttpStatus.OK)
+    @Override
     public List<TrainingTypeResponse> getTrainingTypes() {
         return trainingFacade.getTrainingsTypes();
     }

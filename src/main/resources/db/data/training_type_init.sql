@@ -1,7 +1,6 @@
 INSERT INTO gym_schema.training_type (name) VALUES
-('Strength'),
-('Cardio'),
-('Functional'),
-('Stretching'),
-('Hiit'),
-('Circuit');
+('Martial Arts'),
+('Meditation'),
+('Fencing'),
+('Shapeshifting')
+ON CONFLICT (name) DO NOTHING;
