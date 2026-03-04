@@ -1,15 +1,42 @@
 package com.epam.gym.service.trainer;
 
+import com.epam.gym.domain.training.TrainingType;
+import com.epam.gym.domain.user.Trainer;
+import com.epam.gym.exception.not.found.TrainerNotFoundException;
+import com.epam.gym.repository.domain.trainer.ITrainerRepository;
+import com.epam.gym.service.auth.IPasswordService;
+import com.epam.gym.service.generator.name.IUsernameGenerator;
+import com.epam.gym.service.generator.password.IPasswordGenerator;
+import com.epam.gym.service.trainer.dto.CreateTrainerDto;
+import com.epam.gym.service.trainer.dto.UpdateTrainerDto;
+import com.epam.gym.service.type.ITrainingTypeService;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullSource;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Stream;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
-/*
 @ExtendWith(MockitoExtension.class)
 class TrainerServiceTest {
 
@@ -21,8 +48,6 @@ class TrainerServiceTest {
     private static final String USERNAME = "username";
     private static final String PASSWORD = "password";
     private static final String HASHED_PASSWORD = "hashed_password";
-    private static final String NEW_PASSWORD = "new_password";
-    private static final String NEW_HASHED_PASSWORD = "new_hashed_password";
     private static final String SPECIALIZATION_NAME = "specialization_name";
 
     @Mock
@@ -72,7 +97,7 @@ class TrainerServiceTest {
         assertEquals(LASTNAME, saved.getLastName());
         assertEquals(trainingType, saved.getSpecialization());
         assertEquals(USERNAME, saved.getUsername());
-        assertEquals(HASHED_PASSWORD, saved.getPassword());
+        assertEquals(PASSWORD, saved.getPassword());
         assertTrue(saved.isActive());
 
         assertNoUnexpectedInteractions();
@@ -96,7 +121,7 @@ class TrainerServiceTest {
 
         testObject.update(updateTrainerDto);
 
-        verify(trainerRepository).save(trainerCaptor.capture());
+        verify(trainerRepository).update(trainerCaptor.capture());
         var saved = trainerCaptor.getValue();
 
         assertEquals(NEW_FIRSTNAME, saved.getFirstName());
@@ -130,87 +155,6 @@ class TrainerServiceTest {
 
 
     @Test
-    void changePassword_shouldUpdatePassword_whenOldPasswordMatch() {
-        var trainee = getTrainer();
-        var changePasswordDto = getChangePasswordDto();
-        doReturn(Optional.of(trainee)).when(trainerRepository).getByUsername(USERNAME);
-        doReturn(true).when(passwordService).checkPassword(PASSWORD, HASHED_PASSWORD);
-        doReturn(NEW_HASHED_PASSWORD).when(passwordService).hashPassword(NEW_PASSWORD);
-
-        testObject.changePassword(changePasswordDto);
-
-        verify(trainerRepository).save(trainerCaptor.capture());
-        var saved = trainerCaptor.getValue();
-
-        assertEquals(NEW_HASHED_PASSWORD, saved.getPassword());
-        assertEquals(UID, saved.getUid());
-        assertEquals(USERNAME, saved.getUsername());
-        assertTrue(saved.isActive());
-
-        assertNoUnexpectedInteractions();
-    }
-
-    @Test
-    void changePassword_shouldThrowException_whenOldPasswordNotMatch() {
-        var trainee = getTrainer();
-        var changePasswordDto = getChangePasswordDto();
-        doReturn(Optional.of(trainee)).when(trainerRepository).getByUsername(USERNAME);
-        doReturn(false).when(passwordService).checkPassword(PASSWORD, HASHED_PASSWORD);
-
-        assertThrows(AuthException.class, () -> testObject.changePassword(changePasswordDto));
-
-        assertNoUnexpectedInteractions();
-    }
-
-    @ParameterizedTest
-    @NullSource
-    void changePassword_shouldThrowException_whenArgumentNull(ChangePasswordDto dto) {
-        assertThrows(NullPointerException.class, () -> testObject.changePassword(dto));
-
-        assertNoUnexpectedInteractions();
-    }
-
-
-    @Test
-    void toggleStatus_shouldDeactivate_whenTrainerIsActive() {
-        var trainee = getTrainer();
-        doReturn(Optional.of(trainee)).when(trainerRepository).getByUsername(USERNAME);
-
-        testObject.toggleStatus(USERNAME);
-
-        verify(trainerRepository).save(trainerCaptor.capture());
-        assertFalse(trainerCaptor.getValue().isActive());
-
-        assertNoUnexpectedInteractions();
-    }
-
-    @Test
-    void toggleStatus_shouldActivate_whenTrainerIsInactive() {
-        var inactiveTrainer = Trainer.builder()
-            .uid(UID)
-            .username(USERNAME)
-            .active(false)
-            .build();
-        doReturn(Optional.of(inactiveTrainer)).when(trainerRepository).getByUsername(USERNAME);
-
-        testObject.toggleStatus(USERNAME);
-
-        verify(trainerRepository).save(trainerCaptor.capture());
-        assertTrue(trainerCaptor.getValue().isActive());
-
-        assertNoUnexpectedInteractions();
-    }
-
-    @ParameterizedTest
-    @NullSource
-    void toggleStatus_shouldThrowNullPointerException_whenArgumentNull(String username) {
-        assertThrows(NullPointerException.class, () -> testObject.toggleStatus(username));
-
-        assertNoUnexpectedInteractions();
-    }
-
-
-    @Test
     void getByUsername_shouldReturnTrainer_whenTrainerExists() {
         var trainee = getTrainer();
         doReturn(Optional.of(trainee)).when(trainerRepository).getByUsername(USERNAME);
@@ -238,6 +182,47 @@ class TrainerServiceTest {
         assertNoUnexpectedInteractions();
     }
 
+    @Test
+    void getByUids_shouldReturnEmptyList_whenUidsIsEmpty() {
+        var result = testObject.getByUids(List.of());
+
+        assertTrue(result.isEmpty());
+
+        verifyNoInteractions(trainerRepository);
+        assertNoUnexpectedInteractions();
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideUidsData")
+    void getByUids_shouldReturnExpectedResult(List<UUID> uids, List<Trainer> trainees) {
+        doReturn(trainees).when(trainerRepository).findAllByUids(uids);
+
+        var result = testObject.getByUids(uids);
+
+        assertEquals(trainees.size(), result.size());
+        assertEquals(trainees, result);
+
+        assertNoUnexpectedInteractions();
+    }
+
+    @ParameterizedTest
+    @NullSource
+    void getByUids_shouldThrowNpe_whenArgumentNull(List<UUID> uids) {
+        assertThrows(NullPointerException.class, () -> testObject.getByUids(uids));
+
+        assertNoUnexpectedInteractions();
+    }
+
+    private static Stream<Arguments> provideUidsData() {
+        return Stream.of(
+            Arguments.of(List.of(UUID.randomUUID()), List.of(new Trainer())),
+            Arguments.of(
+                List.of(UUID.randomUUID(), UUID.randomUUID()),
+                List.of(new Trainer(), new Trainer())
+            )
+        );
+    }
+
     private static CreateTrainerDto getCreateTrainerDto() {
         return new CreateTrainerDto(
             FIRSTNAME, LASTNAME, SPECIALIZATION_NAME
@@ -247,12 +232,6 @@ class TrainerServiceTest {
     private static UpdateTrainerDto getUpdateTrainerDto() {
         return new UpdateTrainerDto(
             USERNAME, NEW_FIRSTNAME, NEW_LASTNAME
-        );
-    }
-
-    private static ChangePasswordDto getChangePasswordDto() {
-        return new ChangePasswordDto(
-            USERNAME, PASSWORD, NEW_PASSWORD
         );
     }
 
@@ -285,4 +264,3 @@ class TrainerServiceTest {
         );
     }
 }
-*/

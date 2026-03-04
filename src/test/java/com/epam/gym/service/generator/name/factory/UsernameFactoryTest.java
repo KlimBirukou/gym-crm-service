@@ -39,11 +39,22 @@ class UsernameFactoryTest {
         assertEquals(username, result);
     }
 
-    static Stream<Arguments> provideNullNameArguments() {
+    private static Stream<Arguments> provideNullNameArgsForShortCreate() {
         return Stream.of(
-            Arguments.of(null, LASTNAME, null),
-            Arguments.of(FIRSTNAME, null, null),
-            Arguments.of(null, null, null),
+            Arguments.of(null, LASTNAME),
+            Arguments.of(FIRSTNAME, null),
+            Arguments.of(null, null)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideNullNameArgsForShortCreate")
+    void create_TwoArgs_shouldThrowNpe_whenNamesAreNull(String firstName, String lastName) {
+        assertThrows(NullPointerException.class, () -> testObject.create(firstName, lastName));
+    }
+
+    private static Stream<Arguments> provideNullNameArgsWithSuffix() {
+        return Stream.of(
             Arguments.of(null, LASTNAME, SUFFIX_1),
             Arguments.of(FIRSTNAME, null, SUFFIX_1),
             Arguments.of(null, null, SUFFIX_1),
@@ -54,17 +65,9 @@ class UsernameFactoryTest {
     }
 
     @ParameterizedTest
-    @MethodSource("provideNullNameArguments")
-    void shouldThrowNpe_whenArgumentsAreNull_regardlessOfSuffix(String firstName, String lastName, Integer suffix) {
-        assertThrows(NullPointerException.class,
-            () -> {
-                if (Objects.isNull(suffix)) {
-                    testObject.create(firstName, lastName);
-                } else {
-                    testObject.create(firstName, lastName, suffix);
-                }
-            }
-        );
+    @MethodSource("provideNullNameArgsWithSuffix")
+    void create_ThreeArgs_shouldThrowNpe_whenNamesAreNull(String firstName, String lastName, Integer suffix) {
+        assertThrows(NullPointerException.class, () -> testObject.create(firstName, lastName, suffix));
     }
 
     static Stream<Arguments> provideBadSuffixesArguments() {

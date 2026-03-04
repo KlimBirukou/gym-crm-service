@@ -101,7 +101,7 @@ class ITrainerEntityToTrainerMapperTest {
             .specialization(specialization)
             .build();
 
-        var result = testObject.invertConvert(trainer);
+        var result = testObject.convert(trainer);
 
         assertNotNull(result);
         assertEquals(TRAINER_UID, result.getUid());
@@ -120,7 +120,7 @@ class ITrainerEntityToTrainerMapperTest {
     @ParameterizedTest
     @NullSource
     void invertConvert_shouldReturnNull_whenArgumentNull(Trainer trainer) {
-        var result = testObject.invertConvert(trainer);
+        var result = testObject.convert(trainer);
 
         assertNull(result);
     }
@@ -145,7 +145,7 @@ class ITrainerEntityToTrainerMapperTest {
 
         var domain = testObject.convert(originalEntity);
         assertNotNull(domain);
-        var resultEntity = testObject.invertConvert(domain);
+        var resultEntity = testObject.convert(domain);
 
         assertNotNull(resultEntity);
         assertEquals(originalEntity.getUid(), resultEntity.getUid());
@@ -184,7 +184,7 @@ class ITrainerEntityToTrainerMapperTest {
         when(conversionServiceAdapter.mapTrainingTypeEntityToTrainingType(any()))
             .thenReturn(originalDomain.getSpecialization());
 
-        var entity = testObject.invertConvert(originalDomain);
+        var entity = testObject.convert(originalDomain);
         var resultDomain = testObject.convert(entity);
 
         assertNotNull(resultDomain);

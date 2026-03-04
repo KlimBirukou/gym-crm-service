@@ -27,9 +27,9 @@ class ITrainingTypeEntityToTrainingTypeMapperTest {
 
     private static Stream<Arguments> provideConvertData() {
         return Stream.of(
-            Arguments.of(UUID.randomUUID(), "CARDIO"),
-            Arguments.of(UUID.randomUUID(), "YOGA"),
-            Arguments.of(UUID.randomUUID(), "STRENGTH")
+            Arguments.of(UUID.randomUUID(), "Karate"),
+            Arguments.of(UUID.randomUUID(), "Yoga"),
+            Arguments.of(UUID.randomUUID(), "Powerlifting")
         );
     }
 
@@ -50,30 +50,30 @@ class ITrainingTypeEntityToTrainingTypeMapperTest {
 
     @ParameterizedTest
     @NullSource
-    void convert_shouldThrowException_whenArgumentNull(TrainingTypeEntity entity) {
+    void convert_shouldReturnNull_whenArgumentNull(TrainingTypeEntity entity) {
         var result = testObject.convert(entity);
 
         assertNull(result);
     }
 
 
-    private static Stream<Arguments> provideInvertConvertData() {
+    private static Stream<Arguments> provideConvertBackData() {
         return Stream.of(
-            Arguments.of(UUID.randomUUID(), "CARDIO"),
-            Arguments.of(UUID.randomUUID(), "YOGA"),
-            Arguments.of(UUID.randomUUID(), "STRENGTH")
+            Arguments.of(UUID.randomUUID(), "Karate"),
+            Arguments.of(UUID.randomUUID(), "Yoga"),
+            Arguments.of(UUID.randomUUID(), "Powerlifting")
         );
     }
 
     @ParameterizedTest
-    @MethodSource("provideInvertConvertData")
-    void invertConvert_shouldMapDomainToEntity(UUID uid, String name) {
+    @MethodSource("provideConvertBackData")
+    void convert_shouldMapDomainToEntity(UUID uid, String name) {
         var domain = TrainingType.builder()
             .uid(uid)
             .name(name)
             .build();
 
-        var result = testObject.invertConvert(domain);
+        var result = testObject.convert(domain);
 
         assertNotNull(result);
         assertEquals(uid, result.getUid());
@@ -82,8 +82,8 @@ class ITrainingTypeEntityToTrainingTypeMapperTest {
 
     @ParameterizedTest
     @NullSource
-    void invertConvert_shouldThrowException_whenArgumentNull(TrainingType trainingType) {
-        var result = testObject.invertConvert(trainingType);
+    void convert_shouldReturnNull_whenDomainArgumentNull(TrainingType trainingType) {
+        var result = testObject.convert(trainingType);
 
         assertNull(result);
     }
@@ -91,8 +91,8 @@ class ITrainingTypeEntityToTrainingTypeMapperTest {
 
     private static Stream<Arguments> provideRoundtripEntityData() {
         return Stream.of(
-            Arguments.of(UUID.randomUUID(), "CARDIO"),
-            Arguments.of(UUID.randomUUID(), "YOGA")
+            Arguments.of(UUID.randomUUID(), "Karate"),
+            Arguments.of(UUID.randomUUID(), "Yoga")
         );
     }
 
@@ -106,7 +106,7 @@ class ITrainingTypeEntityToTrainingTypeMapperTest {
 
         var domain = testObject.convert(originalEntity);
         assertNotNull(domain);
-        var resultEntity = testObject.invertConvert(domain);
+        var resultEntity = testObject.convert(domain);
 
         assertEquals(originalEntity.getUid(), resultEntity.getUid());
         assertEquals(originalEntity.getName(), resultEntity.getName());
@@ -114,8 +114,8 @@ class ITrainingTypeEntityToTrainingTypeMapperTest {
 
     private static Stream<Arguments> provideRoundtripDomainData() {
         return Stream.of(
-            Arguments.of(UUID.randomUUID(), "CARDIO"),
-            Arguments.of(UUID.randomUUID(), "YOGA")
+            Arguments.of(UUID.randomUUID(), "Karate"),
+            Arguments.of(UUID.randomUUID(), "Yoga")
         );
     }
 
@@ -127,7 +127,7 @@ class ITrainingTypeEntityToTrainingTypeMapperTest {
             .name(name)
             .build();
 
-        var entity = testObject.invertConvert(originalDomain);
+        var entity = testObject.convert(originalDomain);
         var resultDomain = testObject.convert(entity);
 
         assertEquals(originalDomain.getUid(), resultDomain.getUid());

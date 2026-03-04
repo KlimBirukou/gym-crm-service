@@ -34,7 +34,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 @ExtendWith(MockitoExtension.class)
-class JpaTraineeAssignmentTrainerRepositoryTest {
+class JpaAssignmentRepositoryTest {
 
     private static final String TRAINEE_USERNAME = "trainee_username";
     private static final String TRAINER_USERNAME = "trainer_username";
@@ -100,7 +100,8 @@ class JpaTraineeAssignmentTrainerRepositoryTest {
 
     @Test
     void checkAssign_shouldReturnTrue_whenExists() {
-        doReturn(true).when(repository).existsByTraineeUserUsernameAndTrainerUserUsername(TRAINEE_USERNAME, TRAINER_USERNAME);
+        doReturn(true).when(repository)
+            .existsByTraineeUserUsernameAndTrainerUserUsername(TRAINEE_USERNAME, TRAINER_USERNAME);
 
         var result = testObject.checkAssign(TRAINEE_USERNAME, TRAINER_USERNAME);
 
@@ -151,13 +152,13 @@ class JpaTraineeAssignmentTrainerRepositoryTest {
     void getTrainees_shouldReturnConvertedList_whenRepositoryReturnsData(List<TraineeEntity> entities) {
         doReturn(entities).when(repository).getTrainees(eq(TRAINER_USERNAME), anyBoolean(), anyBoolean());
         entities.forEach(entity ->
-            doReturn(new Trainee()).when(conversionService).convert(eq(entity), eq(Trainee.class))
+            doReturn(new Trainee()).when(conversionService).convert(entity, Trainee.class)
         );
 
         var result = testObject.getTrainees(TRAINER_USERNAME, true, true);
 
         assertEquals(entities.size(), result.size());
-        verify(repository).getTrainees(eq(TRAINER_USERNAME), eq(true), eq(true));
+        verify(repository).getTrainees(TRAINER_USERNAME, true, true);
         verify(conversionService, times(entities.size())).convert(any(TraineeEntity.class), eq(Trainee.class));
 
         assertNoUnexpectedInteractions();
@@ -205,13 +206,13 @@ class JpaTraineeAssignmentTrainerRepositoryTest {
     void getTrainers_shouldReturnConvertedList_whenRepositoryReturnsData(List<TrainerEntity> entities) {
         doReturn(entities).when(repository).getTrainers(eq(TRAINEE_USERNAME), anyBoolean(), anyBoolean());
         entities.forEach(entity ->
-            doReturn(new Trainer()).when(conversionService).convert(eq(entity), eq(Trainer.class))
+            doReturn(new Trainer()).when(conversionService).convert(entity, Trainer.class)
         );
 
         var result = testObject.getTrainers(TRAINEE_USERNAME, true, true);
 
         assertEquals(entities.size(), result.size());
-        verify(repository).getTrainers(eq(TRAINEE_USERNAME), eq(true), eq(true));
+        verify(repository).getTrainers(TRAINEE_USERNAME, true, true);
         verify(conversionService, times(entities.size())).convert(any(TrainerEntity.class), eq(Trainer.class));
 
         assertNoUnexpectedInteractions();

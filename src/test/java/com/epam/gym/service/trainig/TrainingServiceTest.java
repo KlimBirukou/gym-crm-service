@@ -1,13 +1,47 @@
 package com.epam.gym.service.trainig;
 
+import com.epam.gym.domain.training.Training;
+import com.epam.gym.domain.training.TrainingType;
+import com.epam.gym.domain.user.Trainee;
+import com.epam.gym.domain.user.Trainer;
+import com.epam.gym.exception.conflict.date.TraineeDateConflictException;
+import com.epam.gym.exception.conflict.date.TrainerDateConflictException;
+import com.epam.gym.exception.not.active.TraineeNotActiveException;
+import com.epam.gym.exception.not.active.TrainerNotActiveException;
+import com.epam.gym.exception.not.assigned.NotAssignmentException;
+import com.epam.gym.repository.domain.training.ITrainingRepository;
+import com.epam.gym.service.assignment.IAssignmentService;
+import com.epam.gym.service.trainee.ITraineeService;
+import com.epam.gym.service.trainer.ITrainerService;
+import com.epam.gym.service.training.TrainingService;
+import com.epam.gym.service.training.dto.CreateTrainingDto;
+import com.epam.gym.service.training.dto.TraineeTrainingsDto;
+import com.epam.gym.service.training.dto.TrainerTrainingsDto;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullSource;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.time.Duration;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Stream;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
-
-/*
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 @ExtendWith(MockitoExtension.class)
 class TrainingServiceTest {
@@ -31,9 +65,7 @@ class TrainingServiceTest {
     @Mock
     private ITrainerService trainerService;
     @Mock
-    private ITrainingTypeService trainingTypeService;
-    @Mock
-    private ITraineeAssignmentTrainerService traineeAssignmentTrainerService;
+    private IAssignmentService assignmentService;
 
     @Captor
     private ArgumentCaptor<Training> trainingCaptor;
@@ -46,8 +78,7 @@ class TrainingServiceTest {
             trainingRepository,
             traineeService,
             trainerService,
-            trainingTypeService,
-            traineeAssignmentTrainerService
+            assignmentService
         );
     }
 
@@ -55,12 +86,10 @@ class TrainingServiceTest {
     void create_shouldCreateTraining_whenValidationPassed() {
         var trainee = getTrainee(true);
         var trainer = getTrainer(true);
-        var trainingTypeName = getTrainingType();
         var createTrainingDto = getCreateTrainingDto();
         doReturn(trainee).when(traineeService).getByUsername(TRAINEE_USERNAME);
         doReturn(trainer).when(trainerService).getByUsername(TRAINER_USERNAME);
-        doNothing().when(traineeAssignmentTrainerService).checkAssignExist(TRAINEE_USERNAME, TRAINER_USERNAME);
-        doReturn(trainingTypeName).when(trainingTypeService).getByName(TRAINING_TYPE_NAME);
+        doReturn(true).when(assignmentService).checkAssignExist(TRAINEE_USERNAME, TRAINER_USERNAME);
         doReturn(List.of()).when(trainingRepository).getTrainingsOnDate(DATE);
 
         var result = testObject.create(createTrainingDto);
@@ -73,7 +102,7 @@ class TrainingServiceTest {
         assertEquals(TRAINEE_UID, saved.getTraineeUid());
         assertEquals(TRAINER_UID, saved.getTrainerUid());
         assertEquals(TRAINING_NAME, saved.getName());
-        assertEquals(trainingTypeName, saved.getTrainingType());
+        assertEquals(getTrainingType(), saved.getTrainingType());
         assertEquals(DATE, saved.getDate());
         assertEquals(Duration.ofMinutes(DURATION_MINUTES), saved.getDuration());
 
@@ -105,72 +134,46 @@ class TrainingServiceTest {
     }
 
     @Test
-    void create_shouldThrowException_whenTrainingTypeMismatch() {
+    void create_shouldThrowException_whenNotAssigned() {
         var trainee = getTrainee(true);
-        var trainingTypeName = getTrainingType();
+        var trainer = getTrainer(true);
         var createTrainingDto = getCreateTrainingDto();
-        var wrongType = TrainingType.builder()
-            .uid(UUID.randomUUID())
-            .name("WRONG_TYPE")
-            .build();
-        var trainerWithWrongType = Trainer.builder()
-            .uid(TRAINER_UID)
-            .username(TRAINER_USERNAME)
-            .specialization(wrongType)
-            .active(true)
-            .build();
         doReturn(trainee).when(traineeService).getByUsername(TRAINEE_USERNAME);
-        doReturn(trainerWithWrongType).when(trainerService).getByUsername(TRAINER_USERNAME);
-        doNothing().when(traineeAssignmentTrainerService).checkAssignExist(TRAINEE_USERNAME, TRAINER_USERNAME);
-        doReturn(trainingTypeName).when(trainingTypeService).getByName(TRAINING_TYPE_NAME);
+        doReturn(trainer).when(trainerService).getByUsername(TRAINER_USERNAME);
+        doReturn(false).when(assignmentService).checkAssignExist(TRAINEE_USERNAME, TRAINER_USERNAME);
 
-        assertThrows(TrainingTypeMismatchException.class, () -> testObject.create(createTrainingDto));
+        assertThrows(NotAssignmentException.class, () -> testObject.create(createTrainingDto));
 
         assertNoUnexpectedInteractions();
     }
 
-    @Test
-    void create_shouldThrowException_whenTraineeDateConflict() {
-        var trainee = getTrainee(true);
-        var trainer = getTrainer(true);
-        var trainingTypeName = getTrainingType();
-        var createTrainingDto = getCreateTrainingDto();
-        var existingTraining = Training.builder()
-            .uid(UUID.randomUUID())
-            .traineeUid(TRAINEE_UID)
-            .trainerUid(UUID.randomUUID())
-            .date(DATE)
-            .build();
-        doReturn(trainee).when(traineeService).getByUsername(TRAINEE_USERNAME);
-        doReturn(trainer).when(trainerService).getByUsername(TRAINER_USERNAME);
-        doNothing().when(traineeAssignmentTrainerService).checkAssignExist(TRAINEE_USERNAME, TRAINER_USERNAME);
-        doReturn(trainingTypeName).when(trainingTypeService).getByName(TRAINING_TYPE_NAME);
-        doReturn(List.of(existingTraining)).when(trainingRepository).getTrainingsOnDate(DATE);
-
-        assertThrows(TrainingDateConflictException.class, () -> testObject.create(createTrainingDto));
-
-        assertNoUnexpectedInteractions();
+    private static Stream<Arguments> provideConflictData() {
+        return Stream.of(
+            Arguments.of(TRAINEE_UID, UUID.randomUUID(), TraineeDateConflictException.class),
+            Arguments.of(UUID.randomUUID(), TRAINER_UID, TrainerDateConflictException.class)
+        );
     }
 
-    @Test
-    void create_shouldThrowException_whenTrainerDateConflict() {
+    @ParameterizedTest
+    @MethodSource("provideConflictData")
+    void create_shouldThrowException_whenDateConflictExists(UUID traineeUid,
+                                                            UUID trainerUid,
+                                                            Class<? extends Throwable> expectedException) {
         var trainee = getTrainee(true);
         var trainer = getTrainer(true);
-        var trainingTypeName = getTrainingType();
         var createTrainingDto = getCreateTrainingDto();
         var existingTraining = Training.builder()
             .uid(UUID.randomUUID())
-            .traineeUid(UUID.randomUUID())
-            .trainerUid(TRAINER_UID)
+            .traineeUid(traineeUid)
+            .trainerUid(trainerUid)
             .date(DATE)
             .build();
         doReturn(trainee).when(traineeService).getByUsername(TRAINEE_USERNAME);
         doReturn(trainer).when(trainerService).getByUsername(TRAINER_USERNAME);
-        doNothing().when(traineeAssignmentTrainerService).checkAssignExist(TRAINEE_USERNAME, TRAINER_USERNAME);
-        doReturn(trainingTypeName).when(trainingTypeService).getByName(TRAINING_TYPE_NAME);
+        doReturn(true).when(assignmentService).checkAssignExist(TRAINEE_USERNAME, TRAINER_USERNAME);
         doReturn(List.of(existingTraining)).when(trainingRepository).getTrainingsOnDate(DATE);
 
-        assertThrows(TrainingDateConflictException.class, () -> testObject.create(createTrainingDto));
+        assertThrows(expectedException, () -> testObject.create(createTrainingDto));
 
         assertNoUnexpectedInteractions();
     }
@@ -187,42 +190,17 @@ class TrainingServiceTest {
     @Test
     void getTraineeTrainings_shouldReturnList_whenValidInput() {
         var trainee = getTrainee(true);
-        var trainingTypeName = getTrainingType();
         var training = getTraining();
-        var criteriaDto = getCriteriaDto(TRAINEE_USERNAME);
+        var criteriaDto = getTraineeTrainingsDto();
         doReturn(trainee).when(traineeService).getByUsername(TRAINEE_USERNAME);
-        doReturn(trainingTypeName).when(trainingTypeService).getByName(TRAINING_TYPE_NAME);
-        doReturn(List.of(training)).when(trainingRepository).getTraineeTrainings(TRAINEE_UID, TRAINING_TYPE_UID);
+        doReturn(List.of(training)).when(trainingRepository).getTraineeTrainings(
+            TRAINEE_UID, FROM_DATE, TO_DATE, null, TRAINING_TYPE_NAME
+        );
 
         var result = testObject.getTraineeTrainings(criteriaDto);
 
         assertEquals(1, result.size());
         assertEquals(training, result.getFirst());
-
-        assertNoUnexpectedInteractions();
-    }
-
-    @Test
-    void getTraineeTrainings_shouldFilterByDateRange_checkAllBranches() {
-        var trainee = getTrainee(true);
-        var trainingTypeName = getTrainingType();
-        var criteriaDto = getCriteriaDto(TRAINEE_USERNAME);
-        var trainingBefore = Training.builder().date(FROM_DATE.minusDays(1)).build();
-        var trainingOnStart = Training.builder().date(FROM_DATE).build();
-        var trainingInside = Training.builder().date(DATE).build();
-        var trainingOnEnd = Training.builder().date(TO_DATE).build();
-        var trainingAfter = Training.builder().date(TO_DATE.plusDays(1)).build();
-        doReturn(trainee).when(traineeService).getByUsername(TRAINEE_USERNAME);
-        doReturn(trainingTypeName).when(trainingTypeService).getByName(TRAINING_TYPE_NAME);
-        doReturn(List.of(trainingBefore, trainingOnStart, trainingInside, trainingOnEnd, trainingAfter))
-            .when(trainingRepository).getTraineeTrainings(TRAINEE_UID, TRAINING_TYPE_UID);
-
-        var result = testObject.getTraineeTrainings(criteriaDto);
-
-        assertEquals(3, result.size());
-        assertEquals(trainingOnStart, result.get(0));
-        assertEquals(trainingInside, result.get(1));
-        assertEquals(trainingOnEnd, result.get(2));
 
         assertNoUnexpectedInteractions();
     }
@@ -239,12 +217,12 @@ class TrainingServiceTest {
     @Test
     void getTrainerTrainings_shouldReturnList_whenValidInput() {
         var trainer = getTrainer(true);
-        var trainingTypeName = getTrainingType();
         var training = getTraining();
-        var criteriaDto = getCriteriaDto(TRAINER_USERNAME);
+        var criteriaDto = getTrainerTrainingsDto();
         doReturn(trainer).when(trainerService).getByUsername(TRAINER_USERNAME);
-        doReturn(trainingTypeName).when(trainingTypeService).getByName(TRAINING_TYPE_NAME);
-        doReturn(List.of(training)).when(trainingRepository).getTrainerTrainings(TRAINER_UID, TRAINING_TYPE_UID);
+        doReturn(List.of(training)).when(trainingRepository).getTrainerTrainings(
+            TRAINER_UID, FROM_DATE, TO_DATE, TRAINEE_USERNAME
+        );
 
         var result = testObject.getTrainerTrainings(criteriaDto);
 
@@ -256,7 +234,7 @@ class TrainingServiceTest {
 
     @ParameterizedTest
     @NullSource
-    void getTrainerTrainings_shouldThrowException_whenArgumentNull(TraineeTrainingsDto dto) {
+    void getTrainerTrainings_shouldThrowException_whenArgumentNull(TrainerTrainingsDto dto) {
         assertThrows(NullPointerException.class, () -> testObject.getTrainerTrainings(dto));
 
         assertNoUnexpectedInteractions();
@@ -267,9 +245,27 @@ class TrainingServiceTest {
             TRAINEE_USERNAME,
             TRAINER_USERNAME,
             TRAINING_NAME,
-            TRAINING_TYPE_NAME,
             DATE,
             DURATION_MINUTES
+        );
+    }
+
+    private static TraineeTrainingsDto getTraineeTrainingsDto() {
+        return new TraineeTrainingsDto(
+            TRAINEE_USERNAME,
+            FROM_DATE,
+            TO_DATE,
+            null,
+            TRAINING_TYPE_NAME
+        );
+    }
+
+    private static TrainerTrainingsDto getTrainerTrainingsDto() {
+        return new TrainerTrainingsDto(
+            TRAINER_USERNAME,
+            FROM_DATE,
+            TO_DATE,
+            TRAINEE_USERNAME
         );
     }
 
@@ -306,20 +302,12 @@ class TrainingServiceTest {
             .build();
     }
 
-    private static TraineeTrainingsDto getCriteriaDto(String username) {
-        return new TraineeTrainingsDto(
-            username, TRAINING_TYPE_NAME, FROM_DATE, TO_DATE
-        );
-    }
-
     private void assertNoUnexpectedInteractions() {
         verifyNoMoreInteractions(
             trainingRepository,
             traineeService,
             trainerService,
-            trainingTypeService,
-            traineeAssignmentTrainerService
+            assignmentService
         );
     }
 }
-*/

@@ -16,27 +16,23 @@ public class AssignmentController implements IAssignmentController {
     private final IAssignmentFacade assignmentFacade;
 
     @Override
-    public List<TraineeProfileResponse> getTrainees(
-        String username,
-        Boolean assigned,
-        Boolean active
+    public List<TraineeProfileResponse> getTrainees(String username,
+                                                    Boolean assigned,
+                                                    Boolean active
     ) {
         return assignmentFacade.getTrainees(username, assigned, active);
     }
 
     @Override
-    public List<TrainerProfileResponse> getTrainers(
-        String username,
-        Boolean assigned,
-        Boolean active
+    public List<TrainerProfileResponse> getTrainers(String username,
+                                                    Boolean assigned,
+                                                    Boolean active
     ) {
         return assignmentFacade.getTrainers(username, assigned, active);
     }
 
     @Override
-    public void assign(
-        AssignRequest request
-    ) {
+    public void assign(AssignRequest request) {
         assignmentFacade.assign(request);
     }
 }

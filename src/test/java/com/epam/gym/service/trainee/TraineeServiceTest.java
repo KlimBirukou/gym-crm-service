@@ -1,7 +1,6 @@
 package com.epam.gym.service.trainee;
 
 import com.epam.gym.domain.user.Trainee;
-import com.epam.gym.exception.AuthException;
 import com.epam.gym.exception.not.found.TraineeNotFoundException;
 import com.epam.gym.repository.domain.trainee.ITraineeRepository;
 import com.epam.gym.service.auth.IPasswordService;
@@ -13,6 +12,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -20,19 +21,20 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-/*
 
 @ExtendWith(MockitoExtension.class)
 class TraineeServiceTest {
@@ -47,8 +49,6 @@ class TraineeServiceTest {
     private static final String USERNAME = "username";
     private static final String PASSWORD = "password";
     private static final String HASHED_PASSWORD = "hashed_password";
-    private static final String NEW_PASSWORD = "new_password";
-    private static final String NEW_HASHED_PASSWORD = "new_hashed_password";
     private static final String ADDRESS = "address";
     private static final String NEW_ADDRESS = "new address";
 
@@ -95,7 +95,7 @@ class TraineeServiceTest {
         assertEquals(DATE, saved.getBirthdate());
         assertEquals(ADDRESS, saved.getAddress());
         assertEquals(USERNAME, saved.getUsername());
-        assertEquals(HASHED_PASSWORD, saved.getPassword());
+        assertEquals(PASSWORD, saved.getPassword());
         assertTrue(saved.isActive());
 
         assertNoUnexpectedInteractions();
@@ -118,7 +118,7 @@ class TraineeServiceTest {
 
         testObject.update(updateTraineeDto);
 
-        verify(traineeRepository).save(traineeCaptor.capture());
+        verify(traineeRepository).update(traineeCaptor.capture());
         var saved = traineeCaptor.getValue();
 
         assertEquals(NEW_FIRSTNAME, saved.getFirstName());
@@ -150,88 +150,6 @@ class TraineeServiceTest {
 
         assertNoUnexpectedInteractions();
     }
-
-
-    @Test
-    void changePassword_shouldUpdatePassword_whenOldPasswordMatch() {
-        var trainee = getTrainee();
-        var changePasswordDto = getChangePasswordDto();
-        doReturn(Optional.of(trainee)).when(traineeRepository).getByUsername(USERNAME);
-        doReturn(true).when(passwordService).checkPassword(PASSWORD, HASHED_PASSWORD);
-        doReturn(NEW_HASHED_PASSWORD).when(passwordService).hashPassword(NEW_PASSWORD);
-
-        testObject.changePassword(changePasswordDto);
-
-        verify(traineeRepository).save(traineeCaptor.capture());
-        var saved = traineeCaptor.getValue();
-
-        assertEquals(NEW_HASHED_PASSWORD, saved.getPassword());
-        assertEquals(UID, saved.getUid());
-        assertEquals(USERNAME, saved.getUsername());
-        assertTrue(saved.isActive());
-
-        assertNoUnexpectedInteractions();
-    }
-
-    @Test
-    void changePassword_shouldThrowException_whenOldPasswordNotMatch() {
-        var trainee = getTrainee();
-        var changePasswordDto = getChangePasswordDto();
-        doReturn(Optional.of(trainee)).when(traineeRepository).getByUsername(USERNAME);
-        doReturn(false).when(passwordService).checkPassword(PASSWORD, HASHED_PASSWORD);
-
-        assertThrows(AuthException.class, () -> testObject.changePassword(changePasswordDto));
-
-        assertNoUnexpectedInteractions();
-    }
-
-    @ParameterizedTest
-    @NullSource
-    void changePassword_shouldThrowException_whenArgumentNull(ChangePasswordDto dto) {
-        assertThrows(NullPointerException.class, () -> testObject.changePassword(dto));
-
-        assertNoUnexpectedInteractions();
-    }
-
-
-    @Test
-    void toggleStatus_shouldDeactivate_whenTraineeIsActive() {
-        var trainee = getTrainee();
-        doReturn(Optional.of(trainee)).when(traineeRepository).getByUsername(USERNAME);
-
-        testObject.changeStatus(USERNAME);
-
-        verify(traineeRepository).save(traineeCaptor.capture());
-        assertFalse(traineeCaptor.getValue().isActive());
-
-        assertNoUnexpectedInteractions();
-    }
-
-    @Test
-    void toggleStatus_shouldActivate_whenTraineeIsInactive() {
-        var inactiveTrainee = Trainee.builder()
-            .uid(UID)
-            .username(USERNAME)
-            .active(false)
-            .build();
-        doReturn(Optional.of(inactiveTrainee)).when(traineeRepository).getByUsername(USERNAME);
-
-        testObject.changeStatus(USERNAME);
-
-        verify(traineeRepository).save(traineeCaptor.capture());
-        assertTrue(traineeCaptor.getValue().isActive());
-
-        assertNoUnexpectedInteractions();
-    }
-
-    @ParameterizedTest
-    @NullSource
-    void toggleStatus_shouldThrowNullPointerException_whenArgumentNull(String username) {
-        assertThrows(NullPointerException.class, () -> testObject.changeStatus(username));
-
-        assertNoUnexpectedInteractions();
-    }
-
 
     @Test
     void delete_shouldDeleteTrainee() {
@@ -278,6 +196,47 @@ class TraineeServiceTest {
         assertNoUnexpectedInteractions();
     }
 
+    @Test
+    void getByUids_shouldReturnEmptyList_whenUidsIsEmpty() {
+        var result = testObject.getByUids(List.of());
+
+        assertTrue(result.isEmpty());
+
+        verifyNoInteractions(traineeRepository);
+        assertNoUnexpectedInteractions();
+    }
+
+    private static Stream<Arguments> provideUidsData() {
+        return Stream.of(
+            Arguments.of(List.of(UUID.randomUUID()), List.of(new Trainee())),
+            Arguments.of(
+                List.of(UUID.randomUUID(), UUID.randomUUID()),
+                List.of(new Trainee(), new Trainee())
+            )
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideUidsData")
+    void getByUids_shouldReturnExpectedResult(List<UUID> uids, List<Trainee> trainees) {
+        doReturn(trainees).when(traineeRepository).findAllByUids(uids);
+
+        var result = testObject.getByUids(uids);
+
+        assertEquals(trainees.size(), result.size());
+        assertEquals(trainees, result);
+
+        assertNoUnexpectedInteractions();
+    }
+
+    @ParameterizedTest
+    @NullSource
+    void getByUids_shouldThrowNpe_whenArgumentNull(List<UUID> uids) {
+        assertThrows(NullPointerException.class, () -> testObject.getByUids(uids));
+
+        assertNoUnexpectedInteractions();
+    }
+
     private static CreateTraineeDto getCreateTraineeDto() {
         return new CreateTraineeDto(
             FIRSTNAME, LASTNAME, DATE, ADDRESS
@@ -287,12 +246,6 @@ class TraineeServiceTest {
     private static UpdateTraineeDto getUpdateTraineeDto() {
         return new UpdateTraineeDto(
             USERNAME, NEW_FIRSTNAME, NEW_LASTNAME, NEW_DATE, NEW_ADDRESS
-        );
-    }
-
-    private static ChangePasswordDto getChangePasswordDto() {
-        return new ChangePasswordDto(
-            USERNAME, PASSWORD, NEW_PASSWORD
         );
     }
 
@@ -318,4 +271,3 @@ class TraineeServiceTest {
         );
     }
 }
-*/

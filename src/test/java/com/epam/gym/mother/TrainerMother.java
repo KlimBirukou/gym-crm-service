@@ -6,7 +6,6 @@ import java.util.UUID;
 
 public class TrainerMother {
 
-    private static final String SPECIALIZATION = "specialization";
     private static final String PASSWORD = "password";
 
     public static Trainer get(UUID uid, String firstName, String lastName, String username) {
@@ -15,7 +14,6 @@ public class TrainerMother {
             .firstName(firstName)
             .lastName(lastName)
             .username(username)
-           // .specialization(SPECIALIZATION)
             .password(PASSWORD)
             .active(true)
             .build();
