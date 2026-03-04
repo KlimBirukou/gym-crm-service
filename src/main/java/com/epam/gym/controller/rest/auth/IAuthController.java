@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
     name = "Authentification",
     description = "Operations for registration and authentication"
 )
-@RequestMapping("/v1/auth")
+@RequestMapping("/api/v1/auth")
 public interface IAuthController {
 
     @Operation(

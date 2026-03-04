@@ -10,4 +10,5 @@ public record CreateTrainerDto(
     @NonNull String lastName,
     @NonNull String specialization
 ) {
+
 }

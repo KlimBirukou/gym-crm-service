@@ -28,7 +28,7 @@ import java.util.List;
     name = "Assignment",
     description = "Assigning trainer to trainee and obtaining a list of assigned/unassigned, active/inactive trainee and trainers."
 )
-@RequestMapping("/v1/assignments")
+@RequestMapping("/api/v1/assignments")
 public interface IAssignmentController {
 
     @Operation(

@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
     name = "Trainee",
     description = "Operations with trainee profile"
 )
-@RequestMapping("/v1/trainee")
+@RequestMapping("/api/v1/trainee")
 public interface ITraineeController {
 
     @Operation(

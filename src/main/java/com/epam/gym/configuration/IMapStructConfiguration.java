@@ -16,4 +16,5 @@ import org.mapstruct.extensions.spring.SpringMapperConfig;
     conversionServiceAdapterPackage = "com.epam.gym.configuration"
 )
 public interface IMapStructConfiguration {
+
 }

@@ -32,7 +32,7 @@ public class TrainingService implements ITrainingService {
     private final ITrainingRepository trainingRepository;
     private final ITraineeService traineeService;
     private final ITrainerService trainerService;
-    private final IAssignmentService traineeAssignmentTrainerService;
+    private final IAssignmentService assignmentService;
 
     @Override
     @Transactional
@@ -45,7 +45,7 @@ public class TrainingService implements ITrainingService {
         if (!trainer.isActive()) {
             throw new TrainerNotActiveException(trainer.getUsername());
         }
-        if (!traineeAssignmentTrainerService.checkAssignExist(dto.traineeUsername(), dto.trainerUsername())) {
+        if (!assignmentService.checkAssignExist(dto.traineeUsername(), dto.trainerUsername())) {
             throw new NotAssignmentException(dto.trainerUsername(), dto.traineeUsername());
         }
         validateDateAvailability(dto, trainee, trainer);

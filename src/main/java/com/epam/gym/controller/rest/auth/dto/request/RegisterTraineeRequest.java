@@ -39,4 +39,5 @@ public record RegisterTraineeRequest(
     )
     String address
 ) {
+
 }

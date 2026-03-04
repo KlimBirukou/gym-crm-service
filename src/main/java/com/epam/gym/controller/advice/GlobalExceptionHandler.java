@@ -37,7 +37,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler
     public ResponseEntity<@NonNull Object> handleException(NotFoundException exception, WebRequest request) {
         var message = ENTITY_NOT_FOUND_MESSAGE.formatted(exception.getEntityName(), exception.getIdentifier());
-        log.warn(message);
+        log.info(message);
         var status = HttpStatus.NOT_FOUND;
         var errorDto = ErrorDto.builder()
             .error(status.name())
@@ -49,7 +49,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler
     public ResponseEntity<@NonNull Object> handleException(NotActiveException exception, WebRequest request) {
         var message = NOT_ACTIVE_MESSAGE.formatted(exception.getEntityName(), exception.getIdentifier());
-        log.warn(message);
+        log.info(message);
         var status = HttpStatus.UNPROCESSABLE_CONTENT;
         var errorDto = ErrorDto.builder()
             .error(status.name())
@@ -62,7 +62,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<@NonNull Object> handleException(DateConflictException exception, WebRequest request) {
         var message = DATE_CONFLICT_MESSAGE.formatted(exception.getEntityName(), exception.getIdentifier(),
             exception.getDate());
-        log.warn(message);
+        log.info(message);
         var status = HttpStatus.CONFLICT;
         var errorDto = ErrorDto.builder()
             .error(status.name())
@@ -75,7 +75,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<@NonNull Object> handleException(AlreadyAssignedException exception, WebRequest request) {
         var message = ALREADY_ASSIGNED_MESSAGE.formatted(exception.getTraineeUsername(),
             exception.getTrainerUsername());
-        log.warn(message);
+        log.info(message);
         var status = HttpStatus.CONFLICT;
         var errorDto = ErrorDto.builder()
             .error(status.name())
@@ -87,7 +87,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler
     public ResponseEntity<@NonNull Object> handleException(NotAssignmentException exception, WebRequest request) {
         var message = NOT_ASSIGNED_MESSAGE.formatted(exception.getTraineeUsername(), exception.getTrainerUsername());
-        log.warn(message);
+        log.info(message);
         var status = HttpStatus.UNPROCESSABLE_CONTENT;
         var errorDto = ErrorDto.builder()
             .error(status.name())
@@ -98,7 +98,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler
     public ResponseEntity<@NonNull Object> handleException(AuthException exception, WebRequest request) {
-        log.warn(LOGIN_MESSAGE);
+        log.info(LOGIN_MESSAGE);
         var status = HttpStatus.UNAUTHORIZED;
         var errorDto = ErrorDto.builder()
             .error(status.name())
@@ -117,7 +117,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             .stream()
             .map(DefaultMessageSourceResolvable::getDefaultMessage)
             .collect(Collectors.joining("; "));
-        log.warn(message);
+        log.info(message);
         var errorDto = ErrorDto.builder()
             .error("VALIDATION_FAILED")
             .description(message)

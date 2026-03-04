@@ -48,4 +48,5 @@ public record TraineeResponse(
     )
     @NonNull List<TrainerProfileResponse> trainers
 ) {
+
 }

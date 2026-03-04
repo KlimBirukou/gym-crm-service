@@ -21,7 +21,7 @@ public class AssignmentService implements IAssignmentService {
 
     private final ITraineeService traineeService;
     private final ITrainerService trainerService;
-    private final IAssignmentRepository traineeAssignmentTrainerRepository;
+    private final IAssignmentRepository assignmentRepository;
 
     @Override
     @Transactional
@@ -34,16 +34,16 @@ public class AssignmentService implements IAssignmentService {
         if (!trainer.isActive()) {
             throw new TrainerNotActiveException(trainer.getUsername());
         }
-        if (traineeAssignmentTrainerRepository.checkAssign(traineeUsername, trainerUsername)) {
+        if (assignmentRepository.checkAssign(traineeUsername, trainerUsername)) {
             throw new AlreadyAssignedException(traineeUsername, trainerUsername);
         }
-        traineeAssignmentTrainerRepository.assign(trainee, trainer);
+        assignmentRepository.assign(trainee, trainer);
     }
 
     @Override
     @Transactional
     public boolean checkAssignExist(@NonNull String traineeUsername, @NonNull String trainerUsername) {
-        return traineeAssignmentTrainerRepository.checkAssign(traineeUsername, trainerUsername);
+        return assignmentRepository.checkAssign(traineeUsername, trainerUsername);
     }
 
     @Override
@@ -52,7 +52,7 @@ public class AssignmentService implements IAssignmentService {
                                      @NonNull Boolean assigned,
                                      @NonNull Boolean active) {
         trainerService.getByUsername(trainerUsername);
-        return traineeAssignmentTrainerRepository.getTrainees(trainerUsername, assigned, active);
+        return assignmentRepository.getTrainees(trainerUsername, assigned, active);
     }
 
     @Override
@@ -61,6 +61,6 @@ public class AssignmentService implements IAssignmentService {
                                      @NonNull Boolean assigned,
                                      @NonNull Boolean active) {
         traineeService.getByUsername(traineeUsername);
-        return traineeAssignmentTrainerRepository.getTrainer(traineeUsername, assigned, active);
+        return assignmentRepository.getTrainers(traineeUsername, assigned, active);
     }
 }

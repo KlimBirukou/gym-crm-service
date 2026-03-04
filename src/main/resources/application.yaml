@@ -1,5 +1,8 @@
 # Application
 spring:
+  output:
+    ansi:
+      enabled: always
   application:
     name: gym
 
@@ -59,18 +62,15 @@ logging:
     org.hibernate.SQL: ERROR
     org.hibernate.type.descriptor.sql.BasicBinder: ERROR
   pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %highlight(%-5level) %cyan(%logger{36}) - %msg%n"
+    correlation: "[${spring.application.name:},%X{requestUid:-}] "
+    console: "%clr([){faint}%clr(${spring.application.name:}){cyan}%clr( : ){faint}%clr(%X{requestUid:-}){magenta}%clr(]){faint} %clr(%d{yyyy-MM-dd HH:mm:ss}){faint} %clr(%-5level) %clr([%thread]){faint} %clr(%logger{36}){cyan} - %msg%n"
     file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"
 
 # Swagger/OpenApi
 springdoc:
-  api-docs:
-    path: /api-docs
+  show-actuator: true
   swagger-ui:
     path: /swagger-ui.html
     tags-sorter: alpha
     operations-sorter: alpha
-
-server:
-  servlet:
-    context-path: /api
+    disable-swagger-default-url: true

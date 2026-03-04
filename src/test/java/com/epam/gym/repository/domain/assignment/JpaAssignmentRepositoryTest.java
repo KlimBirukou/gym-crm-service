@@ -12,7 +12,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.NullSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -20,27 +19,31 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.convert.ConversionService;
 
 import java.util.List;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 @ExtendWith(MockitoExtension.class)
-public class JpaTraineeAssignmentTrainerRepositoryTest {
+class JpaTraineeAssignmentTrainerRepositoryTest {
 
     private static final String TRAINEE_USERNAME = "trainee_username";
     private static final String TRAINER_USERNAME = "trainer_username";
 
     private static final Trainee TRAINEE = Trainee.builder().username(TRAINEE_USERNAME).build();
     private static final Trainer TRAINER = Trainer.builder().username(TRAINER_USERNAME).build();
-    private static final Trainer TRAINER_2 = Trainer.builder().username("trainer.user2").build();
 
     private static final TraineeEntity TRAINEE_ENTITY = new TraineeEntity();
+    private static final TraineeEntity TRAINEE_ENTITY_2 = new TraineeEntity();
     private static final TrainerEntity TRAINER_ENTITY = new TrainerEntity();
     private static final TrainerEntity TRAINER_ENTITY_2 = new TrainerEntity();
 
@@ -122,63 +125,113 @@ public class JpaTraineeAssignmentTrainerRepositoryTest {
         assertNoUnexpectedInteractions();
     }
 
-    private static Stream<Arguments> provideTestData() {
+
+    @Test
+    void getTrainees_shouldReturnEmptyList() {
+        doReturn(List.of()).when(repository).getTrainees(TRAINER_USERNAME, true, true);
+
+        var result = testObject.getTrainees(TRAINER_USERNAME, true, true);
+
+        assertTrue(result.isEmpty());
+        verify(repository).getTrainees(TRAINER_USERNAME, true, true);
+        verifyNoInteractions(conversionService);
+
+        assertNoUnexpectedInteractions();
+    }
+
+    private static Stream<Arguments> provideTraineesData() {
         return Stream.of(
-            Arguments.of(List.of(), List.of()),
-            Arguments.of(List.of(TRAINER_ENTITY), List.of(TRAINER)),
-            Arguments.of(List.of(TRAINER_ENTITY, TRAINER_ENTITY_2), List.of(TRAINER, TRAINER_2))
+            Arguments.of(List.of(TRAINEE_ENTITY)),
+            Arguments.of(List.of(TRAINEE_ENTITY, TRAINEE_ENTITY_2))
         );
     }
 
     @ParameterizedTest
-    @MethodSource("provideTestData")
-    void getAssignedTrainers_shouldReturnTrainers(List<TrainerEntity> entities, List<Trainer> trainers) {
-        doReturn(entities).when(repository).getAssignedTrainers(TRAINEE_USERNAME);
-        IntStream.range(0, entities.size()).forEach(i ->
-            doReturn(trainers.get(i)).when(conversionService).convert(entities.get(i), Trainer.class)
+    @MethodSource("provideTraineesData")
+    void getTrainees_shouldReturnConvertedList_whenRepositoryReturnsData(List<TraineeEntity> entities) {
+        doReturn(entities).when(repository).getTrainees(eq(TRAINER_USERNAME), anyBoolean(), anyBoolean());
+        entities.forEach(entity ->
+            doReturn(new Trainee()).when(conversionService).convert(eq(entity), eq(Trainee.class))
         );
 
-        var result = testObject.getAssignedTrainers(TRAINEE_USERNAME);
+        var result = testObject.getTrainees(TRAINER_USERNAME, true, true);
 
-        assertEquals(trainers.size(), result.size());
-        assertEquals(trainers, result);
-
-        assertNoUnexpectedInteractions();
-    }
-
-    @ParameterizedTest
-    @NullSource
-    void getAssignedTrainers_shouldThrowException_whenArgumentNull(String username) {
-        assertThrows(NullPointerException.class, () -> testObject.getAssignedTrainers(username));
+        assertEquals(entities.size(), result.size());
+        verify(repository).getTrainees(eq(TRAINER_USERNAME), eq(true), eq(true));
+        verify(conversionService, times(entities.size())).convert(any(TraineeEntity.class), eq(Trainee.class));
 
         assertNoUnexpectedInteractions();
     }
 
+    private static Stream<Arguments> provideNullsForGetTrainees() {
+        return Stream.of(
+            Arguments.of(null, true, true),
+            Arguments.of(TRAINER_USERNAME, null, true),
+            Arguments.of(TRAINER_USERNAME, true, null)
+        );
+    }
 
     @ParameterizedTest
-    @MethodSource("provideTestData")
-    void getUnassignedTrainers_shouldReturnTrainers(List<TrainerEntity> entities, List<Trainer> trainers) {
-        doReturn(entities).when(repository).getUnassignedTrainers(TRAINEE_USERNAME);
-        IntStream.range(0, entities.size()).forEach(i ->
-            doReturn(trainers.get(i)).when(conversionService).convert(entities.get(i), Trainer.class)
+    @MethodSource("provideNullsForGetTrainees")
+    void getTrainees_shouldThrowException_whenArgumentsNull(String trainerUsername, Boolean assigned, Boolean active) {
+        assertThrows(NullPointerException.class, () -> testObject.getTrainees(trainerUsername, assigned, active));
+
+        assertNoUnexpectedInteractions();
+    }
+
+
+    @Test
+    void getTrainers_shouldReturnEmptyList() {
+        doReturn(List.of()).when(repository).getTrainers(TRAINEE_USERNAME, true, true);
+
+        var result = testObject.getTrainers(TRAINEE_USERNAME, true, true);
+
+        assertTrue(result.isEmpty());
+        verify(repository).getTrainers(TRAINEE_USERNAME, true, true);
+        verifyNoInteractions(conversionService);
+
+        assertNoUnexpectedInteractions();
+    }
+
+    private static Stream<Arguments> provideTrainersData() {
+        return Stream.of(
+            Arguments.of(List.of(TRAINER_ENTITY)),
+            Arguments.of(List.of(TRAINER_ENTITY, TRAINER_ENTITY_2))
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTrainersData")
+    void getTrainers_shouldReturnConvertedList_whenRepositoryReturnsData(List<TrainerEntity> entities) {
+        doReturn(entities).when(repository).getTrainers(eq(TRAINEE_USERNAME), anyBoolean(), anyBoolean());
+        entities.forEach(entity ->
+            doReturn(new Trainer()).when(conversionService).convert(eq(entity), eq(Trainer.class))
         );
 
-        var result = testObject.getUnassignedTrainers(TRAINEE_USERNAME);
+        var result = testObject.getTrainers(TRAINEE_USERNAME, true, true);
 
-        assertEquals(trainers.size(), result.size());
-        assertEquals(trainers, result);
+        assertEquals(entities.size(), result.size());
+        verify(repository).getTrainers(eq(TRAINEE_USERNAME), eq(true), eq(true));
+        verify(conversionService, times(entities.size())).convert(any(TrainerEntity.class), eq(Trainer.class));
 
         assertNoUnexpectedInteractions();
+    }
+
+    private static Stream<Arguments> provideNullsForGetTrainers() {
+        return Stream.of(
+            Arguments.of(null, true, true),
+            Arguments.of(TRAINEE_USERNAME, null, true),
+            Arguments.of(TRAINEE_USERNAME, true, null)
+        );
     }
 
     @ParameterizedTest
-    @NullSource
-    void getUnassignedTrainers_shouldThrowException_whenArgumentNull(String username) {
-        assertThrows(NullPointerException.class, () -> testObject.getUnassignedTrainers(username));
+    @MethodSource("provideNullsForGetTrainers")
+    void getTrainers_shouldThrowException_whenArgumentsNull(String traineeUsername, Boolean assigned, Boolean active) {
+        assertThrows(NullPointerException.class, () -> testObject.getTrainers(traineeUsername, assigned, active));
 
         assertNoUnexpectedInteractions();
     }
-
 
     private void assertNoUnexpectedInteractions() {
         verifyNoMoreInteractions(

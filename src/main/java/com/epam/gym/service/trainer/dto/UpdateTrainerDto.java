@@ -10,4 +10,5 @@ public record UpdateTrainerDto(
     @NonNull String firstName,
     @NonNull String lastName
 ) {
+
 }

@@ -24,7 +24,7 @@ import java.util.List;
     name = "Training",
     description = "Operations with trainings"
 )
-@RequestMapping("/v1/training")
+@RequestMapping("/api/v1/training")
 public interface ITrainingController {
 
     @Operation(
@@ -86,20 +86,20 @@ public interface ITrainingController {
                 @ExampleObject(
                     name = "Trainee date conflict",
                     value = """
-                    {
-                      "error": "CONFLICT",
-                      "description": "Trainee [Arya.Stark] already has a training on [2026-03-15] date"
-                    }
-                    """
+                        {
+                          "error": "CONFLICT",
+                          "description": "Trainee [Arya.Stark] already has a training on [2026-03-15] date"
+                        }
+                        """
                 ),
                 @ExampleObject(
                     name = "Trainer date conflict",
                     value = """
-                    {
-                      "error": "CONFLICT",
-                      "description": "Trainer [Syrio.Forel] already has a training on [2026-03-15] date"
-                    }
-                    """
+                        {
+                          "error": "CONFLICT",
+                          "description": "Trainer [Syrio.Forel] already has a training on [2026-03-15] date"
+                        }
+                        """
                 )
             }
         )
@@ -112,29 +112,29 @@ public interface ITrainingController {
                 @ExampleObject(
                     name = "Not assigned",
                     value = """
-                    {
-                      "error": "UNPROCESSABLE_CONTENT",
-                      "description": "Trainer [Arya.Stark] not assigned to [Master.Yoda] trainee"
-                    }
-                    """
+                        {
+                          "error": "UNPROCESSABLE_CONTENT",
+                          "description": "Trainer [Arya.Stark] not assigned to [Master.Yoda] trainee"
+                        }
+                        """
                 ),
                 @ExampleObject(
                     name = "Trainer not active",
                     value = """
-                    {
-                      "error": "UNPROCESSABLE_CONTENT",
-                      "description": "Trainer [John.Wick] not active to perform this action"
-                    }
-                    """
+                        {
+                          "error": "UNPROCESSABLE_CONTENT",
+                          "description": "Trainer [John.Wick] not active to perform this action"
+                        }
+                        """
                 ),
                 @ExampleObject(
                     name = "Trainee not active",
                     value = """
-                    {
-                      "error": "UNPROCESSABLE_CONTENT",
-                      "description": "Trainee [Brienne.Tarth] not active to perform this action"
-                    }
-                    """
+                        {
+                          "error": "UNPROCESSABLE_CONTENT",
+                          "description": "Trainee [Brienne.Tarth] not active to perform this action"
+                        }
+                        """
                 )
             }
         )
@@ -161,7 +161,7 @@ public interface ITrainingController {
             mediaType = MediaType.APPLICATION_JSON_VALUE,
             array = @ArraySchema(
                 schema = @Schema(implementation = TraineeTrainingResponse.class))
-            )
+        )
     )
     @ApiResponse(
         responseCode = "404",

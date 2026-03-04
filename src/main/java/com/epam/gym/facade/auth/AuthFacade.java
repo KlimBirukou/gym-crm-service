@@ -75,14 +75,6 @@ public class AuthFacade implements IAuthFacade {
 
     @Override
     @Transactional
-    public void logout() {
-        log.info("Logout. Started.");
-        // TODO implement in Spring Security module
-        log.info("Logout. Finished.");
-    }
-
-    @Override
-    @Transactional
     public void changePassword(@NonNull ChangePasswordRequest request) {
         log.info("Change password. Started. Username={}", request.username());
         var dto = conversionService.convert(request, ChangePasswordDto.class);

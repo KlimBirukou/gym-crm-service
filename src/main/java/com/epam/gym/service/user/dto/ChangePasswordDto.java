@@ -10,4 +10,5 @@ public record ChangePasswordDto(
     @NonNull String oldPassword,
     @NonNull String newPassword
 ) {
+
 }

@@ -14,4 +14,5 @@ public record UpdateTraineeDto(
     @NonNull LocalDate birthdate,
     @NonNull String address
 ) {
+
 }

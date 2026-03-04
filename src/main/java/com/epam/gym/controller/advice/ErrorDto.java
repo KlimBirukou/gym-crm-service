@@ -9,4 +9,5 @@ public record ErrorDto(
     @NonNull String error,
     @NonNull String description
 ) {
+
 }

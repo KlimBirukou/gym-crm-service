@@ -29,4 +29,5 @@ public record ChangePasswordRequest(
     )
     String newPassword
 ) {
+
 }

@@ -9,7 +9,7 @@ import org.mapstruct.Mapping;
 import org.springframework.core.convert.converter.Converter;
 
 @Mapper(config = IMapStructConfiguration.class)
-public interface TrainerToShortTrainerResponseMapper
+public interface TrainerToTraineeProfileResponseMapper
     extends Converter<@NonNull Trainer, TrainerProfileResponse> {
 
     @Override

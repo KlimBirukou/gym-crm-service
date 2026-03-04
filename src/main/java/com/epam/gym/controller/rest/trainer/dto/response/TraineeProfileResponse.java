@@ -26,4 +26,5 @@ public record TraineeProfileResponse(
     )
     @NonNull String lastName
 ) {
+
 }

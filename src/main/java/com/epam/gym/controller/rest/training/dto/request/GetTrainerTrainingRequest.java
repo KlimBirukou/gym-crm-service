@@ -20,4 +20,5 @@ public record GetTrainerTrainingRequest(
     LocalDate to,
     String traineeUsername
 ) {
+
 }

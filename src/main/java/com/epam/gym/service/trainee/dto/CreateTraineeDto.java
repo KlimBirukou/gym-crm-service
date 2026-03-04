@@ -13,4 +13,5 @@ public record CreateTraineeDto(
     LocalDate birthdate,
     String address
 ) {
+
 }

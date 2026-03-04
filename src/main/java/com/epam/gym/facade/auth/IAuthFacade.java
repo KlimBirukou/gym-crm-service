@@ -15,7 +15,5 @@ public interface IAuthFacade {
 
     void login(@NonNull LoginRequest request);
 
-    void logout();
-
     void changePassword(@NonNull ChangePasswordRequest request);
 }

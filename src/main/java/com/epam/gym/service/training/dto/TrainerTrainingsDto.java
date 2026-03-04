@@ -12,5 +12,6 @@ public record TrainerTrainingsDto(
     LocalDate from,
     LocalDate to,
     String traineeUsername
-){
+) {
+
 }

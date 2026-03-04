@@ -21,4 +21,5 @@ public record GetTraineeTrainingsRequest(
     String trainerUsername,
     String trainingTypeName
 ) {
+
 }

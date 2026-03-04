@@ -31,4 +31,5 @@ public record TrainerProfileResponse(
     )
     @NonNull String specializationName
 ) {
+
 }

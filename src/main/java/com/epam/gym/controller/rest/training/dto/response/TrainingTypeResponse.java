@@ -23,4 +23,5 @@ public record TrainingTypeResponse(
     )
     @NonNull String name
 ) {
+
 }

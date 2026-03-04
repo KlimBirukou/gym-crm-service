@@ -38,4 +38,5 @@ public record TraineeTrainingResponse(
     )
     @NonNull String trainerUsername
 ) {
+
 }

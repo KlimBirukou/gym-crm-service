@@ -52,9 +52,9 @@ public class JpaAssignmentRepository implements com.epam.gym.repository.domain.a
 
     @Override
     @Transactional
-    public List<Trainer> getTrainer(@NonNull String traineeUsername,
-                                    @NonNull Boolean assigned,
-                                    @NonNull Boolean active) {
+    public List<Trainer> getTrainers(@NonNull String traineeUsername,
+                                     @NonNull Boolean assigned,
+                                     @NonNull Boolean active) {
         return repository.getTrainers(traineeUsername, assigned, active)
             .stream()
             .map(entity -> conversionService.convert(entity, Trainer.class))

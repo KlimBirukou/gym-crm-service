@@ -14,4 +14,5 @@ public record CreateTrainingDto(
     @NonNull LocalDate date,
     int durationInMinutes
 ) {
+
 }

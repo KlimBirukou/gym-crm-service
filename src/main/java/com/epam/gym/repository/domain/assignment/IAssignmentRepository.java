@@ -13,10 +13,10 @@ public interface IAssignmentRepository {
     boolean checkAssign(@NonNull String traineeUsername, @NonNull String trainerUsername);
 
     List<Trainee> getTrainees(@NonNull String trainerUsername,
-                             @NonNull Boolean assigned,
-                             @NonNull Boolean active);
+                              @NonNull Boolean assigned,
+                              @NonNull Boolean active);
 
-    List<Trainer> getTrainer(@NonNull String traineeUsername,
-                             @NonNull Boolean assigned,
-                             @NonNull Boolean active);
+    List<Trainer> getTrainers(@NonNull String traineeUsername,
+                              @NonNull Boolean assigned,
+                              @NonNull Boolean active);
 }

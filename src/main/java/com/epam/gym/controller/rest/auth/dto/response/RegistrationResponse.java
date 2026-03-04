@@ -22,4 +22,5 @@ public record RegistrationResponse(
     )
     @NonNull String password
 ) {
+
 }

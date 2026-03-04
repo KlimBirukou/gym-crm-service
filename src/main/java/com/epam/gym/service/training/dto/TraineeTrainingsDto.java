@@ -14,4 +14,5 @@ public record TraineeTrainingsDto(
     String trainerUsername,
     String trainingTypeName
 ) {
+
 }
