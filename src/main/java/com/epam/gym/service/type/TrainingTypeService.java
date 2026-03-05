@@ -17,14 +17,14 @@ public class TrainingTypeService implements ITrainingTypeService {
     private final ITrainingTypeRepository trainingTypeRepository;
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public TrainingType getByName(@NonNull String name) {
         return trainingTypeRepository.getByName(name)
             .orElseThrow(() -> new TrainingTypeNotFoundException(name));
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<TrainingType> getAll() {
         return trainingTypeRepository.getAll();
     }

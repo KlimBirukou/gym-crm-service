@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface IAssignmentRepository
+public interface IAssignmentEntityRepository
     extends JpaRepository<@NonNull TraineeTrainerEntity, @NonNull UUID> {
 
     boolean existsByTraineeUserUsernameAndTrainerUserUsername(@NonNull String traineeUsername,
@@ -24,13 +24,14 @@ public interface IAssignmentRepository
         FROM TraineeEntity te
         JOIN FETCH te.user u
         LEFT JOIN TraineeTrainerEntity tte
-             ON tte.trainee = te
-             AND tte.trainer.user.username = :trainerUsername
-             WHERE (
-                 (:assigned = TRUE AND tte.trainer IS NOT NULL)
-                 OR
-                 (:assigned = FALSE AND tte.trainer IS NULL))
-        AND u.active = :active
+            ON tte.trainee = te AND tte.trainer.user.username = :trainerUsername
+        WHERE (
+                (:assigned = TRUE AND tte.trainer IS NOT NULL)
+                OR
+                (:assigned = FALSE AND tte.trainer IS NULL)
+            )
+            AND
+            u.active = :active
         """)
     List<TraineeEntity> getTrainees(
         @Param("trainerUsername") @NonNull String trainerUsername,
@@ -44,13 +45,14 @@ public interface IAssignmentRepository
         JOIN FETCH tr.user u
         JOIN FETCH tr.specialization
         LEFT JOIN TraineeTrainerEntity tte
-             ON tte.trainer = tr
-             AND tte.trainee.user.username = :traineeUsername
-             WHERE (
-                 (:assigned = TRUE AND tte.trainee IS NOT NULL)
-                 OR
-                 (:assigned = FALSE AND tte.trainee IS NULL))
-        AND u.active = :active
+            ON tte.trainer = tr AND tte.trainee.user.username = :traineeUsername
+        WHERE (
+                (:assigned = TRUE AND tte.trainee IS NOT NULL)
+                OR
+                (:assigned = FALSE AND tte.trainee IS NULL)
+            )
+            AND
+            u.active = :active
         """)
     List<TrainerEntity> getTrainers(
         @Param("traineeUsername") @NonNull String traineeUsername,

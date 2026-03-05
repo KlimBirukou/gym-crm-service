@@ -18,31 +18,37 @@ public record TraineeResponse(
         example = "Vesemir.Oldman"
     )
     @NonNull String username,
+
     @Schema(
         description = "Trainee first name",
         example = "Vesemir"
     )
     @NonNull String firstName,
+
     @Schema(
         description = "Trainee last name",
         example = "Oldman"
     )
     @NonNull String lastName,
+
     @Schema(
         description = "Trainee birthdate",
         example = "2000-01-01"
     )
     @NonNull LocalDate birthdate,
+
     @Schema(
         description = "Trainee address",
         example = "Kaer Morhen Fortress, Blue Mountains"
     )
     @NonNull String address,
+
     @Schema(
         description = "Trainee account status",
         example = "true"
     )
     @NonNull Boolean active,
+
     @Schema(
         description = "Trainee assigned trainers"
     )

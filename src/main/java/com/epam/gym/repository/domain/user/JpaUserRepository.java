@@ -24,7 +24,7 @@ public class JpaUserRepository implements IUserRepository {
     private final IUserEntityToUserMapper mapper;
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public Optional<User> getByUsername(@NonNull String username) {
         return repository.findByUsername(username)
             .map(entity -> conversionService.convert(entity, User.class));

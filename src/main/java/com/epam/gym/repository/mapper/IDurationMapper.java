@@ -5,22 +5,23 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Named;
 
 import java.time.Duration;
-import java.util.Objects;
+import java.util.Optional;
 
 @Mapper(config = IMapStructConfiguration.class)
 public interface IDurationMapper {
 
     @Named("fromMinutesToDuration")
     default Duration toDuration(Integer minutes) {
-        return Objects.isNull(minutes)
-            ? null
-            : Duration.ofMinutes(minutes);
+        return Optional.ofNullable(minutes)
+            .map(Duration::ofMinutes)
+            .orElse(null);
     }
 
     @Named("fromDurationToMinutes")
     default Integer toMinutes(Duration duration) {
-        return Objects.isNull(duration)
-            ? null
-            : (int) duration.toMinutes();
+        return Optional.ofNullable(duration)
+            .map(Duration::toMinutes)
+            .map(Long::intValue)
+            .orElse(null);
     }
 }

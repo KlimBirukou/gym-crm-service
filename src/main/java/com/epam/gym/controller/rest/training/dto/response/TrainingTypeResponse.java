@@ -17,6 +17,7 @@ public record TrainingTypeResponse(
         example = "d66e3fde-d7ad-4e35-86ce-e516be124fc6"
     )
     @NonNull UUID uid,
+
     @Schema(
         description = "Training type name",
         example = "Mortial Arts"

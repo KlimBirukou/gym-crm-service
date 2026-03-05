@@ -16,12 +16,14 @@ public record UpdateTrainerRequest(
         example = "Vesemir"
     )
     String firstName,
+
     @NotBlank(message = "Trainer last name is required")
     @Schema(
         description = "New trainer last name",
         example = "Oldman"
     )
     String lastName,
+
     @NotBlank(message = "Specialization is required")
     @Schema(
         description = "New trainee specialization, existed in the system",

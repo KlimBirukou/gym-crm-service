@@ -14,10 +14,13 @@ public record GetTrainerTrainingRequest(
 
     @NotBlank(message = "Trainer username is required")
     String username,
+
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     LocalDate from,
+
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     LocalDate to,
+
     String traineeUsername
 ) {
 

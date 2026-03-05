@@ -139,7 +139,9 @@ public interface ITrainingController {
             }
         )
     )
-    @PostMapping
+    @PostMapping(
+        consumes = MediaType.APPLICATION_JSON_VALUE
+    )
     @ResponseStatus(HttpStatus.CREATED)
     void createTraining(
         @io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -179,7 +181,10 @@ public interface ITrainingController {
             )
         )
     )
-    @GetMapping("/trainee/username/{username}")
+    @GetMapping(
+        path = "/trainee/username/{username}",
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
     @ResponseStatus(HttpStatus.OK)
     List<TraineeTrainingResponse> getTraineeTrainings(
         @Parameter(
@@ -239,7 +244,10 @@ public interface ITrainingController {
             )
         )
     )
-    @GetMapping("/trainer/username/{username}")
+    @GetMapping(
+        path = "/trainer/username/{username}",
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
     @ResponseStatus(HttpStatus.OK)
     List<TrainerTrainingsResponse> getTrainerTrainings(
         @Parameter(
@@ -277,7 +285,10 @@ public interface ITrainingController {
                 schema = @Schema(implementation = TrainingTypeResponse.class)
             ))
     )
-    @GetMapping("/types")
+    @GetMapping(
+        path = "/types",
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
     @ResponseStatus(HttpStatus.OK)
     List<TrainingTypeResponse> getTrainingTypes();
 }

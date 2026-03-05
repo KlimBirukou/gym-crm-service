@@ -15,7 +15,8 @@ import java.util.UUID;
 public interface ITrainingEntityRepository extends JpaRepository<@NonNull TrainingEntity, @NonNull UUID> {
 
     @Query("""
-        SELECT tg FROM TrainingEntity tg
+        SELECT tg
+        FROM TrainingEntity tg
             JOIN FETCH tg.trainingType
             JOIN FETCH tg.trainee
             JOIN FETCH tg.trainer tr
@@ -34,7 +35,8 @@ public interface ITrainingEntityRepository extends JpaRepository<@NonNull Traini
     );
 
     @Query("""
-        SELECT tg FROM TrainingEntity tg
+        SELECT tg
+        FROM TrainingEntity tg
             JOIN FETCH tg.trainingType
             JOIN FETCH tg.trainee te
             JOIN FETCH tg.trainer
@@ -51,13 +53,12 @@ public interface ITrainingEntityRepository extends JpaRepository<@NonNull Traini
     );
 
     @Query("""
-        SELECT tg FROM TrainingEntity tg
+        SELECT tg
+        FROM TrainingEntity tg
             JOIN FETCH tg.trainingType
             JOIN FETCH tg.trainee
             JOIN FETCH tg.trainer
         WHERE tg.date = :date
         """)
-    List<TrainingEntity> findByDate(
-        @Param("date") @NonNull LocalDate date
-    );
+    List<TrainingEntity> findByDate(@Param("date") @NonNull LocalDate date);
 }

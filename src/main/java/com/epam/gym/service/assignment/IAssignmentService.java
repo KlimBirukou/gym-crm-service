@@ -10,7 +10,7 @@ public interface IAssignmentService {
 
     void assign(@NonNull String traineeUsername, @NonNull String trainerUsername);
 
-    boolean checkAssignExist(@NonNull String traineeUsername, @NonNull String trainerUsername);
+    boolean checkAssignmentExist(@NonNull String traineeUsername, @NonNull String trainerUsername);
 
     List<Trainee> getTrainees(@NonNull String trainerUsername, @NonNull Boolean assigned, @NonNull Boolean active);
 

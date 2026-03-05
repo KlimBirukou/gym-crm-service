@@ -21,18 +21,21 @@ public record CreateTrainingRequest(
         example = "Geralt.zRivii"
     )
     String traineeUsername,
+
     @NotBlank(message = "Trainer username is required")
     @Schema(
         description = "Existing trainer username",
         example = "Vesemir.Oldman"
     )
     String trainerUsername,
+
     @NotBlank(message = "Training name is required")
     @Schema(
         description = "Training topic name",
         example = "Improve swordsmanship skills"
     )
     String name,
+
     @NotNull(message = "Training date is required")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @Future(message = "Training date cannot be in the past")
@@ -41,13 +44,13 @@ public record CreateTrainingRequest(
         example = "2026-06-06"
     )
     LocalDate date,
+
     @NotNull(message = "Training duration is required")
     @Schema(
         description = "Duration of the planned training in minutes",
         example = "120"
     )
     Integer durationInMinutes
-
 ) {
 
 }

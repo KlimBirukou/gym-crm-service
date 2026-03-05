@@ -21,16 +21,17 @@ public class JpaTrainingTypeRepository implements ITrainingTypeRepository {
     private final ConversionService conversionService;
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public Optional<TrainingType> getByName(@NonNull String name) {
         return repository.getByName(name)
             .map(entity -> conversionService.convert(entity, TrainingType.class));
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<TrainingType> getAll() {
-        return repository.findAll().stream()
+        return repository.findAll()
+            .stream()
             .map(entity -> conversionService.convert(entity, TrainingType.class))
             .toList();
     }

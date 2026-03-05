@@ -20,12 +20,14 @@ public record UpdateTraineeRequest(
         example = "Vesemir"
     )
     String firstName,
+
     @NotBlank(message = "Trainee last name is required")
     @Schema(
         description = "New trainee last name",
         example = "Oldman"
     )
     String lastName,
+
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @Past(message = "Birthdate cannot be in future")
     @Schema(

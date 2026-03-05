@@ -1,5 +1,6 @@
 package com.epam.gym.controller.context;
 
+import com.epam.gym.GymApplication;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,18 +19,15 @@ import java.util.UUID;
 @Component
 public class RequestUidMdcFilter extends OncePerRequestFilter {
 
-    public static final String MDC_KEY = "requestUid";
-    public static final String HEADER_NAME = "X-Request-Uid";
-
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-        var uid = Optional.ofNullable(request.getHeader(HEADER_NAME))
+        var uid = Optional.ofNullable(request.getHeader(GymApplication.REQUEST_HEADER_NAME))
             .filter(StringUtils::isNotBlank)
             .orElseGet(() -> UUID.randomUUID().toString());
-        try (var ignored = MDC.putCloseable(MDC_KEY, uid)) {
-            response.addHeader(HEADER_NAME, uid);
+        try (var ignored = MDC.putCloseable(GymApplication.REQUEST_MDC_KEY, uid)) {
+            response.addHeader(GymApplication.REQUEST_HEADER_NAME, uid);
             log.info("REST Request: {} {}", request.getMethod(), request.getRequestURI());
             filterChain.doFilter(request, response);
             log.info("REST Response: Status {}", response.getStatus());

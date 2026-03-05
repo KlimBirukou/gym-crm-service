@@ -12,5 +12,5 @@ public interface RegisterTraineeRequestToCreateTraineeDtoMapper
     extends Converter<@NonNull RegisterTraineeRequest, CreateTraineeDto> {
 
     @Override
-    CreateTraineeDto convert(@NonNull RegisterTraineeRequest source);
+    CreateTraineeDto convert(RegisterTraineeRequest source);
 }

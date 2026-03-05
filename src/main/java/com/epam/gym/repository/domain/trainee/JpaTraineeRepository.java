@@ -26,13 +26,13 @@ public class JpaTraineeRepository implements ITraineeRepository {
     private final ITraineeEntityToTraineeMapper mapper;
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public boolean existsByUsername(@NonNull String username) {
         return repository.existsByUserUsername(username);
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public Optional<Trainee> getByUsername(@NonNull String username) {
         return repository.findByUserUsername(username)
             .map(entity -> conversionService.convert(entity, Trainee.class));
@@ -60,19 +60,20 @@ public class JpaTraineeRepository implements ITraineeRepository {
         repository.deleteByUserUsername(username);
     }
 
-
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Trainee> getByFirstNameAndLastName(@NonNull String firstname, @NonNull String lastName) {
-        return repository.findByUserFirstNameAndUserLastName(firstname, lastName).stream()
+        return repository.findByUserFirstNameAndUserLastName(firstname, lastName)
+            .stream()
             .map(entity -> conversionService.convert(entity, Trainee.class))
             .toList();
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Trainee> findAllByUids(@NonNull List<UUID> uids) {
-        return repository.findAllByUidIn(uids).stream()
+        return repository.findAllByUidIn(uids)
+            .stream()
             .map(entity -> conversionService.convert(entity, Trainee.class))
             .toList();
     }

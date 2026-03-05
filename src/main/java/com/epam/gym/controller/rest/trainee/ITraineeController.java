@@ -57,7 +57,10 @@ public interface ITraineeController {
             )
         )
     )
-    @GetMapping("/{username}")
+    @GetMapping(
+        path = "/{username}",
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
     @ResponseStatus(HttpStatus.OK)
     TraineeResponse getTrainee(
         @Parameter(
@@ -108,7 +111,11 @@ public interface ITraineeController {
             )
         )
     )
-    @PutMapping("/{username}")
+    @PutMapping(
+        path = "/{username}",
+        produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE
+    )
     @ResponseStatus(HttpStatus.OK)
     TraineeResponse updateTrainee(
         @Parameter(

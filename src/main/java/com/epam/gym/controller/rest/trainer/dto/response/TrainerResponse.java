@@ -17,26 +17,31 @@ public record TrainerResponse(
         example = "Vesemir.Oldman"
     )
     @NonNull String username,
+
     @Schema(
         description = "Trainer first name",
         example = "Vesemir"
     )
     @NonNull String firstName,
+
     @Schema(
         description = "Trainee last name",
         example = "Oldman"
     )
     @NonNull String lastName,
+
     @Schema(
         description = "Trainer specialization name",
         example = "Martial Arts"
     )
     @NonNull String specialization,
+
     @Schema(
         description = "Trainer account status",
         example = "true"
     )
     @NonNull Boolean active,
+
     @Schema(
         description = "Trainer assigned trainees"
     )

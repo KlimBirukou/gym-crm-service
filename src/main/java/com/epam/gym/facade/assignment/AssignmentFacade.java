@@ -22,7 +22,7 @@ public class AssignmentFacade implements IAssignmentFacade {
     private final ConversionService conversionService;
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<TraineeProfileResponse> getTrainees(@NonNull String username,
                                                     @NonNull Boolean assigned,
                                                     @NonNull Boolean active) {
@@ -36,7 +36,7 @@ public class AssignmentFacade implements IAssignmentFacade {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<TrainerProfileResponse> getTrainers(@NonNull String username,
                                                     @NonNull Boolean assigned,
                                                     @NonNull Boolean active) {
@@ -45,17 +45,15 @@ public class AssignmentFacade implements IAssignmentFacade {
             .stream()
             .map(trainer -> conversionService.convert(trainer, TrainerProfileResponse.class))
             .toList();
-        log.info("Get trainers. Finished. Found {} trainers: {}}", response.size(), response);
+        log.info("Get trainers. Finished. Found {} trainers: {}", response.size(), response);
         return response;
     }
 
     @Override
     @Transactional
     public void assign(@NonNull AssignRequest request) {
-        log.info("Assign. Started. Trainee username={}, trainer username={}",
-            request.traineeUsername(), request.trainerUsername());
+        log.info("Assign. Started. AssignRequest={}", request);
         assignmentService.assign(request.traineeUsername(), request.trainerUsername());
-        log.info("Assign. Finished. Trainee username={}, trainer username={}",
-            request.traineeUsername(), request.trainerUsername());
+        log.info("Assign. Finished. AssignRequest={}", request);
     }
 }

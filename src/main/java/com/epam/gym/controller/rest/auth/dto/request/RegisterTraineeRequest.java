@@ -20,12 +20,14 @@ public record RegisterTraineeRequest(
         example = "Vesemir"
     )
     String firstName,
+
     @NotBlank(message = "Last name is required")
     @Schema(
         description = "Last name of potential trainee",
         example = "Oldman"
     )
     String lastName,
+
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @Past(message = "Birthdate cannot be in future")
     @Schema(
@@ -33,6 +35,7 @@ public record RegisterTraineeRequest(
         example = "2000-01-01"
     )
     LocalDate birthdate,
+
     @Schema(
         description = "Address of potential trainee",
         example = "Kaer Morhen Fortress, Blue Mountains"

@@ -13,7 +13,9 @@ import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -33,78 +35,68 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     private static final String NOT_ACTIVE_MESSAGE = "%s [%s] not active to perform this action";
     private static final String DATE_CONFLICT_MESSAGE = "%s [%s] already has a training on [%s] date";
     private static final String LOGIN_MESSAGE = "Username or password invalid";
+    private static final String VALIDATION_FAILED = "VALIDATION_FAILED";
+    private static final String CONTENT_TYPE_MESSAGE =
+        "Content type '%s' is not supported. Supported media types are: %s";
 
     @ExceptionHandler
     public ResponseEntity<@NonNull Object> handleException(NotFoundException exception, WebRequest request) {
-        var message = ENTITY_NOT_FOUND_MESSAGE.formatted(exception.getEntityName(), exception.getIdentifier());
-        log.info(message);
-        var status = HttpStatus.NOT_FOUND;
-        var errorDto = ErrorDto.builder()
-            .error(status.name())
-            .description(message)
-            .build();
-        return super.handleExceptionInternal(exception, errorDto, new HttpHeaders(), status, request);
+        return getObjectResponseEntity(
+            exception,
+            request,
+            ENTITY_NOT_FOUND_MESSAGE.formatted(exception.getEntityName(), exception.getIdentifier()),
+            HttpStatus.NOT_FOUND
+        );
     }
 
     @ExceptionHandler
     public ResponseEntity<@NonNull Object> handleException(NotActiveException exception, WebRequest request) {
-        var message = NOT_ACTIVE_MESSAGE.formatted(exception.getEntityName(), exception.getIdentifier());
-        log.info(message);
-        var status = HttpStatus.UNPROCESSABLE_CONTENT;
-        var errorDto = ErrorDto.builder()
-            .error(status.name())
-            .description(message)
-            .build();
-        return super.handleExceptionInternal(exception, errorDto, new HttpHeaders(), status, request);
+        return getObjectResponseEntity(
+            exception,
+            request,
+            NOT_ACTIVE_MESSAGE.formatted(exception.getEntityName(), exception.getIdentifier()),
+            HttpStatus.UNPROCESSABLE_CONTENT
+        );
     }
 
     @ExceptionHandler
     public ResponseEntity<@NonNull Object> handleException(DateConflictException exception, WebRequest request) {
-        var message = DATE_CONFLICT_MESSAGE.formatted(exception.getEntityName(), exception.getIdentifier(),
-            exception.getDate());
-        log.info(message);
-        var status = HttpStatus.CONFLICT;
-        var errorDto = ErrorDto.builder()
-            .error(status.name())
-            .description(message)
-            .build();
-        return super.handleExceptionInternal(exception, errorDto, new HttpHeaders(), status, request);
+        return getObjectResponseEntity(
+            exception,
+            request,
+            DATE_CONFLICT_MESSAGE.formatted(exception.getEntityName(), exception.getIdentifier(), exception.getDate()),
+            HttpStatus.CONFLICT
+        );
     }
 
     @ExceptionHandler
     public ResponseEntity<@NonNull Object> handleException(AlreadyAssignedException exception, WebRequest request) {
-        var message = ALREADY_ASSIGNED_MESSAGE.formatted(exception.getTraineeUsername(),
-            exception.getTrainerUsername());
-        log.info(message);
-        var status = HttpStatus.CONFLICT;
-        var errorDto = ErrorDto.builder()
-            .error(status.name())
-            .description(message)
-            .build();
-        return super.handleExceptionInternal(exception, errorDto, new HttpHeaders(), status, request);
+        return getObjectResponseEntity(
+            exception,
+            request,
+            ALREADY_ASSIGNED_MESSAGE.formatted(exception.getTraineeUsername(), exception.getTrainerUsername()),
+            HttpStatus.CONFLICT
+        );
     }
 
     @ExceptionHandler
     public ResponseEntity<@NonNull Object> handleException(NotAssignmentException exception, WebRequest request) {
-        var message = NOT_ASSIGNED_MESSAGE.formatted(exception.getTraineeUsername(), exception.getTrainerUsername());
-        log.info(message);
-        var status = HttpStatus.UNPROCESSABLE_CONTENT;
-        var errorDto = ErrorDto.builder()
-            .error(status.name())
-            .description(message)
-            .build();
-        return super.handleExceptionInternal(exception, errorDto, new HttpHeaders(), status, request);
+        return getObjectResponseEntity(
+            exception,
+            request,
+            NOT_ASSIGNED_MESSAGE.formatted(exception.getTraineeUsername(), exception.getTrainerUsername()),
+            HttpStatus.UNPROCESSABLE_CONTENT
+        );
     }
 
     @ExceptionHandler
     public ResponseEntity<@NonNull Object> handleException(AuthException exception, WebRequest request) {
-        log.info(LOGIN_MESSAGE);
-        var status = HttpStatus.UNAUTHORIZED;
-        var errorDto = ErrorDto.builder()
-            .error(status.name())
-            .description(LOGIN_MESSAGE)
-            .build();
-        return super.handleExceptionInternal(exception, errorDto, new HttpHeaders(), status, request);
+        return getObjectResponseEntity(
+            exception,
+            request,
+            LOGIN_MESSAGE,
+            HttpStatus.UNAUTHORIZED
+        );
     }
 
     @Override
@@ -117,13 +109,30 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             .stream()
             .map(DefaultMessageSourceResolvable::getDefaultMessage)
             .collect(Collectors.joining("; "));
-        log.info(message);
-        var errorDto = ErrorDto.builder()
-            .error("VALIDATION_FAILED")
-            .description(message)
-            .build();
-        return super.handleExceptionInternal(ex, errorDto, new HttpHeaders(), HttpStatus.BAD_REQUEST,
-            request);
+        return getObjectResponseEntity(
+            ex,
+            request,
+            message,
+            VALIDATION_FAILED,
+            HttpStatus.BAD_REQUEST
+        );
+    }
+
+    @Override
+    protected @Nullable ResponseEntity<@NonNull Object> handleHttpMediaTypeNotSupported(HttpMediaTypeNotSupportedException ex,
+                                                                                        HttpHeaders headers,
+                                                                                        HttpStatusCode status,
+                                                                                        WebRequest request) {
+        var supportedTypes = ex.getSupportedMediaTypes()
+            .stream()
+            .map(MediaType::toString)
+            .collect(Collectors.joining("; "));
+        return getObjectResponseEntity(
+            ex,
+            request,
+            CONTENT_TYPE_MESSAGE.formatted(ex.getContentType(), supportedTypes),
+            HttpStatus.UNSUPPORTED_MEDIA_TYPE
+        );
     }
 
     @ExceptionHandler(Exception.class)
@@ -133,6 +142,26 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         var errorDto = ErrorDto.builder()
             .error(status.name())
             .description(MESSAGE_500)
+            .build();
+        return super.handleExceptionInternal(exception, errorDto, new HttpHeaders(), status, request);
+    }
+
+    private ResponseEntity<@NonNull Object> getObjectResponseEntity(Exception exception,
+                                                                    WebRequest request,
+                                                                    String message,
+                                                                    HttpStatus status) {
+        return getObjectResponseEntity(exception, request, message, status.name(), status);
+    }
+
+    private ResponseEntity<@NonNull Object> getObjectResponseEntity(Exception exception,
+                                                                    WebRequest request,
+                                                                    String message,
+                                                                    String error,
+                                                                    HttpStatus status) {
+        log.info(message);
+        var errorDto = ErrorDto.builder()
+            .error(error)
+            .description(message)
             .build();
         return super.handleExceptionInternal(exception, errorDto, new HttpHeaders(), status, request);
     }

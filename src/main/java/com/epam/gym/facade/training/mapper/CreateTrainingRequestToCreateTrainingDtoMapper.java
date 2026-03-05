@@ -12,5 +12,5 @@ public interface CreateTrainingRequestToCreateTrainingDtoMapper
     extends Converter<@NonNull CreateTrainingRequest, CreateTrainingDto> {
 
     @Override
-    CreateTrainingDto convert(@NonNull CreateTrainingRequest source);
+    CreateTrainingDto convert(CreateTrainingRequest source);
 }

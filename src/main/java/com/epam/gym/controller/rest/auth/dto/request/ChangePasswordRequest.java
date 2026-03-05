@@ -16,12 +16,14 @@ public record ChangePasswordRequest(
         example = "Vesemir.Oldman"
     )
     String username,
+
     @NotBlank(message = "Old password is required")
     @Schema(
         description = "Current password of user",
         example = "Vesemir.Oldman"
     )
     String oldPassword,
+
     @NotBlank(message = "New password is required")
     @Schema(
         description = "New desired password",

@@ -5,10 +5,9 @@ import com.epam.gym.repository.entity.TraineeTrainerEntity;
 import com.epam.gym.domain.user.Trainee;
 import com.epam.gym.domain.user.Trainer;
 import com.epam.gym.repository.entity.TrainerEntity;
-import com.epam.gym.repository.jpa.assignment.IAssignmentRepository;
+import com.epam.gym.repository.jpa.assignment.IAssignmentEntityRepository;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Primary;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,31 +15,30 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Repository
-@Primary
 @RequiredArgsConstructor
-public class JpaAssignmentRepository implements com.epam.gym.repository.domain.assignment.IAssignmentRepository {
+public class JpaAssignmentRepository implements IAssignmentRepository {
 
-    private final IAssignmentRepository repository;
+    private final IAssignmentEntityRepository repository;
     private final ConversionService conversionService;
 
     @Override
     @Transactional
     public void assign(@NonNull Trainee trainee, @NonNull Trainer trainer) {
-        var entity = TraineeTrainerEntity.builder()
+        repository.save(TraineeTrainerEntity.builder()
             .trainee(conversionService.convert(trainee, TraineeEntity.class))
             .trainer(conversionService.convert(trainer, TrainerEntity.class))
-            .build();
-        repository.save(entity);
+            .build()
+        );
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public boolean checkAssign(@NonNull String traineeUsername, @NonNull String trainerUsername) {
         return repository.existsByTraineeUserUsernameAndTrainerUserUsername(traineeUsername, trainerUsername);
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Trainee> getTrainees(@NonNull String trainerUsername,
                                      @NonNull Boolean assigned,
                                      @NonNull Boolean active) {
@@ -51,7 +49,7 @@ public class JpaAssignmentRepository implements com.epam.gym.repository.domain.a
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Trainer> getTrainers(@NonNull String traineeUsername,
                                      @NonNull Boolean assigned,
                                      @NonNull Boolean active) {

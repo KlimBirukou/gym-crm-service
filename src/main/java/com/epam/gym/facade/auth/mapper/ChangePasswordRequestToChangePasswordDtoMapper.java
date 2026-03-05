@@ -11,5 +11,6 @@ import org.springframework.core.convert.converter.Converter;
 public interface ChangePasswordRequestToChangePasswordDtoMapper
     extends Converter<@NonNull ChangePasswordRequest, ChangePasswordDto> {
 
-    ChangePasswordDto convert(@NonNull ChangePasswordRequest source);
+    @Override
+    ChangePasswordDto convert(ChangePasswordRequest source);
 }

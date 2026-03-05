@@ -15,11 +15,13 @@ public record TraineeProfileResponse(
         example = "Vesemi.Oldman"
     )
     @NonNull String username,
+
     @Schema(
         description = "Trainer first name",
         example = "Vesemir"
     )
     @NonNull String firstName,
+
     @Schema(
         description = "Trainer last name",
         example = "Oldman"

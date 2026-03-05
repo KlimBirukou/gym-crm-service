@@ -17,7 +17,6 @@ public interface ITrainingEntityToTrainingMapper extends Converter<@NonNull Trai
     @Mapping(target = "traineeUid", source = "trainee.uid")
     @Mapping(target = "trainerUid", source = "trainer.uid")
     @Mapping(target = "duration", source = "duration", qualifiedByName = "fromMinutesToDuration")
-    @Mapping(target = "trainingType", source = "trainingType")
     Training convert(TrainingEntity entity);
 
     @InheritInverseConfiguration
@@ -25,6 +24,5 @@ public interface ITrainingEntityToTrainingMapper extends Converter<@NonNull Trai
     @Mapping(target = "trainee.uid", source = "traineeUid")
     @Mapping(target = "trainer.uid", source = "trainerUid")
     @Mapping(target = "duration", source = "duration", qualifiedByName = "fromDurationToMinutes")
-    @Mapping(target = "trainingType", source = "trainingType")
     TrainingEntity invertConvert(Training trainee);
 }

@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -37,17 +38,17 @@ public class TrainingService implements ITrainingService {
     @Override
     @Transactional
     public Training create(@NonNull CreateTrainingDto dto) {
-        var trainee = traineeService.getByUsername(dto.traineeUsername());
-        if (!trainee.isActive()) {
-            throw new TraineeNotActiveException(trainee.getUsername());
-        }
-        var trainer = trainerService.getByUsername(dto.trainerUsername());
-        if (!trainer.isActive()) {
-            throw new TrainerNotActiveException(trainer.getUsername());
-        }
-        if (!assignmentService.checkAssignExist(dto.traineeUsername(), dto.trainerUsername())) {
-            throw new NotAssignmentException(dto.trainerUsername(), dto.traineeUsername());
-        }
+        var trainee = Optional.of(dto.traineeUsername())
+            .map(traineeService::getByUsername)
+            .filter(Trainee::isActive)
+            .orElseThrow(() -> new TraineeNotActiveException(dto.traineeUsername()));
+        var trainer = Optional.of(dto.trainerUsername())
+            .map(trainerService::getByUsername)
+            .filter(Trainer::isActive)
+            .orElseThrow(() -> new TrainerNotActiveException(dto.trainerUsername()));
+        Optional.of(dto)
+            .filter(d -> assignmentService.checkAssignmentExist(d.traineeUsername(), d.trainerUsername()))
+            .orElseThrow(() -> new NotAssignmentException(dto.trainerUsername(), dto.traineeUsername()));
         validateDateAvailability(dto, trainee, trainer);
         var uid = UUID.randomUUID();
         var training = Training.builder()
@@ -64,7 +65,7 @@ public class TrainingService implements ITrainingService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Training> getTraineeTrainings(@NonNull TraineeTrainingsDto dto) {
         var trainee = traineeService.getByUsername(dto.username());
         return trainingRepository.getTraineeTrainings(
@@ -77,7 +78,7 @@ public class TrainingService implements ITrainingService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Training> getTrainerTrainings(@NonNull TrainerTrainingsDto dto) {
         var trainer = trainerService.getByUsername(dto.username());
         return trainingRepository.getTrainerTrainings(
@@ -90,13 +91,15 @@ public class TrainingService implements ITrainingService {
 
     private void validateDateAvailability(CreateTrainingDto dto, Trainee trainee, Trainer trainer) {
         trainingRepository.getTrainingsOnDate(dto.date())
-            .forEach(training -> {
-                if (Objects.equals(training.getTraineeUid(), trainee.getUid())) {
-                    throw new TraineeDateConflictException(trainee.getUsername(), dto.date());
-                }
-                if (Objects.equals(training.getTrainerUid(), trainer.getUid())) {
-                    throw new TrainerDateConflictException(trainer.getUsername(), dto.date());
-                }
-            });
+            .forEach(training -> checkDateConflict(dto, trainee, trainer, training));
+    }
+
+    private static void checkDateConflict(CreateTrainingDto dto, Trainee trainee, Trainer trainer, Training training) {
+        if (Objects.equals(training.getTraineeUid(), trainee.getUid())) {
+            throw new TraineeDateConflictException(trainee.getUsername(), dto.date());
+        }
+        if (Objects.equals(training.getTrainerUid(), trainer.getUid())) {
+            throw new TrainerDateConflictException(trainer.getUsername(), dto.date());
+        }
     }
 }

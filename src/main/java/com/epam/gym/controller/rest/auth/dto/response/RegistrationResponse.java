@@ -7,7 +7,6 @@ import tools.jackson.databind.PropertyNamingStrategies;
 import tools.jackson.databind.annotation.JsonNaming;
 
 @Builder
-
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public record RegistrationResponse(
 
@@ -16,6 +15,7 @@ public record RegistrationResponse(
         example = "Vesemir.Oldman"
     )
     @NonNull String username,
+
     @Schema(
         description = "New user generated password",
         example = "sfmp1239d8"

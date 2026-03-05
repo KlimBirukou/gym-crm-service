@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 @Builder
-
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public record RegisterTrainerRequest(
 
@@ -17,12 +16,14 @@ public record RegisterTrainerRequest(
         example = "Vesemir"
     )
     String firstName,
+
     @NotBlank(message = "Last name is required")
     @Schema(
         description = "Last name of potential trainee",
         example = "Oldman"
     )
     String lastName,
+
     @NotBlank(message = "Specialization is required")
     @Schema(
         description = "The name of the specialization existing in the system",

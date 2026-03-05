@@ -61,7 +61,10 @@ public interface IAssignmentController {
             )
         )
     )
-    @GetMapping("/trainer/{username}/trainees")
+    @GetMapping(
+        path = "/trainer/{username}/trainees",
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
     @ResponseStatus(HttpStatus.OK)
     List<TraineeProfileResponse> getTrainees(
         @Parameter(
@@ -114,7 +117,10 @@ public interface IAssignmentController {
             )
         )
     )
-    @GetMapping("/trainee/{username}/trainers")
+    @GetMapping(
+        path = "/trainee/{username}/trainers",
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
     @ResponseStatus(HttpStatus.OK)
     List<TrainerProfileResponse> getTrainers(
         @Parameter(
@@ -130,7 +136,7 @@ public interface IAssignmentController {
         )
         @RequestParam Boolean assigned,
         @Parameter(
-            description = "Assignment filter: true for assigned trainers, false for unassigned",
+            description = "Activity filter: true for active trainees, false for inactive",
             example = "true",
             required = true
         )
@@ -232,7 +238,11 @@ public interface IAssignmentController {
             }
         )
     )
-    @PostMapping("/assign")
+    @PostMapping(
+        path = "/assign",
+        produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE
+    )
     @ResponseStatus(HttpStatus.OK)
     void assign(
         @io.swagger.v3.oas.annotations.parameters.RequestBody(

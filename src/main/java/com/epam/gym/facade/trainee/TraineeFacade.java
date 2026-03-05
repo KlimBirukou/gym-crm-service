@@ -29,7 +29,7 @@ public class TraineeFacade implements ITraineeFacade {
     private final IUserService userService;
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public TraineeResponse getProfile(@NonNull String username) {
         log.info("Get trainee. Started. Username={}", username);
         var trainee = traineeService.getByUsername(username);

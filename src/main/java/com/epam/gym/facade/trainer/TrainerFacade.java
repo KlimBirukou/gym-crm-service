@@ -29,7 +29,7 @@ public class TrainerFacade implements ITrainerFacade {
     private final IUserService userService;
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public TrainerResponse getProfile(@NonNull String username) {
         log.info("Get trainer. Started. Username={}", username);
         var trainer = trainerService.getByUsername(username);

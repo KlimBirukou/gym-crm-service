@@ -12,5 +12,5 @@ public interface RegisterTrainerRequestToCreateTrainerDtoMapper
     extends Converter<@NonNull RegisterTrainerRequest, CreateTrainerDto> {
 
     @Override
-    CreateTrainerDto convert(@NonNull RegisterTrainerRequest request);
+    CreateTrainerDto convert(RegisterTrainerRequest request);
 }

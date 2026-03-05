@@ -16,6 +16,7 @@ public record LoginRequest(
         example = "Vesemir.Oldman"
     )
     String username,
+
     @NotBlank(message = "Password is required")
     @Schema(
         description = "Current password of user",

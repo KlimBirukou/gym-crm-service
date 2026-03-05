@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class UserService implements IUserService {
@@ -19,7 +21,7 @@ public class UserService implements IUserService {
     private final IPasswordService passwordService;
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public User getByUsername(@NonNull String username) {
         return userRepository.getByUsername(username)
             .orElseThrow(() -> new UserNotFoundException(username));
@@ -30,9 +32,9 @@ public class UserService implements IUserService {
     public void changePassword(@NonNull ChangePasswordDto dto) {
         var user = userRepository.getByUsername(dto.username())
             .orElseThrow(() -> new UserNotFoundException(dto.username()));
-        if (!passwordService.checkPassword(dto.oldPassword(), user.getPassword())) {
-            throw new AuthException();
-        }
+        Optional.of(dto)
+            .filter(d -> passwordService.checkPassword(d.oldPassword(), user.getPassword()))
+            .orElseThrow(AuthException::new);
         user.setPassword(passwordService.hashPassword(dto.newPassword()));
         userRepository.update(user);
     }

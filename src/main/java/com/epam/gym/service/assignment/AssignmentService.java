@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Predicate;
 
 @Service
 @RequiredArgsConstructor
@@ -26,28 +28,28 @@ public class AssignmentService implements IAssignmentService {
     @Override
     @Transactional
     public void assign(@NonNull String traineeUsername, @NonNull String trainerUsername) {
-        var trainee = traineeService.getByUsername(traineeUsername);
-        if (!trainee.isActive()) {
-            throw new TraineeNotActiveException(trainee.getUsername());
-        }
-        var trainer = trainerService.getByUsername(trainerUsername);
-        if (!trainer.isActive()) {
-            throw new TrainerNotActiveException(trainer.getUsername());
-        }
-        if (assignmentRepository.checkAssign(traineeUsername, trainerUsername)) {
-            throw new AlreadyAssignedException(traineeUsername, trainerUsername);
-        }
+        var trainee = Optional.of(traineeUsername)
+            .map(traineeService::getByUsername)
+            .filter(Trainee::isActive)
+            .orElseThrow(() -> new TraineeNotActiveException(traineeUsername));
+        var trainer = Optional.of(trainerUsername)
+            .map(trainerService::getByUsername)
+            .filter(Trainer::isActive)
+            .orElseThrow(() -> new TrainerNotActiveException(trainerUsername));
+        Optional.of(trainee)
+            .filter(Predicate.not(t -> assignmentRepository.checkAssign(traineeUsername, trainerUsername)))
+            .orElseThrow(() -> new AlreadyAssignedException(traineeUsername, trainerUsername));
         assignmentRepository.assign(trainee, trainer);
     }
 
     @Override
-    @Transactional
-    public boolean checkAssignExist(@NonNull String traineeUsername, @NonNull String trainerUsername) {
+    @Transactional(readOnly = true)
+    public boolean checkAssignmentExist(@NonNull String traineeUsername, @NonNull String trainerUsername) {
         return assignmentRepository.checkAssign(traineeUsername, trainerUsername);
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Trainee> getTrainees(@NonNull String trainerUsername,
                                      @NonNull Boolean assigned,
                                      @NonNull Boolean active) {
@@ -56,7 +58,7 @@ public class AssignmentService implements IAssignmentService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Trainer> getTrainers(@NonNull String traineeUsername,
                                      @NonNull Boolean assigned,
                                      @NonNull Boolean active) {

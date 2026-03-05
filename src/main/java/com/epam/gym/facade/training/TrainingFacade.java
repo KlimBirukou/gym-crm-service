@@ -49,7 +49,7 @@ public class TrainingFacade implements ITrainingFacade {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<TraineeTrainingResponse> getTraineeTrainings(@NonNull GetTraineeTrainingsRequest request) {
         log.info("Get trainee trainings. Started. Request={}", request);
         var dto = conversionService.convert(request, TraineeTrainingsDto.class);
@@ -75,7 +75,7 @@ public class TrainingFacade implements ITrainingFacade {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<TrainerTrainingsResponse> getTrainerTrainings(@NonNull GetTrainerTrainingRequest request) {
         log.info("Get trainer trainings. Started. Request={}", request);
         var dto = conversionService.convert(request, TrainerTrainingsDto.class);
@@ -101,7 +101,7 @@ public class TrainingFacade implements ITrainingFacade {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<TrainingTypeResponse> getTrainingsTypes() {
         log.info("Get all trainings types. Started.");
         var response = trainingTypeService.getAll()

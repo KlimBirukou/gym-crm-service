@@ -16,6 +16,7 @@ public record AssignRequest(
         example = "Geralt.zRivii"
     )
     String traineeUsername,
+
     @NotBlank(message = "Trainer username is required")
     @Schema(
         description = "Username of traineк",

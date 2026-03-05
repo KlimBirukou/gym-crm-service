@@ -56,7 +56,10 @@ public interface ITrainerController {
             )
         )
     )
-    @GetMapping("/{username}")
+    @GetMapping(
+        path = "/{username}",
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
     @ResponseStatus(HttpStatus.OK)
     TrainerResponse getTrainer(
         @Parameter(
@@ -107,7 +110,11 @@ public interface ITrainerController {
             )
         )
     )
-    @PutMapping("/{username}")
+    @PutMapping(
+        path = "/{username}",
+        produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE
+    )
     @ResponseStatus(HttpStatus.OK)
     TrainerResponse updateTrainer(
         @Parameter(

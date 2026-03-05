@@ -49,7 +49,11 @@ public interface IAuthController {
             )
         )
     )
-    @PostMapping("/registration/trainee")
+    @PostMapping(
+        path = "/registration/trainee",
+        produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE
+    )
     @ResponseStatus(HttpStatus.CREATED)
     RegistrationResponse registerTrainee(
         @io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -88,7 +92,11 @@ public interface IAuthController {
             )
         )
     )
-    @PostMapping("/registration/trainer")
+    @PostMapping(
+        path = "/registration/trainer",
+        produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE
+    )
     @ResponseStatus(HttpStatus.CREATED)
     RegistrationResponse registerTrainer(
         @io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -109,7 +117,10 @@ public interface IAuthController {
         responseCode = "204",
         description = "Login successful"
     )
-    @PostMapping("/login")
+    @PostMapping(
+        path = "/login",
+        consumes = MediaType.APPLICATION_JSON_VALUE
+    )
     @ResponseStatus(HttpStatus.OK)
     void login(
         @io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -129,7 +140,6 @@ public interface IAuthController {
     @ApiResponse(
         responseCode = "200",
         description = "Password changed successfully")
-    @PutMapping("/change-password")
     @ApiResponse(
         responseCode = "401",
         description = "Wrong username or password",
@@ -145,6 +155,11 @@ public interface IAuthController {
                     """
             )
         )
+    )
+    @PutMapping(
+        path = "/change-password",
+        produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE
     )
     @ResponseStatus(HttpStatus.OK)
     void changePassword(

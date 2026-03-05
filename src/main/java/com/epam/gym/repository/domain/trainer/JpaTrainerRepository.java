@@ -26,13 +26,13 @@ public class JpaTrainerRepository implements ITrainerRepository {
     private final ITrainerEntityToTrainerMapper mapper;
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public boolean existsByUsername(@NonNull String username) {
         return repository.existsByUserUsername(username);
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public Optional<Trainer> getByUsername(@NonNull String username) {
         return repository.findByUserUsername(username)
             .map(entity -> conversionService.convert(entity, Trainer.class));
@@ -55,17 +55,19 @@ public class JpaTrainerRepository implements ITrainerRepository {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Trainer> getByFirstNameAndLastName(@NonNull String firstname, @NonNull String lastName) {
-        return repository.findByUserFirstNameAndUserLastName(firstname, lastName).stream()
+        return repository.findByUserFirstNameAndUserLastName(firstname, lastName)
+            .stream()
             .map(entity -> conversionService.convert(entity, Trainer.class))
             .toList();
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Trainer> findAllByUids(@NonNull List<UUID> uids) {
-        return repository.findAllByUidIn(uids).stream()
+        return repository.findAllByUidIn(uids)
+            .stream()
             .map(entity -> conversionService.convert(entity, Trainer.class))
             .toList();
     }

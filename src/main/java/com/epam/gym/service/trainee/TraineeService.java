@@ -13,8 +13,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 @Service
 @RequiredArgsConstructor
@@ -64,18 +67,18 @@ public class TraineeService implements ITraineeService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public Trainee getByUsername(@NonNull String username) {
         return traineeRepository.getByUsername(username)
             .orElseThrow(() -> new TraineeNotFoundException(username));
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Trainee> getByUids(@NonNull List<UUID> uids) {
-        if (uids.isEmpty()) {
-            return List.of();
-        }
-        return traineeRepository.findAllByUids(uids);
+        return Optional.of(uids)
+            .filter(Predicate.not(Collection::isEmpty))
+            .map(traineeRepository::findAllByUids)
+            .orElseGet(List::of);
     }
 }

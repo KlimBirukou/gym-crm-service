@@ -14,33 +14,18 @@ import org.springframework.core.convert.converter.Converter;
 @Mapper(config = IMapStructConfiguration.class)
 public interface IUserEntityToUserMapper extends Converter<@NonNull UserEntity, User> {
 
-    @Mapping(target = "uid", source = "uid")
-    @Mapping(target = "firstName", source = "firstName")
-    @Mapping(target = "lastName", source = "lastName")
-    @Mapping(target = "username", source = "username")
-    @Mapping(target = "password", source = "password")
-    @Mapping(target = "active", source = "active")
-    User convert(@NonNull UserEntity source);
+    @Override
+    User convert(UserEntity source);
 
     @InheritInverseConfiguration
     @DelegatingConverter
-    @Mapping(target = "uid", source = "uid")
-    @Mapping(target = "firstName", source = "firstName")
-    @Mapping(target = "lastName", source = "lastName")
-    @Mapping(target = "username", source = "username")
-    @Mapping(target = "password", source = "password")
-    @Mapping(target = "active", source = "active")
     @Mapping(target = "trainee", ignore = true)
     @Mapping(target = "trainer", ignore = true)
-    UserEntity convert(@NonNull User domain);
+    UserEntity convert(User domain);
 
     @Mapping(target = "uid", ignore = true)
     @Mapping(target = "username", ignore = true)
-    @Mapping(target = "password", source = "password")
-    @Mapping(target = "firstName", source = "firstName")
-    @Mapping(target = "lastName", source = "lastName")
-    @Mapping(target = "active", source = "active")
     @Mapping(target = "trainee", ignore = true)
     @Mapping(target = "trainer", ignore = true)
-    void updateEntity(@NonNull User domain, @MappingTarget UserEntity entity);
+    void updateEntity(User domain, @MappingTarget UserEntity entity);
 }

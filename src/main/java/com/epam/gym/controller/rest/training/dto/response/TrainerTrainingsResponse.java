@@ -17,21 +17,25 @@ public record TrainerTrainingsResponse(
         example = "Improve swordsmanship skills"
     )
     @NonNull String name,
+
     @Schema(
         description = "Date of training",
         example = "2026-06-06"
     )
     @NonNull LocalDate date,
+
     @Schema(
         description = "Training type name",
         example = "Mortial Arts"
     )
     @NonNull String trainingTypeName,
+
     @Schema(
         description = "Duration of the training in minutes",
         example = "120"
     )
     int duration,
+
     @Schema(
         description = "Trainee username",
         example = "Vesemir.Oldman"

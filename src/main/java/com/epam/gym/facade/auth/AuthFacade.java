@@ -21,6 +21,8 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -61,15 +63,14 @@ public class AuthFacade implements IAuthFacade {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public void login(@NonNull LoginRequest request) {
         log.info("Login. Started. Username={}", request.username());
         // TODO implement in Spring Security module
         User user = userService.getByUsername(request.username());
-        if (!passwordService.checkPassword(request.password(), user.getPassword())) {
-            log.info("Login. Finished. Denied. Username={}", request.username());
-            throw new AuthException();
-        }
+        Optional.of(request)
+            .filter(r -> passwordService.checkPassword(request.password(), user.getPassword()))
+            .orElseThrow(AuthException::new);
         log.info("Login. Finished. Successful. Username={}", request.username());
     }
 
