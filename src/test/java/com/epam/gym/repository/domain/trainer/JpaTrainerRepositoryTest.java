@@ -5,13 +5,15 @@ import com.epam.gym.exception.not.found.TrainerNotFoundException;
 import com.epam.gym.repository.entity.TrainerEntity;
 import com.epam.gym.repository.jpa.trainer.ITrainerEntityRepository;
 import com.epam.gym.repository.mapper.ITrainerEntityToTrainerMapper;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.convert.ConversionService;
@@ -52,41 +54,29 @@ class JpaTrainerRepositoryTest {
     @Mock
     private ITrainerEntityToTrainerMapper mapper;
 
+    @InjectMocks
     private JpaTrainerRepository testObject;
 
-    @BeforeEach
-    void setUp() {
-        testObject = new JpaTrainerRepository(
-            repository,
-            conversionService,
-            mapper
-        );
-    }
-
-    private static Stream<Boolean> provideBooleanData() {
-        return Stream.of(true, false);
+    @AfterEach
+    void tearDown() {
+        verifyNoMoreInteractions(repository, conversionService, mapper);
     }
 
     @ParameterizedTest
-    @MethodSource("provideBooleanData")
+    @ValueSource(booleans = {true, false})
     void existByUsername_shouldReturnBoolean_whenArgumentNotNull(boolean isExist) {
         doReturn(isExist).when(repository).existsByUserUsername(USERNAME);
 
         var result = testObject.existsByUsername(USERNAME);
 
         assertEquals(isExist, result);
-
-        assertNoUnexpectedInteractions();
     }
 
     @ParameterizedTest
     @NullSource
     void existByUsername_shouldThrowException_whenArgumentNull(String username) {
         assertThrows(NullPointerException.class, () -> testObject.existsByUsername(username));
-
-        assertNoUnexpectedInteractions();
     }
-
 
     @Test
     void getByUsername_shouldReturnOptionalWithTrainer_whenEntityExist() {
@@ -97,8 +87,6 @@ class JpaTrainerRepositoryTest {
 
         assertTrue(result.isPresent());
         assertSame(TRAINER_1, result.get());
-
-        assertNoUnexpectedInteractions();
     }
 
     @Test
@@ -108,18 +96,13 @@ class JpaTrainerRepositoryTest {
         var result = testObject.getByUsername(USERNAME);
 
         assertTrue(result.isEmpty());
-
-        assertNoUnexpectedInteractions();
     }
 
     @ParameterizedTest
     @NullSource
     void getByUsername_shouldThrowException_whenArgumentNull(String username) {
         assertThrows(NullPointerException.class, () -> testObject.getByUsername(username));
-
-        assertNoUnexpectedInteractions();
     }
-
 
     @Test
     void save_shouldSaveEntity() {
@@ -128,18 +111,13 @@ class JpaTrainerRepositoryTest {
         testObject.save(TRAINER_1);
 
         verify(repository).save(TRAINER_ENTITY_1);
-
-        assertNoUnexpectedInteractions();
     }
 
     @ParameterizedTest
     @NullSource
     void save_shouldThrowException_whenArgumentNull(Trainer trainer) {
         assertThrows(NullPointerException.class, () -> testObject.save(trainer));
-
-        assertNoUnexpectedInteractions();
     }
-
 
     @Test
     void update_shouldUpdateEntity_whenTrainerExists() {
@@ -149,8 +127,6 @@ class JpaTrainerRepositoryTest {
 
         verify(mapper).updateEntity(TRAINER_1, TRAINER_ENTITY_1);
         verify(repository).save(TRAINER_ENTITY_1);
-
-        assertNoUnexpectedInteractions();
     }
 
     @Test
@@ -158,18 +134,13 @@ class JpaTrainerRepositoryTest {
         doReturn(Optional.empty()).when(repository).findByUserUsername(USERNAME);
 
         assertThrows(TrainerNotFoundException.class, () -> testObject.update(TRAINER_1));
-
-        assertNoUnexpectedInteractions();
     }
 
     @ParameterizedTest
     @NullSource
     void update_shouldThrowException_whenArgumentNull(Trainer trainer) {
         assertThrows(NullPointerException.class, () -> testObject.update(trainer));
-
-        assertNoUnexpectedInteractions();
     }
-
 
     private static Stream<Arguments> provideTestData() {
         return Stream.of(
@@ -191,8 +162,6 @@ class JpaTrainerRepositoryTest {
 
         assertEquals(trainers.size(), result.size());
         verify(conversionService, times(entities.size())).convert(any(TrainerEntity.class), eq(Trainer.class));
-
-        assertNoUnexpectedInteractions();
     }
 
     private static Stream<Arguments> provideNullArguments() {
@@ -207,8 +176,6 @@ class JpaTrainerRepositoryTest {
     @MethodSource("provideNullArguments")
     void getByFirstNameAndLastName_shouldThrowException_whenArgumentsNull(String firstname, String lastname) {
         assertThrows(NullPointerException.class, () -> testObject.getByFirstNameAndLastName(firstname, lastname));
-
-        assertNoUnexpectedInteractions();
     }
 
 
@@ -225,24 +192,11 @@ class JpaTrainerRepositoryTest {
 
         assertEquals(trainers.size(), result.size());
         verify(conversionService, times(entities.size())).convert(any(TrainerEntity.class), eq(Trainer.class));
-
-        assertNoUnexpectedInteractions();
     }
 
     @ParameterizedTest
     @NullSource
     void findAllByUids_shouldThrowException_whenArgumentNull(List<UUID> uids) {
         assertThrows(NullPointerException.class, () -> testObject.findAllByUids(uids));
-
-        assertNoUnexpectedInteractions();
-    }
-
-
-    private void assertNoUnexpectedInteractions() {
-        verifyNoMoreInteractions(
-            repository,
-            conversionService,
-            mapper
-        );
     }
 }

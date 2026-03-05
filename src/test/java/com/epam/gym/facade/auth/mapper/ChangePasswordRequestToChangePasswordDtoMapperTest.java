@@ -1,7 +1,7 @@
 package com.epam.gym.facade.auth.mapper;
 
 import com.epam.gym.controller.rest.auth.dto.request.ChangePasswordRequest;
-import org.junit.jupiter.api.BeforeEach;
+import com.epam.gym.service.user.dto.ChangePasswordDto;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -11,17 +11,12 @@ import org.mapstruct.factory.Mappers;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 class ChangePasswordRequestToChangePasswordDtoMapperTest {
 
-    private ChangePasswordRequestToChangePasswordDtoMapper testObject;
-
-    @BeforeEach
-    void setUp() {
-        testObject = Mappers.getMapper(ChangePasswordRequestToChangePasswordDtoMapper.class);
-    }
+    private static final ChangePasswordRequestToChangePasswordDtoMapper testObject =
+        Mappers.getMapper(ChangePasswordRequestToChangePasswordDtoMapper.class);
 
     private static Stream<Arguments> provideConvertData() {
         return Stream.of(
@@ -41,10 +36,12 @@ class ChangePasswordRequestToChangePasswordDtoMapperTest {
 
         var result = testObject.convert(source);
 
-        assertNotNull(result);
-        assertEquals(username, result.username());
-        assertEquals(oldPassword, result.oldPassword());
-        assertEquals(newPassword, result.newPassword());
+        var expectedChangePasswordDto = ChangePasswordDto.builder()
+            .username(username)
+            .newPassword(newPassword)
+            .oldPassword(oldPassword)
+            .build();
+        assertEquals(expectedChangePasswordDto, result);
     }
 
     @ParameterizedTest

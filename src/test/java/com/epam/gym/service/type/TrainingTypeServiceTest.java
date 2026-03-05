@@ -3,13 +3,14 @@ package com.epam.gym.service.type;
 import com.epam.gym.domain.training.TrainingType;
 import com.epam.gym.exception.not.found.TrainingTypeNotFoundException;
 import com.epam.gym.repository.domain.type.ITrainingTypeRepository;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullSource;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -34,23 +35,22 @@ class TrainingTypeServiceTest {
     @Mock
     private ITrainingTypeRepository trainingTypeRepository;
 
+    @InjectMocks
     private TrainingTypeService testObject;
 
-    @BeforeEach
-    void setUp() {
-        testObject = new TrainingTypeService(trainingTypeRepository);
+    @AfterEach
+    void tearDown() {
+        verifyNoMoreInteractions(trainingTypeRepository);
     }
 
     @Test
     void getByName_shouldReturnTrainingType_whenTypeExist() {
-        var type = getType1();
+        var type = buildType(TYPE_NAME_1);
         doReturn(Optional.of(type)).when(trainingTypeRepository).getByName(TYPE_NAME_1);
 
         var result = testObject.getByName(TYPE_NAME_1);
 
         assertSame(type, result);
-
-        verifyNoMoreInteractions(trainingTypeRepository);
     }
 
     @Test
@@ -58,24 +58,19 @@ class TrainingTypeServiceTest {
         doReturn(Optional.empty()).when(trainingTypeRepository).getByName(UNKNOW_TYPE_NAME);
 
         assertThrows(TrainingTypeNotFoundException.class, () -> testObject.getByName(UNKNOW_TYPE_NAME));
-
-        verifyNoMoreInteractions(trainingTypeRepository);
     }
 
     @ParameterizedTest
     @NullSource
     void getByName_shouldThrowException_whenArgumentNull(String name) {
         assertThrows(NullPointerException.class, () -> testObject.getByName(name));
-
-        verifyNoMoreInteractions(trainingTypeRepository);
     }
-
 
     private static Stream<Arguments> provideTestData() {
         return Stream.of(
             Arguments.of(List.of(), 0),
-            Arguments.of(List.of(getType1()), 1),
-            Arguments.of(List.of(getType1(), getType2()), 2)
+            Arguments.of(List.of(buildType(TYPE_NAME_1)), 1),
+            Arguments.of(List.of(buildType(TYPE_NAME_1), buildType(TYPE_NAME_2)), 2)
         );
     }
 
@@ -88,21 +83,12 @@ class TrainingTypeServiceTest {
 
         assertEquals(size, result.size());
         assertEquals(list, result);
-
-        verifyNoMoreInteractions(trainingTypeRepository);
     }
 
-    private static TrainingType getType1() {
+    private static TrainingType buildType(String name) {
         return TrainingType.builder()
             .uid(UUID.randomUUID())
-            .name(TYPE_NAME_1)
-            .build();
-    }
-
-    private static TrainingType getType2() {
-        return TrainingType.builder()
-            .uid(UUID.randomUUID())
-            .name(TYPE_NAME_2)
+            .name(name)
             .build();
     }
 }

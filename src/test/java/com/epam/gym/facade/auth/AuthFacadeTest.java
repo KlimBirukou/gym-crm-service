@@ -15,11 +15,12 @@ import com.epam.gym.service.trainer.ITrainerService;
 import com.epam.gym.service.trainer.dto.CreateTrainerDto;
 import com.epam.gym.service.user.IUserService;
 import com.epam.gym.service.user.dto.ChangePasswordDto;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.convert.ConversionService;
@@ -59,24 +60,19 @@ class AuthFacadeTest {
     @Mock
     private ConversionService conversionService;
 
+    @InjectMocks
     private AuthFacade testObject;
 
-    @BeforeEach
-    void setUp() {
-        testObject = new AuthFacade(
-            traineeService,
-            trainerService,
-            userService,
-            passwordService,
-            conversionService
-        );
+    @AfterEach
+    void tearDown() {
+        verifyNoMoreInteractions(traineeService, trainerService, userService, passwordService, conversionService);
     }
 
     @Test
     void registerTrainee_shouldRegisterAndReturnResponse_whenAlways() {
-        var request = getRegisterTraineeRequest();
-        var createTraineeDto = getCreateTraineeDto();
-        var trainee = getTrainee();
+        var request = buildRegisterTraineeRequest();
+        var createTraineeDto = buildCreateTraineeDto();
+        var trainee = buildTrainee();
         doReturn(createTraineeDto).when(conversionService).convert(request, CreateTraineeDto.class);
         doReturn(trainee).when(traineeService).create(createTraineeDto);
 
@@ -85,24 +81,19 @@ class AuthFacadeTest {
         assertNotNull(result);
         assertEquals(USERNAME, result.username());
         assertEquals(PASSWORD, result.password());
-
-        assertNoUnexpectedInteractions();
     }
 
     @ParameterizedTest
     @NullSource
     void registerTrainee_shouldThrowException_whenRequestNull(RegisterTraineeRequest request) {
         assertThrows(NullPointerException.class, () -> testObject.registerTrainee(request));
-
-        assertNoUnexpectedInteractions();
     }
-
 
     @Test
     void registerTrainer_shouldRegisterAndReturnResponse_whenAlways() {
-        var request = getRegisterTrainerRequest();
-        var createTrainerDto = getCreateTrainerDto();
-        var trainer = getTrainer();
+        var request = buildRegisterTrainerRequest();
+        var createTrainerDto = buildCreateTrainerDto();
+        var trainer = buildTrainer();
         doReturn(createTrainerDto).when(conversionService).convert(request, CreateTrainerDto.class);
         doReturn(trainer).when(trainerService).create(createTrainerDto);
 
@@ -111,74 +102,59 @@ class AuthFacadeTest {
         assertNotNull(result);
         assertEquals(USERNAME, result.username());
         assertEquals(PASSWORD, result.password());
-
-        assertNoUnexpectedInteractions();
     }
 
     @ParameterizedTest
     @NullSource
     void registerTrainer_shouldThrowException_whenRequestNull(RegisterTrainerRequest request) {
         assertThrows(NullPointerException.class, () -> testObject.registerTrainer(request));
-
-        assertNoUnexpectedInteractions();
     }
-
 
     @Test
     void login_shouldSucceed_whenCredentialsValid() {
-        var request = getLoginRequest();
-        var user = getUser();
+        var request = buildLoginRequest();
+        var user = buildUser();
         doReturn(user).when(userService).getByUsername(USERNAME);
         doReturn(true).when(passwordService).checkPassword(PASSWORD, HASHED_PASSWORD);
 
         testObject.login(request);
-
-        assertNoUnexpectedInteractions();
     }
 
     @Test
     void login_shouldThrowException_whenPasswordInvalid() {
-        var request = getLoginRequest();
-        var user = getUser();
+        var request = buildLoginRequest();
+        var user = buildUser();
         doReturn(user).when(userService).getByUsername(USERNAME);
         doReturn(false).when(passwordService).checkPassword(PASSWORD, HASHED_PASSWORD);
 
         assertThrows(AuthException.class, () -> testObject.login(request));
-
-        assertNoUnexpectedInteractions();
     }
 
     @ParameterizedTest
     @NullSource
     void login_shouldThrowException_whenRequestNull(LoginRequest request) {
         assertThrows(NullPointerException.class, () -> testObject.login(request));
-
-        assertNoUnexpectedInteractions();
     }
 
 
     @Test
     void changePassword_shouldCallUserService_whenAlways() {
-        var request = getChangePasswordRequest();
+        var request = buildChangePasswordRequest();
         var changePasswordDto = getChangePasswordDto();
         doReturn(changePasswordDto).when(conversionService).convert(request, ChangePasswordDto.class);
 
         testObject.changePassword(request);
 
         verify(userService).changePassword(changePasswordDto);
-
-        assertNoUnexpectedInteractions();
     }
 
     @ParameterizedTest
     @NullSource
     void changePassword_shouldThrowException_whenRequestNull(ChangePasswordRequest request) {
         assertThrows(NullPointerException.class, () -> testObject.changePassword(request));
-
-        assertNoUnexpectedInteractions();
     }
 
-    private static RegisterTraineeRequest getRegisterTraineeRequest() {
+    private static RegisterTraineeRequest buildRegisterTraineeRequest() {
         return RegisterTraineeRequest.builder()
             .firstName(FIRSTNAME)
             .lastName(LASTNAME)
@@ -187,7 +163,7 @@ class AuthFacadeTest {
             .build();
     }
 
-    private static RegisterTrainerRequest getRegisterTrainerRequest() {
+    private static RegisterTrainerRequest buildRegisterTrainerRequest() {
         return RegisterTrainerRequest.builder()
             .firstName(FIRSTNAME)
             .lastName(LASTNAME)
@@ -195,14 +171,14 @@ class AuthFacadeTest {
             .build();
     }
 
-    private static LoginRequest getLoginRequest() {
+    private static LoginRequest buildLoginRequest() {
         return LoginRequest.builder()
             .username(USERNAME)
             .password(PASSWORD)
             .build();
     }
 
-    private static ChangePasswordRequest getChangePasswordRequest() {
+    private static ChangePasswordRequest buildChangePasswordRequest() {
         return ChangePasswordRequest.builder()
             .username(USERNAME)
             .oldPassword(OLD_PASSWORD)
@@ -210,7 +186,7 @@ class AuthFacadeTest {
             .build();
     }
 
-    private static CreateTraineeDto getCreateTraineeDto() {
+    private static CreateTraineeDto buildCreateTraineeDto() {
         return CreateTraineeDto.builder()
             .firstName(FIRSTNAME)
             .lastName(LASTNAME)
@@ -219,7 +195,7 @@ class AuthFacadeTest {
             .build();
     }
 
-    private static CreateTrainerDto getCreateTrainerDto() {
+    private static CreateTrainerDto buildCreateTrainerDto() {
         return CreateTrainerDto.builder()
             .firstName(FIRSTNAME)
             .lastName(LASTNAME)
@@ -235,7 +211,7 @@ class AuthFacadeTest {
             .build();
     }
 
-    private static Trainee getTrainee() {
+    private static Trainee buildTrainee() {
         return Trainee.builder()
             .uid(UUID.randomUUID())
             .username(USERNAME)
@@ -243,7 +219,7 @@ class AuthFacadeTest {
             .build();
     }
 
-    private static Trainer getTrainer() {
+    private static Trainer buildTrainer() {
         return Trainer.builder()
             .uid(UUID.randomUUID())
             .username(USERNAME)
@@ -251,21 +227,11 @@ class AuthFacadeTest {
             .build();
     }
 
-    private static User getUser() {
+    private static User buildUser() {
         return User.builder()
             .uid(UUID.randomUUID())
             .username(USERNAME)
             .password(HASHED_PASSWORD)
             .build();
-    }
-
-    private void assertNoUnexpectedInteractions() {
-        verifyNoMoreInteractions(
-            traineeService,
-            trainerService,
-            userService,
-            passwordService,
-            conversionService
-        );
     }
 }

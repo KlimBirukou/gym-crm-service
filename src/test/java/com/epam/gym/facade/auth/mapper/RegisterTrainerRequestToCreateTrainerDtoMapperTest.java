@@ -1,7 +1,7 @@
 package com.epam.gym.facade.auth.mapper;
 
 import com.epam.gym.controller.rest.auth.dto.request.RegisterTrainerRequest;
-import org.junit.jupiter.api.BeforeEach;
+import com.epam.gym.service.trainer.dto.CreateTrainerDto;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -11,17 +11,12 @@ import org.mapstruct.factory.Mappers;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 class RegisterTrainerRequestToCreateTrainerDtoMapperTest {
 
-    private RegisterTrainerRequestToCreateTrainerDtoMapper testObject;
-
-    @BeforeEach
-    void setUp() {
-        testObject = Mappers.getMapper(RegisterTrainerRequestToCreateTrainerDtoMapper.class);
-    }
+    private final RegisterTrainerRequestToCreateTrainerDtoMapper testObject =
+        Mappers.getMapper(RegisterTrainerRequestToCreateTrainerDtoMapper.class);
 
     private static Stream<Arguments> provideConvertData() {
         return Stream.of(
@@ -39,12 +34,10 @@ class RegisterTrainerRequestToCreateTrainerDtoMapperTest {
             .specialization(specialization)
             .build();
 
-        var result = testObject.convert(source);
+        var actual = testObject.convert(source);
 
-        assertNotNull(result);
-        assertEquals(firstName, result.firstName());
-        assertEquals(lastName, result.lastName());
-        assertEquals(specialization, result.specialization());
+        var expected = new CreateTrainerDto(firstName, lastName, specialization);
+        assertEquals(expected, actual);
     }
 
     @ParameterizedTest

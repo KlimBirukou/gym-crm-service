@@ -5,8 +5,8 @@ import com.epam.gym.domain.user.Trainer;
 import com.epam.gym.repository.entity.TraineeEntity;
 import com.epam.gym.repository.entity.TraineeTrainerEntity;
 import com.epam.gym.repository.entity.TrainerEntity;
-import com.epam.gym.repository.jpa.assignment.IAssignmentRepository;
-import org.junit.jupiter.api.BeforeEach;
+import com.epam.gym.repository.jpa.assignment.IAssignmentEntityRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -14,6 +14,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.convert.ConversionService;
@@ -28,6 +29,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -38,31 +40,31 @@ class JpaAssignmentRepositoryTest {
 
     private static final String TRAINEE_USERNAME = "trainee_username";
     private static final String TRAINER_USERNAME = "trainer_username";
-
-    private static final Trainee TRAINEE = Trainee.builder().username(TRAINEE_USERNAME).build();
-    private static final Trainer TRAINER = Trainer.builder().username(TRAINER_USERNAME).build();
-
-    private static final TraineeEntity TRAINEE_ENTITY = new TraineeEntity();
+    private static final Trainee TRAINEE = Trainee.builder()
+        .username(TRAINEE_USERNAME)
+        .build();
+    private static final Trainer TRAINER = Trainer.builder()
+        .username(TRAINER_USERNAME)
+        .build();
+    private static final TraineeEntity TRAINEE_ENTITY = mock(TraineeEntity.class);
     private static final TraineeEntity TRAINEE_ENTITY_2 = new TraineeEntity();
     private static final TrainerEntity TRAINER_ENTITY = new TrainerEntity();
     private static final TrainerEntity TRAINER_ENTITY_2 = new TrainerEntity();
 
     @Mock
-    private IAssignmentRepository repository;
+    private IAssignmentEntityRepository repository;
     @Mock
     private ConversionService conversionService;
 
     @Captor
     private ArgumentCaptor<TraineeTrainerEntity> trainerEntityArgumentCaptor;
 
+    @InjectMocks
     private JpaAssignmentRepository testObject;
 
-    @BeforeEach
-    void setUp() {
-        testObject = new JpaAssignmentRepository(
-            repository,
-            conversionService
-        );
+    @AfterEach
+    void tearDown() {
+        verifyNoMoreInteractions(repository, conversionService);
     }
 
     @Test
@@ -77,8 +79,6 @@ class JpaAssignmentRepositoryTest {
 
         assertEquals(TRAINEE_ENTITY, capturedEntity.getTrainee());
         assertEquals(TRAINER_ENTITY, capturedEntity.getTrainer());
-
-        assertNoUnexpectedInteractions();
     }
 
     private static Stream<Arguments> provideNullsForAssign() {
@@ -93,10 +93,7 @@ class JpaAssignmentRepositoryTest {
     @MethodSource("provideNullsForAssign")
     void assign_shouldThrowException_whenArgumentsNull(Trainee trainee, Trainer trainer) {
         assertThrows(NullPointerException.class, () -> testObject.assign(trainee, trainer));
-
-        assertNoUnexpectedInteractions();
     }
-
 
     @Test
     void checkAssign_shouldReturnTrue_whenExists() {
@@ -106,8 +103,6 @@ class JpaAssignmentRepositoryTest {
         var result = testObject.checkAssign(TRAINEE_USERNAME, TRAINER_USERNAME);
 
         assertTrue(result);
-
-        assertNoUnexpectedInteractions();
     }
 
     private static Stream<Arguments> provideNullsForCheckAssign() {
@@ -122,10 +117,7 @@ class JpaAssignmentRepositoryTest {
     @MethodSource("provideNullsForCheckAssign")
     void checkAssign_shouldThrowException_whenArgumentsNull(String traineeUsername, String trainerUsername) {
         assertThrows(NullPointerException.class, () -> testObject.checkAssign(traineeUsername, trainerUsername));
-
-        assertNoUnexpectedInteractions();
     }
-
 
     @Test
     void getTrainees_shouldReturnEmptyList() {
@@ -136,8 +128,6 @@ class JpaAssignmentRepositoryTest {
         assertTrue(result.isEmpty());
         verify(repository).getTrainees(TRAINER_USERNAME, true, true);
         verifyNoInteractions(conversionService);
-
-        assertNoUnexpectedInteractions();
     }
 
     private static Stream<Arguments> provideTraineesData() {
@@ -160,8 +150,6 @@ class JpaAssignmentRepositoryTest {
         assertEquals(entities.size(), result.size());
         verify(repository).getTrainees(TRAINER_USERNAME, true, true);
         verify(conversionService, times(entities.size())).convert(any(TraineeEntity.class), eq(Trainee.class));
-
-        assertNoUnexpectedInteractions();
     }
 
     private static Stream<Arguments> provideNullsForGetTrainees() {
@@ -176,10 +164,7 @@ class JpaAssignmentRepositoryTest {
     @MethodSource("provideNullsForGetTrainees")
     void getTrainees_shouldThrowException_whenArgumentsNull(String trainerUsername, Boolean assigned, Boolean active) {
         assertThrows(NullPointerException.class, () -> testObject.getTrainees(trainerUsername, assigned, active));
-
-        assertNoUnexpectedInteractions();
     }
-
 
     @Test
     void getTrainers_shouldReturnEmptyList() {
@@ -190,8 +175,6 @@ class JpaAssignmentRepositoryTest {
         assertTrue(result.isEmpty());
         verify(repository).getTrainers(TRAINEE_USERNAME, true, true);
         verifyNoInteractions(conversionService);
-
-        assertNoUnexpectedInteractions();
     }
 
     private static Stream<Arguments> provideTrainersData() {
@@ -214,8 +197,6 @@ class JpaAssignmentRepositoryTest {
         assertEquals(entities.size(), result.size());
         verify(repository).getTrainers(TRAINEE_USERNAME, true, true);
         verify(conversionService, times(entities.size())).convert(any(TrainerEntity.class), eq(Trainer.class));
-
-        assertNoUnexpectedInteractions();
     }
 
     private static Stream<Arguments> provideNullsForGetTrainers() {
@@ -230,14 +211,5 @@ class JpaAssignmentRepositoryTest {
     @MethodSource("provideNullsForGetTrainers")
     void getTrainers_shouldThrowException_whenArgumentsNull(String traineeUsername, Boolean assigned, Boolean active) {
         assertThrows(NullPointerException.class, () -> testObject.getTrainers(traineeUsername, assigned, active));
-
-        assertNoUnexpectedInteractions();
-    }
-
-    private void assertNoUnexpectedInteractions() {
-        verifyNoMoreInteractions(
-            repository,
-            conversionService
-        );
     }
 }

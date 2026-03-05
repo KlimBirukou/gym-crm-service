@@ -9,13 +9,14 @@ import com.epam.gym.service.assignment.IAssignmentService;
 import com.epam.gym.service.trainer.ITrainerService;
 import com.epam.gym.service.trainer.dto.UpdateTrainerDto;
 import com.epam.gym.service.user.IUserService;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullSource;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.convert.ConversionService;
@@ -58,25 +59,21 @@ class TrainerFacadeTest {
     @Mock
     private IUserService userService;
 
+    @InjectMocks
     private TrainerFacade testObject;
 
-    @BeforeEach
-    void setUp() {
-        testObject = new TrainerFacade(
-            assignmentService,
-            trainerService,
-            conversionService,
-            userService
-        );
+    @AfterEach
+    void tearDown() {
+        verifyNoMoreInteractions(assignmentService, trainerService, conversionService, userService);
     }
 
     @Test
     void getProfile_shouldReturnTrainerResponse_whenTrainerExists() {
-        var trainer = getTrainer();
-        var trainee1 = getTrainee(TRAINEE_USERNAME_1);
-        var trainee2 = getTrainee(TRAINEE_USERNAME_2);
-        var traineeProfileResponse1 = getTraineeProfileResponse(TRAINEE_USERNAME_1);
-        var traineeProfileResponse2 = getTraineeProfileResponse(TRAINEE_USERNAME_2);
+        var trainer = buildTrainer();
+        var trainee1 = buildTrainee(TRAINEE_USERNAME_1);
+        var trainee2 = buildTrainee(TRAINEE_USERNAME_2);
+        var traineeProfileResponse1 = buildTraineeProfileResponse(TRAINEE_USERNAME_1);
+        var traineeProfileResponse2 = buildTraineeProfileResponse(TRAINEE_USERNAME_2);
         doReturn(trainer).when(trainerService).getByUsername(USERNAME);
         doReturn(List.of(trainee1, trainee2)).when(assignmentService).getTrainees(USERNAME, true, true);
         doReturn(traineeProfileResponse1).when(conversionService).convert(trainee1, TraineeProfileResponse.class);
@@ -93,25 +90,21 @@ class TrainerFacadeTest {
         assertEquals(2, result.trainees().size());
         assertEquals(TRAINEE_USERNAME_1, result.trainees().get(0).username());
         assertEquals(TRAINEE_USERNAME_2, result.trainees().get(1).username());
-
-        assertNoUnexpectedInteractions();
     }
 
     @ParameterizedTest
     @NullSource
     void getProfile_shouldThrowException_whenUsernameNull(String username) {
         assertThrows(NullPointerException.class, () -> testObject.getProfile(username));
-
-        assertNoUnexpectedInteractions();
     }
 
 
     @Test
     void updateTrainer_shouldUpdateAndReturnResponse_whenTrainerExists() {
-        var updatedTrainer = getUpdatedTrainer();
-        var updateRequest = getUpdateTrainerRequest();
-        var trainee1 = getTrainee(TRAINEE_USERNAME_1);
-        var traineeProfileResponse1 = getTraineeProfileResponse(TRAINEE_USERNAME_1);
+        var updatedTrainer = buildUpdatedTrainer();
+        var updateRequest = buildUpdateTrainerRequest();
+        var trainee1 = buildTrainee(TRAINEE_USERNAME_1);
+        var traineeProfileResponse1 = buildTraineeProfileResponse(TRAINEE_USERNAME_1);
         doReturn(updatedTrainer).when(trainerService).update(
             UpdateTrainerDto.builder()
                 .username(USERNAME)
@@ -131,13 +124,11 @@ class TrainerFacadeTest {
         assertEquals(SPECIALIZATION_NAME, result.specialization());
         assertTrue(result.active());
         assertEquals(1, result.trainees().size());
-
-        assertNoUnexpectedInteractions();
     }
 
     private static Stream<Arguments> provideUpdateTrainerNullArguments() {
         return Stream.of(
-            Arguments.of(null, getUpdateTrainerRequest()),
+            Arguments.of(null, buildUpdateTrainerRequest()),
             Arguments.of(USERNAME, null)
         );
     }
@@ -146,8 +137,6 @@ class TrainerFacadeTest {
     @MethodSource("provideUpdateTrainerNullArguments")
     void updateTrainer_shouldThrowException_whenArgumentsNull(String username, UpdateTrainerRequest request) {
         assertThrows(NullPointerException.class, () -> testObject.updateTrainer(username, request));
-
-        assertNoUnexpectedInteractions();
     }
 
 
@@ -156,43 +145,39 @@ class TrainerFacadeTest {
         testObject.changeStatus(USERNAME, false);
 
         verify(userService).changeStatus(USERNAME, false);
-
-        assertNoUnexpectedInteractions();
     }
 
     @ParameterizedTest
     @NullSource
     void changeStatus_shouldThrowException_whenUsernameNull(String username) {
         assertThrows(NullPointerException.class, () -> testObject.changeStatus(username, false));
-
-        assertNoUnexpectedInteractions();
     }
 
-    private static Trainer getTrainer() {
+    private static Trainer buildTrainer() {
         return Trainer.builder()
             .uid(UID)
             .firstName(FIRSTNAME)
             .lastName(LASTNAME)
             .username(USERNAME)
             .password(PASSWORD)
-            .specialization(getTrainingType())
+            .specialization(buildTrainingType())
             .active(true)
             .build();
     }
 
-    private static Trainer getUpdatedTrainer() {
+    private static Trainer buildUpdatedTrainer() {
         return Trainer.builder()
             .uid(UID)
             .firstName(NEW_FIRSTNAME)
             .lastName(NEW_LASTNAME)
             .username(USERNAME)
             .password(PASSWORD)
-            .specialization(getTrainingType())
+            .specialization(buildTrainingType())
             .active(true)
             .build();
     }
 
-    private static UpdateTrainerRequest getUpdateTrainerRequest() {
+    private static UpdateTrainerRequest buildUpdateTrainerRequest() {
         return UpdateTrainerRequest.builder()
             .firstName(NEW_FIRSTNAME)
             .lastName(NEW_LASTNAME)
@@ -200,7 +185,7 @@ class TrainerFacadeTest {
             .build();
     }
 
-    private static Trainee getTrainee(String username) {
+    private static Trainee buildTrainee(String username) {
         return Trainee.builder()
             .uid(UUID.randomUUID())
             .firstName(FIRSTNAME)
@@ -213,7 +198,7 @@ class TrainerFacadeTest {
             .build();
     }
 
-    private static TraineeProfileResponse getTraineeProfileResponse(String username) {
+    private static TraineeProfileResponse buildTraineeProfileResponse(String username) {
         return TraineeProfileResponse.builder()
             .username(username)
             .firstName(FIRSTNAME)
@@ -221,19 +206,10 @@ class TrainerFacadeTest {
             .build();
     }
 
-    private static TrainingType getTrainingType() {
+    private static TrainingType buildTrainingType() {
         return TrainingType.builder()
             .uid(UUID.randomUUID())
             .name(SPECIALIZATION_NAME)
             .build();
-    }
-
-    private void assertNoUnexpectedInteractions() {
-        verifyNoMoreInteractions(
-            assignmentService,
-            trainerService,
-            conversionService,
-            userService
-        );
     }
 }

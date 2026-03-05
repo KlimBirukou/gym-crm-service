@@ -5,11 +5,12 @@ import com.epam.gym.exception.not.found.UserNotFoundException;
 import com.epam.gym.repository.entity.UserEntity;
 import com.epam.gym.repository.jpa.user.IUserEntityRepository;
 import com.epam.gym.repository.mapper.IUserEntityToUserMapper;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.convert.ConversionService;
@@ -38,15 +39,12 @@ class JpaUserRepositoryTest {
     @Mock
     private IUserEntityToUserMapper mapper;
 
+    @InjectMocks
     private JpaUserRepository testObject;
 
-    @BeforeEach
-    void setUp() {
-        testObject = new JpaUserRepository(
-            repository,
-            conversionService,
-            mapper
-        );
+    @AfterEach
+    void tearDown() {
+        verifyNoMoreInteractions(repository, conversionService, mapper);
     }
 
     @Test
@@ -59,8 +57,6 @@ class JpaUserRepositoryTest {
         assertTrue(result.isPresent());
         assertEquals(USER, result.get());
         verify(repository).findByUsername(USERNAME);
-
-        assertNoUnexpectedInteractions();
     }
 
     @Test
@@ -71,16 +67,12 @@ class JpaUserRepositoryTest {
 
         assertTrue(result.isEmpty());
         verifyNoInteractions(conversionService);
-
-        assertNoUnexpectedInteractions();
     }
 
     @ParameterizedTest
     @NullSource
     void getByUsername_shouldThrowException_whenArgumentNull(String username) {
         assertThrows(NullPointerException.class, () -> testObject.getByUsername(username));
-
-        assertNoUnexpectedInteractions();
     }
 
 
@@ -91,16 +83,12 @@ class JpaUserRepositoryTest {
         testObject.save(USER);
 
         verify(repository).save(USER_ENTITY);
-
-        assertNoUnexpectedInteractions();
     }
 
     @ParameterizedTest
     @NullSource
     void save_shouldThrowException_whenArgumentNull(User user) {
         assertThrows(NullPointerException.class, () -> testObject.save(user));
-
-        assertNoUnexpectedInteractions();
     }
 
 
@@ -112,8 +100,6 @@ class JpaUserRepositoryTest {
 
         verify(mapper).updateEntity(USER, USER_ENTITY);
         verify(repository).save(USER_ENTITY);
-
-        assertNoUnexpectedInteractions();
     }
 
     @Test
@@ -124,23 +110,11 @@ class JpaUserRepositoryTest {
 
         verify(repository).findByUsername(USERNAME);
         verifyNoInteractions(mapper);
-
-        assertNoUnexpectedInteractions();
     }
 
     @ParameterizedTest
     @NullSource
     void update_shouldThrowException_whenArgumentNull(User user) {
         assertThrows(NullPointerException.class, () -> testObject.update(user));
-
-        assertNoUnexpectedInteractions();
-    }
-
-    private void assertNoUnexpectedInteractions() {
-        verifyNoMoreInteractions(
-            repository,
-            conversionService,
-            mapper
-        );
     }
 }

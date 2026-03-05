@@ -3,13 +3,14 @@ package com.epam.gym.repository.domain.training;
 import com.epam.gym.domain.training.Training;
 import com.epam.gym.repository.entity.TrainingEntity;
 import com.epam.gym.repository.jpa.training.ITrainingEntityRepository;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullSource;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.convert.ConversionService;
@@ -47,14 +48,12 @@ public class JpaTrainingRepositoryTest {
     @Mock
     private ConversionService conversionService;
 
+    @InjectMocks
     private JpaTrainingRepository testObject;
 
-    @BeforeEach
-    void setUp() {
-        testObject = new JpaTrainingRepository(
-            repository,
-            conversionService
-        );
+    @AfterEach
+    void tearDown() {
+        verifyNoMoreInteractions(repository, conversionService);
     }
 
     @Test
@@ -64,18 +63,13 @@ public class JpaTrainingRepositoryTest {
         testObject.save(TRAINING_1);
 
         verify(repository).save(TRAINING_ENTITY_1);
-
-        assertNoUnexpectedInteractions();
     }
 
     @ParameterizedTest
     @NullSource
     void save_shouldThrowException_whenArgumentNull(Training training) {
         assertThrows(NullPointerException.class, () -> testObject.save(training));
-
-        assertNoUnexpectedInteractions();
     }
-
 
     private static Stream<Arguments> provideEntitiesData() {
         return Stream.of(
@@ -99,8 +93,6 @@ public class JpaTrainingRepositoryTest {
         assertEquals(entities.size(), result.size());
         verify(repository).findTraineeTrainings(TRAINEE_UID, DATE, DATE, TRAINEE_USERNAME, TRAINING_TYPE_NAME);
         verify(conversionService, times(entities.size())).convert(any(TrainingEntity.class), eq(Training.class));
-
-        assertNoUnexpectedInteractions();
     }
 
     @ParameterizedTest
@@ -108,10 +100,7 @@ public class JpaTrainingRepositoryTest {
     void getTraineeTrainings_shouldThrowException_whenUidNull(UUID traineeUid) {
         assertThrows(NullPointerException.class,
             () -> testObject.getTraineeTrainings(traineeUid, DATE, DATE, TRAINEE_USERNAME, TRAINING_TYPE_NAME));
-
-        assertNoUnexpectedInteractions();
     }
-
 
     @ParameterizedTest
     @MethodSource("provideEntitiesData")
@@ -127,8 +116,6 @@ public class JpaTrainingRepositoryTest {
         assertEquals(entities.size(), result.size());
         verify(repository).findTrainerTrainings(TRAINER_UID, DATE, DATE, TRAINEE_USERNAME);
         verify(conversionService, times(entities.size())).convert(any(TrainingEntity.class), eq(Training.class));
-
-        assertNoUnexpectedInteractions();
     }
 
     @ParameterizedTest
@@ -136,8 +123,6 @@ public class JpaTrainingRepositoryTest {
     void getTrainerTrainings_shouldThrowException_whenUidNull(UUID trainerUid) {
         assertThrows(NullPointerException.class,
             () -> testObject.getTrainerTrainings(trainerUid, DATE, DATE, TRAINEE_USERNAME));
-
-        assertNoUnexpectedInteractions();
     }
 
     private static Stream<Arguments> provideTestData() {
@@ -160,23 +145,11 @@ public class JpaTrainingRepositoryTest {
 
         assertEquals(trainings.size(), result.size());
         assertEquals(trainings, result);
-
-        assertNoUnexpectedInteractions();
     }
 
     @ParameterizedTest
     @NullSource
     void getTrainerTrainings_shouldThrowsException_whenArgumentsNull(LocalDate date) {
         assertThrows(NullPointerException.class, () -> testObject.getTrainingsOnDate(date));
-
-        assertNoUnexpectedInteractions();
-    }
-
-
-    private void assertNoUnexpectedInteractions() {
-        verifyNoMoreInteractions(
-            repository,
-            conversionService
-        );
     }
 }

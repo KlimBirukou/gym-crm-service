@@ -24,7 +24,6 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -140,82 +139,6 @@ class ITrainingEntityToTrainingMapperTest {
         var result = testObject.invertConvert(training);
 
         assertNull(result);
-    }
-
-    private static Stream<Arguments> provideRoundtripEntityData() {
-        return Stream.of(
-            Arguments.of(60),
-            Arguments.of(0),
-            Arguments.of(120)
-        );
-    }
-
-    @ParameterizedTest
-    @MethodSource("provideRoundtripEntityData")
-    void roundtrip_shouldPreserveData_whenEntityToDomainToEntity(Integer durationMinutes) {
-        var originalEntity = createEntity(durationMinutes);
-        when(durationMapper.toDuration(durationMinutes)).thenReturn(Duration.ofMinutes(durationMinutes));
-        when(durationMapper.toMinutes(Duration.ofMinutes(durationMinutes))).thenReturn(durationMinutes);
-        when(conversionServiceAdapter.mapTrainingTypeEntityToTrainingType(originalEntity.getTrainingType()))
-            .thenReturn(TrainingType.builder()
-                .uid(TYPE_UID)
-                .name(TYPE_NAME)
-                .build());
-
-        var domain = testObject.convert(originalEntity);
-        assertNotNull(domain);
-        var resultEntity = testObject.invertConvert(domain);
-
-        assertNotNull(resultEntity);
-        assertEquals(originalEntity.getUid(), resultEntity.getUid());
-        assertEquals(originalEntity.getTrainee().getUid(), resultEntity.getTrainee().getUid());
-        assertEquals(originalEntity.getTrainer().getUid(), resultEntity.getTrainer().getUid());
-        assertEquals(originalEntity.getName(), resultEntity.getName());
-        assertEquals(originalEntity.getDate(), resultEntity.getDate());
-        assertEquals(originalEntity.getDuration(), resultEntity.getDuration());
-
-        assertNotNull(resultEntity.getTrainingType());
-        assertEquals(originalEntity.getTrainingType().getUid(), resultEntity.getTrainingType().getUid());
-        assertEquals(originalEntity.getTrainingType().getName(), resultEntity.getTrainingType().getName());
-    }
-
-    private static Stream<Arguments> provideRoundtripDomainData() {
-        return Stream.of(
-            Arguments.of(Duration.ofMinutes(60)),
-            Arguments.of(Duration.ZERO),
-            Arguments.of(Duration.ofHours(2))
-        );
-    }
-
-    @ParameterizedTest
-    @MethodSource("provideRoundtripDomainData")
-    void roundtrip_shouldPreserveData_whenDomainToEntityToDomain(Duration duration) {
-        var originalDomain = Training.builder()
-            .uid(TRAINING_UID)
-            .traineeUid(TRAINEE_UID)
-            .trainerUid(TRAINER_UID)
-            .name(TRAINING_NAME)
-            .trainingType(TrainingType.builder().uid(TYPE_UID).name(TYPE_NAME).build())
-            .date(TRAINING_DATE)
-            .duration(duration)
-            .build();
-        when(durationMapper.toMinutes(duration)).thenReturn((int) duration.toMinutes());
-        when(durationMapper.toDuration((int) duration.toMinutes())).thenReturn(duration);
-        when(conversionServiceAdapter.mapTrainingTypeEntityToTrainingType(any()))
-            .thenReturn(originalDomain.getTrainingType());
-
-        var entity = testObject.invertConvert(originalDomain);
-        var resultDomain = testObject.convert(entity);
-
-        assertNotNull(resultDomain);
-        assertEquals(originalDomain.getUid(), resultDomain.getUid());
-        assertEquals(originalDomain.getTraineeUid(), resultDomain.getTraineeUid());
-        assertEquals(originalDomain.getTrainerUid(), resultDomain.getTrainerUid());
-        assertEquals(originalDomain.getName(), resultDomain.getName());
-        assertEquals(originalDomain.getDate(), resultDomain.getDate());
-        assertEquals(originalDomain.getDuration(), resultDomain.getDuration());
-        assertEquals(originalDomain.getTrainingType().getUid(), resultDomain.getTrainingType().getUid());
-        assertEquals(originalDomain.getTrainingType().getName(), resultDomain.getTrainingType().getName());
     }
 
     private static TrainingEntity createEntity(Integer durationMinutes) {

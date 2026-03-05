@@ -1,6 +1,6 @@
 package com.epam.gym.controller.context;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.MDC;
 import org.springframework.http.client.ClientHttpRequestExecution;
@@ -16,25 +16,27 @@ import static org.mockito.Mockito.verify;
 
 class TransactionUidInterceptorTest {
 
-    private TransactionUidInterceptor testObject;
+    private static final String REQUEST_MDC_KEY = "requestUid";
+    private static final String REQUEST_HEADER_NAME = "X-Request-Uid";
 
-    @BeforeEach
-    void setUp() {
-        testObject = new TransactionUidInterceptor();
+    private final TransactionUidInterceptor testObject = new TransactionUidInterceptor();
+
+    @AfterEach
+    void tearDown() {
+        MDC.clear();
     }
 
     @Test
     void intercept_shouldAddHeaderFromMdc() throws IOException {
         var uid = UUID.randomUUID().toString();
-        MDC.put(TransactionUidInterceptor.MDC_KEY, uid);
+        MDC.put(REQUEST_MDC_KEY, uid);
         var request = new MockClientHttpRequest();
         var body = new byte[0];
         var execution = mock(ClientHttpRequestExecution.class);
 
         testObject.intercept(request, body, execution);
 
-        assertEquals(uid, request.getHeaders().getFirst(TransactionUidInterceptor.HEADER_NAME));
+        assertEquals(uid, request.getHeaders().getFirst(REQUEST_HEADER_NAME));
         verify(execution).execute(any(), any());
-        MDC.clear();
     }
 }

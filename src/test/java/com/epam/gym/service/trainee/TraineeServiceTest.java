@@ -8,7 +8,7 @@ import com.epam.gym.service.generator.name.IUsernameGenerator;
 import com.epam.gym.service.generator.password.IPasswordGenerator;
 import com.epam.gym.service.trainee.dto.CreateTraineeDto;
 import com.epam.gym.service.trainee.dto.UpdateTraineeDto;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -17,6 +17,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -64,21 +65,17 @@ class TraineeServiceTest {
     @Captor
     private ArgumentCaptor<Trainee> traineeCaptor;
 
+    @InjectMocks
     private TraineeService testObject;
 
-    @BeforeEach
-    void setUp() {
-        testObject = new TraineeService(
-            passwordGenerator,
-            usernameGenerator,
-            traineeRepository,
-            passwordService
-        );
+    @AfterEach
+    void teardown() {
+        verifyNoMoreInteractions(passwordGenerator, usernameGenerator, traineeRepository, passwordService);
     }
 
     @Test
     void create_shouldCreateTrainee() {
-        var createTraineeDto = getCreateTraineeDto();
+        var createTraineeDto = buildCreateTraineeDto();
         doReturn(USERNAME).when(usernameGenerator).generate(FIRSTNAME, LASTNAME);
         doReturn(PASSWORD).when(passwordGenerator).generate();
         doReturn(HASHED_PASSWORD).when(passwordService).hashPassword(PASSWORD);
@@ -97,23 +94,18 @@ class TraineeServiceTest {
         assertEquals(USERNAME, saved.getUsername());
         assertEquals(PASSWORD, saved.getPassword());
         assertTrue(saved.isActive());
-
-        assertNoUnexpectedInteractions();
     }
 
     @ParameterizedTest
     @NullSource
     void create_shouldThrowException_whenArgumentNull(CreateTraineeDto dto) {
         assertThrows(NullPointerException.class, () -> testObject.create(dto));
-
-        assertNoUnexpectedInteractions();
     }
-
 
     @Test
     void update_shouldUpdateTrainee_whenTraineeExist() {
-        var trainee = getTrainee();
-        var updateTraineeDto = getUpdateTraineeDto();
+        var trainee = buildTrainee();
+        var updateTraineeDto = buildUpdateTraineeDto();
         doReturn(Optional.of(trainee)).when(traineeRepository).getByUsername(USERNAME);
 
         testObject.update(updateTraineeDto);
@@ -129,26 +121,20 @@ class TraineeServiceTest {
         assertEquals(USERNAME, saved.getUsername());
         assertEquals(HASHED_PASSWORD, saved.getPassword());
         assertTrue(saved.isActive());
-
-        assertNoUnexpectedInteractions();
     }
 
     @Test
     void update_shouldThrowException_whenTraineeNotExist() {
-        var updateTraineeDto = getUpdateTraineeDto();
+        var updateTraineeDto = buildUpdateTraineeDto();
         doReturn(Optional.empty()).when(traineeRepository).getByUsername(USERNAME);
 
         assertThrows(TraineeNotFoundException.class, () -> testObject.update(updateTraineeDto));
-
-        assertNoUnexpectedInteractions();
     }
 
     @ParameterizedTest
     @NullSource
     void update_shouldThrowException_whenArgumentNull(UpdateTraineeDto dto) {
         assertThrows(NullPointerException.class, () -> testObject.update(dto));
-
-        assertNoUnexpectedInteractions();
     }
 
     @Test
@@ -156,27 +142,22 @@ class TraineeServiceTest {
         testObject.delete(USERNAME);
 
         verify(traineeRepository).deleteByUsername(USERNAME);
-        assertNoUnexpectedInteractions();
     }
 
     @ParameterizedTest
     @NullSource
     void delete_shouldThrowException_whenArgumentNull(String username) {
         assertThrows(NullPointerException.class, () -> testObject.delete(username));
-
-        assertNoUnexpectedInteractions();
     }
-
 
     @Test
     void getByUsername_shouldReturnTrainee_whenTraineeExists() {
-        var trainee = getTrainee();
+        var trainee = buildTrainee();
         doReturn(Optional.of(trainee)).when(traineeRepository).getByUsername(USERNAME);
 
         var result = testObject.getByUsername(USERNAME);
 
         assertSame(trainee, result);
-        assertNoUnexpectedInteractions();
     }
 
     @Test
@@ -184,16 +165,12 @@ class TraineeServiceTest {
         doReturn(Optional.empty()).when(traineeRepository).getByUsername(USERNAME);
 
         assertThrows(TraineeNotFoundException.class, () -> testObject.getByUsername(USERNAME));
-
-        assertNoUnexpectedInteractions();
     }
 
     @ParameterizedTest
     @NullSource
     void getByUsername_shouldThrowException_whenArgumentNull(String username) {
         assertThrows(NullPointerException.class, () -> testObject.getByUsername(username));
-
-        assertNoUnexpectedInteractions();
     }
 
     @Test
@@ -203,12 +180,14 @@ class TraineeServiceTest {
         assertTrue(result.isEmpty());
 
         verifyNoInteractions(traineeRepository);
-        assertNoUnexpectedInteractions();
     }
 
     private static Stream<Arguments> provideUidsData() {
         return Stream.of(
-            Arguments.of(List.of(UUID.randomUUID()), List.of(new Trainee())),
+            Arguments.of(
+                List.of(UUID.randomUUID()),
+                List.of(new Trainee())
+            ),
             Arguments.of(
                 List.of(UUID.randomUUID(), UUID.randomUUID()),
                 List.of(new Trainee(), new Trainee())
@@ -225,31 +204,27 @@ class TraineeServiceTest {
 
         assertEquals(trainees.size(), result.size());
         assertEquals(trainees, result);
-
-        assertNoUnexpectedInteractions();
     }
 
     @ParameterizedTest
     @NullSource
     void getByUids_shouldThrowNpe_whenArgumentNull(List<UUID> uids) {
         assertThrows(NullPointerException.class, () -> testObject.getByUids(uids));
-
-        assertNoUnexpectedInteractions();
     }
 
-    private static CreateTraineeDto getCreateTraineeDto() {
+    private static CreateTraineeDto buildCreateTraineeDto() {
         return new CreateTraineeDto(
             FIRSTNAME, LASTNAME, DATE, ADDRESS
         );
     }
 
-    private static UpdateTraineeDto getUpdateTraineeDto() {
+    private static UpdateTraineeDto buildUpdateTraineeDto() {
         return new UpdateTraineeDto(
             USERNAME, NEW_FIRSTNAME, NEW_LASTNAME, NEW_DATE, NEW_ADDRESS
         );
     }
 
-    private static Trainee getTrainee() {
+    private static Trainee buildTrainee() {
         return Trainee.builder()
             .uid(UID)
             .firstName(FIRSTNAME)
@@ -260,14 +235,5 @@ class TraineeServiceTest {
             .address(ADDRESS)
             .active(true)
             .build();
-    }
-
-    private void assertNoUnexpectedInteractions() {
-        verifyNoMoreInteractions(
-            passwordGenerator,
-            usernameGenerator,
-            traineeRepository,
-            passwordService
-        );
     }
 }

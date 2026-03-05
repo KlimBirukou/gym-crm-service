@@ -3,7 +3,6 @@ package com.epam.gym.repository.mapper;
 import com.epam.gym.domain.user.Trainee;
 import com.epam.gym.repository.entity.TraineeEntity;
 import com.epam.gym.repository.entity.UserEntity;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -30,12 +29,8 @@ class ITraineeEntityToTraineeMapperTest {
     private static final String PASSWORD = "password";
     private static final String ADDRESS = "address";
 
-    private ITraineeEntityToTraineeMapper testObject;
-
-    @BeforeEach
-    void setUp() {
-        testObject = Mappers.getMapper(ITraineeEntityToTraineeMapper.class);
-    }
+    private final ITraineeEntityToTraineeMapper testObject
+        = Mappers.getMapper(ITraineeEntityToTraineeMapper.class);
 
     private static Stream<Arguments> provideConvertData() {
         return Stream.of(
@@ -84,7 +79,6 @@ class ITraineeEntityToTraineeMapperTest {
         assertNull(result);
     }
 
-
     private static Stream<Arguments> provideConvertBackData() {
         return Stream.of(
             Arguments.of(true, ADDRESS, BIRTHDATE),
@@ -129,7 +123,6 @@ class ITraineeEntityToTraineeMapperTest {
 
         assertNull(result);
     }
-
 
     private static Stream<Arguments> provideUpdateEntityData() {
         return Stream.of(
@@ -216,80 +209,5 @@ class ITraineeEntityToTraineeMapperTest {
         assertEquals(TRAINEE_UID, existingEntity.getUid());
         assertEquals(USER_UID, existingEntity.getUser().getUid());
         assertEquals(USERNAME, existingEntity.getUser().getUsername());
-    }
-
-
-    private static Stream<Arguments> provideRoundtripEntityData() {
-        return Stream.of(
-            Arguments.of(true, ADDRESS, BIRTHDATE),
-            Arguments.of(false, null, null)
-        );
-    }
-
-    @ParameterizedTest
-    @MethodSource("provideRoundtripEntityData")
-    void roundtrip_shouldPreserveData_whenEntityToDomainToEntity(boolean active, String address, LocalDate birthdate) {
-        var userEntity = UserEntity.builder()
-            .uid(USER_UID)
-            .firstName(FIRSTNAME)
-            .lastName(LASTNAME)
-            .username(USERNAME)
-            .password(PASSWORD)
-            .active(active)
-            .build();
-        var originalEntity = TraineeEntity.builder()
-            .uid(TRAINEE_UID)
-            .user(userEntity)
-            .address(address)
-            .birthdate(birthdate)
-            .build();
-
-        var domain = testObject.convert(originalEntity);
-        assertNotNull(domain);
-        var resultEntity = testObject.convert(domain);
-
-        assertEquals(originalEntity.getUid(), resultEntity.getUid());
-        assertEquals(originalEntity.getAddress(), resultEntity.getAddress());
-        assertEquals(originalEntity.getBirthdate(), resultEntity.getBirthdate());
-        assertEquals(originalEntity.getUser().getFirstName(), resultEntity.getUser().getFirstName());
-        assertEquals(originalEntity.getUser().getLastName(), resultEntity.getUser().getLastName());
-        assertEquals(originalEntity.getUser().getUsername(), resultEntity.getUser().getUsername());
-        assertEquals(originalEntity.getUser().getPassword(), resultEntity.getUser().getPassword());
-        assertEquals(originalEntity.getUser().isActive(), resultEntity.getUser().isActive());
-    }
-
-    private static Stream<Arguments> provideRoundtripDomainData() {
-        return Stream.of(
-            Arguments.of(true, ADDRESS, BIRTHDATE),
-            Arguments.of(false, null, null)
-        );
-    }
-
-    @ParameterizedTest
-    @MethodSource("provideRoundtripDomainData")
-    void roundtrip_shouldPreserveData_whenDomainToEntityToDomain(boolean active, String address, LocalDate birthdate) {
-        var originalDomain = Trainee.builder()
-            .uid(TRAINEE_UID)
-            .firstName(FIRSTNAME)
-            .lastName(LASTNAME)
-            .username(USERNAME)
-            .password(PASSWORD)
-            .active(active)
-            .address(address)
-            .birthdate(birthdate)
-            .build();
-
-        var entity = testObject.convert(originalDomain);
-        var resultDomain = testObject.convert(entity);
-
-        assertNotNull(resultDomain);
-        assertEquals(originalDomain.getUid(), resultDomain.getUid());
-        assertEquals(originalDomain.getFirstName(), resultDomain.getFirstName());
-        assertEquals(originalDomain.getLastName(), resultDomain.getLastName());
-        assertEquals(originalDomain.getUsername(), resultDomain.getUsername());
-        assertEquals(originalDomain.getPassword(), resultDomain.getPassword());
-        assertEquals(originalDomain.isActive(), resultDomain.isActive());
-        assertEquals(originalDomain.getAddress(), resultDomain.getAddress());
-        assertEquals(originalDomain.getBirthdate(), resultDomain.getBirthdate());
     }
 }

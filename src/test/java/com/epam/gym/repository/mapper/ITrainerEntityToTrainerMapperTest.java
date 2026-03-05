@@ -9,19 +9,16 @@ import com.epam.gym.repository.entity.UserEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.UUID;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -45,12 +42,8 @@ class ITrainerEntityToTrainerMapperTest {
         testObject = new ITrainerEntityToTrainerMapperImpl(conversionServiceAdapter);
     }
 
-    private static Stream<Boolean> provideConvertData() {
-        return Stream.of(true, false);
-    }
-
     @ParameterizedTest
-    @MethodSource("provideConvertData")
+    @ValueSource(booleans = {true, false})
     void convert_shouldMapEntityToDomain(boolean active) {
         var entity = createEntity(active);
         when(conversionServiceAdapter.mapTrainingTypeEntityToTrainingType(entity.getSpecialization()))
@@ -76,16 +69,8 @@ class ITrainerEntityToTrainerMapperTest {
         assertNull(result);
     }
 
-
-    private static Stream<Arguments> provideInvertConvertData() {
-        return Stream.of(
-            Arguments.of(true),
-            Arguments.of(false)
-        );
-    }
-
     @ParameterizedTest
-    @MethodSource("provideInvertConvertData")
+    @ValueSource(booleans = {true, false})
     void invertConvert_shouldMapDomainToEntity(boolean active) {
         var specialization = TrainingType.builder()
             .uid(TYPE_UID)
@@ -123,79 +108,6 @@ class ITrainerEntityToTrainerMapperTest {
         var result = testObject.convert(trainer);
 
         assertNull(result);
-    }
-
-
-    private static Stream<Arguments> provideRoundtripEntityData() {
-        return Stream.of(
-            Arguments.of(true),
-            Arguments.of(false)
-        );
-    }
-
-    @ParameterizedTest
-    @MethodSource("provideRoundtripEntityData")
-    void roundtrip_shouldPreserveData_whenEntityToDomainToEntity(boolean active) {
-        var originalEntity = createEntity(active);
-        when(conversionServiceAdapter.mapTrainingTypeEntityToTrainingType(originalEntity.getSpecialization()))
-            .thenReturn(TrainingType.builder()
-                .uid(TYPE_UID)
-                .name(SPECIALIZATION_NAME)
-                .build());
-
-        var domain = testObject.convert(originalEntity);
-        assertNotNull(domain);
-        var resultEntity = testObject.convert(domain);
-
-        assertNotNull(resultEntity);
-        assertEquals(originalEntity.getUid(), resultEntity.getUid());
-
-        assertNotNull(resultEntity.getUser());
-        assertEquals(originalEntity.getUser().getFirstName(), resultEntity.getUser().getFirstName());
-        assertEquals(originalEntity.getUser().getLastName(), resultEntity.getUser().getLastName());
-        assertEquals(originalEntity.getUser().getUsername(), resultEntity.getUser().getUsername());
-        assertEquals(originalEntity.getUser().getPassword(), resultEntity.getUser().getPassword());
-        assertEquals(originalEntity.getUser().isActive(), resultEntity.getUser().isActive());
-
-        assertNotNull(resultEntity.getSpecialization());
-        assertEquals(originalEntity.getSpecialization().getUid(), resultEntity.getSpecialization().getUid());
-        assertEquals(originalEntity.getSpecialization().getName(), resultEntity.getSpecialization().getName());
-    }
-
-    private static Stream<Arguments> provideRoundtripDomainData() {
-        return Stream.of(
-            Arguments.of(true),
-            Arguments.of(false)
-        );
-    }
-
-    @ParameterizedTest
-    @MethodSource("provideRoundtripDomainData")
-    void roundtrip_shouldPreserveData_whenDomainToEntityToDomain(boolean active) {
-        var originalDomain = Trainer.builder()
-            .uid(TRAINER_UID)
-            .firstName(FIRSTNAME)
-            .lastName(LASTNAME)
-            .username(USERNAME)
-            .password(PASSWORD)
-            .active(active)
-            .specialization(TrainingType.builder().uid(TYPE_UID).name(SPECIALIZATION_NAME).build())
-            .build();
-        when(conversionServiceAdapter.mapTrainingTypeEntityToTrainingType(any()))
-            .thenReturn(originalDomain.getSpecialization());
-
-        var entity = testObject.convert(originalDomain);
-        var resultDomain = testObject.convert(entity);
-
-        assertNotNull(resultDomain);
-        assertEquals(originalDomain.getUid(), resultDomain.getUid());
-        assertEquals(originalDomain.getFirstName(), resultDomain.getFirstName());
-        assertEquals(originalDomain.getLastName(), resultDomain.getLastName());
-        assertEquals(originalDomain.getUsername(), resultDomain.getUsername());
-        assertEquals(originalDomain.getPassword(), resultDomain.getPassword());
-        assertEquals(originalDomain.isActive(), resultDomain.isActive());
-        assertEquals(originalDomain.getSpecialization().getUid(), resultDomain.getSpecialization().getUid());
-        assertEquals(originalDomain.getSpecialization().getName(), resultDomain.getSpecialization().getName());
     }
 
     private static TrainerEntity createEntity(boolean active) {

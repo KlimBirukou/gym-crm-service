@@ -1,7 +1,7 @@
 package com.epam.gym.facade.trainer.mapper;
 
+import com.epam.gym.controller.rest.trainer.dto.response.TraineeProfileResponse;
 import com.epam.gym.domain.user.Trainee;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -11,17 +11,12 @@ import org.mapstruct.factory.Mappers;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 class TraineeToTraineeProfileResponseMapperTest {
 
-    private TraineeToTraineeProfileResponseMapper testObject;
-
-    @BeforeEach
-    void setUp() {
-        testObject = Mappers.getMapper(TraineeToTraineeProfileResponseMapper.class);
-    }
+    private final TraineeToTraineeProfileResponseMapper testObject =
+        Mappers.getMapper(TraineeToTraineeProfileResponseMapper.class);
 
     private static Stream<Arguments> provideConvertData() {
         return Stream.of(
@@ -32,19 +27,17 @@ class TraineeToTraineeProfileResponseMapperTest {
 
     @ParameterizedTest
     @MethodSource("provideConvertData")
-    void convert_shouldMapTraineeToShortResponse(String username, String fName, String lName) {
+    void convert_shouldMapTraineeToResponse(String username, String firstName, String lastName) {
         var source = Trainee.builder()
             .username(username)
-            .firstName(fName)
-            .lastName(lName)
+            .firstName(firstName)
+            .lastName(lastName)
             .build();
 
-        var result = testObject.convert(source);
+        var actual = testObject.convert(source);
 
-        assertNotNull(result);
-        assertEquals(username, result.username());
-        assertEquals(fName, result.firstName());
-        assertEquals(lName, result.lastName());
+        var expected = new TraineeProfileResponse(username, firstName, lastName);
+        assertEquals(expected, actual);
     }
 
     @ParameterizedTest

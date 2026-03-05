@@ -10,7 +10,7 @@ import com.epam.gym.service.generator.password.IPasswordGenerator;
 import com.epam.gym.service.trainer.dto.CreateTrainerDto;
 import com.epam.gym.service.trainer.dto.UpdateTrainerDto;
 import com.epam.gym.service.type.ITrainingTypeService;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -19,6 +19,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -64,17 +65,17 @@ class TrainerServiceTest {
     @Captor
     private ArgumentCaptor<Trainer> trainerCaptor;
 
+    @InjectMocks
     private TrainerService testObject;
 
-    @BeforeEach
-    void setUp() {
-        testObject = new TrainerService(
+    @AfterEach
+    void tearDown() {
+        verifyNoMoreInteractions(
             passwordGenerator,
             usernameGenerator,
             trainerRepository,
             trainingTypeService,
-            passwordService
-        );
+            passwordService);
     }
 
     @Test
@@ -99,8 +100,6 @@ class TrainerServiceTest {
         assertEquals(USERNAME, saved.getUsername());
         assertEquals(PASSWORD, saved.getPassword());
         assertTrue(saved.isActive());
-
-        assertNoUnexpectedInteractions();
     }
 
     @ParameterizedTest
@@ -108,9 +107,7 @@ class TrainerServiceTest {
     void create_shouldThrowException_whenArgumentNull(CreateTrainerDto dto) {
         assertThrows(NullPointerException.class, () -> testObject.create(dto));
 
-        assertNoUnexpectedInteractions();
     }
-
 
     @Test
     void update_shouldUpdateTrainer_whenTrainerExist() {
@@ -131,8 +128,6 @@ class TrainerServiceTest {
         assertEquals(USERNAME, saved.getUsername());
         assertEquals(HASHED_PASSWORD, saved.getPassword());
         assertTrue(saved.isActive());
-
-        assertNoUnexpectedInteractions();
     }
 
     @Test
@@ -141,16 +136,12 @@ class TrainerServiceTest {
         doReturn(Optional.empty()).when(trainerRepository).getByUsername(USERNAME);
 
         assertThrows(TrainerNotFoundException.class, () -> testObject.update(updateTrainerDto));
-
-        assertNoUnexpectedInteractions();
     }
 
     @ParameterizedTest
     @NullSource
     void update_shouldThrowException_whenDataNull(UpdateTrainerDto dto) {
         assertThrows(NullPointerException.class, () -> testObject.update(dto));
-
-        assertNoUnexpectedInteractions();
     }
 
 
@@ -162,7 +153,6 @@ class TrainerServiceTest {
         var result = testObject.getByUsername(USERNAME);
 
         assertSame(trainee, result);
-        assertNoUnexpectedInteractions();
     }
 
     @Test
@@ -170,16 +160,12 @@ class TrainerServiceTest {
         doReturn(Optional.empty()).when(trainerRepository).getByUsername(USERNAME);
 
         assertThrows(TrainerNotFoundException.class, () -> testObject.getByUsername(USERNAME));
-
-        assertNoUnexpectedInteractions();
     }
 
     @ParameterizedTest
     @NullSource
     void getByUsername_shouldThrowException_whenArgumentNull(String username) {
         assertThrows(NullPointerException.class, () -> testObject.getByUsername(username));
-
-        assertNoUnexpectedInteractions();
     }
 
     @Test
@@ -189,7 +175,6 @@ class TrainerServiceTest {
         assertTrue(result.isEmpty());
 
         verifyNoInteractions(trainerRepository);
-        assertNoUnexpectedInteractions();
     }
 
     @ParameterizedTest
@@ -201,21 +186,20 @@ class TrainerServiceTest {
 
         assertEquals(trainees.size(), result.size());
         assertEquals(trainees, result);
-
-        assertNoUnexpectedInteractions();
     }
 
     @ParameterizedTest
     @NullSource
     void getByUids_shouldThrowNpe_whenArgumentNull(List<UUID> uids) {
         assertThrows(NullPointerException.class, () -> testObject.getByUids(uids));
-
-        assertNoUnexpectedInteractions();
     }
 
     private static Stream<Arguments> provideUidsData() {
         return Stream.of(
-            Arguments.of(List.of(UUID.randomUUID()), List.of(new Trainer())),
+            Arguments.of(
+                List.of(UUID.randomUUID()),
+                List.of(new Trainer())
+            ),
             Arguments.of(
                 List.of(UUID.randomUUID(), UUID.randomUUID()),
                 List.of(new Trainer(), new Trainer())
@@ -252,15 +236,5 @@ class TrainerServiceTest {
             .specialization(getTrainingType())
             .active(true)
             .build();
-    }
-
-    private void assertNoUnexpectedInteractions() {
-        verifyNoMoreInteractions(
-            passwordGenerator,
-            usernameGenerator,
-            trainerRepository,
-            trainingTypeService,
-            passwordService
-        );
     }
 }

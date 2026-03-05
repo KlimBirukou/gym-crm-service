@@ -6,13 +6,14 @@ import com.epam.gym.controller.rest.trainer.dto.response.TraineeProfileResponse;
 import com.epam.gym.domain.user.Trainee;
 import com.epam.gym.domain.user.Trainer;
 import com.epam.gym.service.assignment.IAssignmentService;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullSource;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.convert.ConversionService;
@@ -49,14 +50,12 @@ class AssignmentFacadeTest {
     @Mock
     private ConversionService conversionService;
 
+    @InjectMocks
     private AssignmentFacade testObject;
 
-    @BeforeEach
-    void setUp() {
-        testObject = new AssignmentFacade(
-            assignmentService,
-            conversionService
-        );
+    @AfterEach
+    void tearDown() {
+        verifyNoMoreInteractions(assignmentService, conversionService);
     }
 
     @Test
@@ -68,8 +67,6 @@ class AssignmentFacadeTest {
         assertTrue(result.isEmpty());
         verify(assignmentService).getTrainees(TRAINER_USERNAME, true, true);
         verifyNoInteractions(conversionService);
-
-        assertNoUnexpectedInteractions();
     }
 
     private static Stream<Arguments> provideTraineesData() {
@@ -91,8 +88,6 @@ class AssignmentFacadeTest {
         assertEquals(trainees.size(), result.size());
         verify(assignmentService).getTrainees(TRAINER_USERNAME, assigned, active);
         verify(conversionService, times(trainees.size())).convert(any(Trainee.class), eq(TraineeProfileResponse.class));
-
-        assertNoUnexpectedInteractions();
     }
 
     private static Stream<Arguments> provideGetTraineesNullArguments() {
@@ -107,10 +102,7 @@ class AssignmentFacadeTest {
     @MethodSource("provideGetTraineesNullArguments")
     void getTrainees_shouldThrowException_whenAnyArgumentNull(String username, Boolean assigned, Boolean active) {
         assertThrows(NullPointerException.class, () -> testObject.getTrainees(username, assigned, active));
-
-        assertNoUnexpectedInteractions();
     }
-
 
     @Test
     void getTrainers_shouldReturnEmptyList_whenNoTrainersFound() {
@@ -121,8 +113,6 @@ class AssignmentFacadeTest {
         assertTrue(result.isEmpty());
         verify(assignmentService).getTrainers(TRAINEE_USERNAME, true, true);
         verifyNoInteractions(conversionService);
-
-        assertNoUnexpectedInteractions();
     }
 
     private static Stream<Arguments> provideTrainersData() {
@@ -144,8 +134,6 @@ class AssignmentFacadeTest {
         assertEquals(trainers.size(), result.size());
         verify(assignmentService).getTrainers(TRAINEE_USERNAME, assigned, active);
         verify(conversionService, times(trainers.size())).convert(any(Trainer.class), eq(TrainerProfileResponse.class));
-
-        assertNoUnexpectedInteractions();
     }
 
     private static Stream<Arguments> provideGetTrainersNullArguments() {
@@ -160,41 +148,27 @@ class AssignmentFacadeTest {
     @MethodSource("provideGetTrainersNullArguments")
     void getTrainers_shouldThrowException_whenAnyArgumentNull(String username, Boolean assigned, Boolean active) {
         assertThrows(NullPointerException.class, () -> testObject.getTrainers(username, assigned, active));
-
-        assertNoUnexpectedInteractions();
     }
-
 
     @Test
     void assign_shouldCallAssignmentService_whenAlways() {
-        var request = getAssignRequest();
+        var request = buildAssignRequest();
 
         testObject.assign(request);
 
         verify(assignmentService).assign(TRAINEE_USERNAME, TRAINER_USERNAME);
-
-        assertNoUnexpectedInteractions();
     }
 
     @ParameterizedTest
     @NullSource
     void assign_shouldThrowException_whenRequestNull(AssignRequest request) {
         assertThrows(NullPointerException.class, () -> testObject.assign(request));
-
-        assertNoUnexpectedInteractions();
     }
 
-    private static AssignRequest getAssignRequest() {
+    private static AssignRequest buildAssignRequest() {
         return AssignRequest.builder()
             .traineeUsername(TRAINEE_USERNAME)
             .trainerUsername(TRAINER_USERNAME)
             .build();
-    }
-
-    private void assertNoUnexpectedInteractions() {
-        verifyNoMoreInteractions(
-            assignmentService,
-            conversionService
-        );
     }
 }

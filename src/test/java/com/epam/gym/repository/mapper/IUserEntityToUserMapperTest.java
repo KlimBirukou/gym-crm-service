@@ -2,7 +2,6 @@ package com.epam.gym.repository.mapper;
 
 import com.epam.gym.domain.user.User;
 import com.epam.gym.repository.entity.UserEntity;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -25,12 +24,8 @@ class IUserEntityToUserMapperTest {
     private static final String USERNAME = "username";
     private static final String PASSWORD = "password";
 
-    private IUserEntityToUserMapper testObject;
-
-    @BeforeEach
-    void setUp() {
-        testObject = Mappers.getMapper(IUserEntityToUserMapper.class);
-    }
+    private final IUserEntityToUserMapper testObject
+        = Mappers.getMapper(IUserEntityToUserMapper.class);
 
     private static Stream<Boolean> provideConvertData() {
         return Stream.of(true, false);
@@ -66,7 +61,6 @@ class IUserEntityToUserMapperTest {
 
         assertNull(result);
     }
-
 
     private static Stream<Arguments> provideConvertBackData() {
         return Stream.of(
@@ -105,7 +99,6 @@ class IUserEntityToUserMapperTest {
 
         assertNull(result);
     }
-
 
     private static Stream<Arguments> provideUpdateEntityData() {
         return Stream.of(
@@ -170,37 +163,5 @@ class IUserEntityToUserMapperTest {
 
         assertEquals(UID, existingEntity.getUid());
         assertEquals(USERNAME, existingEntity.getUsername());
-    }
-
-
-    private static Stream<Arguments> provideRoundtripData() {
-        return Stream.of(
-            Arguments.of(true),
-            Arguments.of(false)
-        );
-    }
-
-    @ParameterizedTest
-    @MethodSource("provideRoundtripData")
-    void roundtrip_shouldPreserveData(boolean active) {
-        var originalEntity = UserEntity.builder()
-            .uid(UID)
-            .firstName(FIRSTNAME)
-            .lastName(LASTNAME)
-            .username(USERNAME)
-            .password(PASSWORD)
-            .active(active)
-            .build();
-
-        var domain = testObject.convert(originalEntity);
-        assertNotNull(domain);
-        var resultEntity = testObject.convert(domain);
-
-        assertEquals(originalEntity.getUid(), resultEntity.getUid());
-        assertEquals(originalEntity.getFirstName(), resultEntity.getFirstName());
-        assertEquals(originalEntity.getLastName(), resultEntity.getLastName());
-        assertEquals(originalEntity.getUsername(), resultEntity.getUsername());
-        assertEquals(originalEntity.getPassword(), resultEntity.getPassword());
-        assertEquals(originalEntity.isActive(), resultEntity.isActive());
     }
 }

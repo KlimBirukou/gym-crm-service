@@ -1,7 +1,7 @@
 package com.epam.gym.facade.training.mapper;
 
+import com.epam.gym.controller.rest.training.dto.response.TrainingTypeResponse;
 import com.epam.gym.domain.training.TrainingType;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -12,27 +12,17 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 class ITrainingTypeToTrainingTypeResponseMapperTest {
 
-    private static final UUID UID_1 = UUID.randomUUID();
-    private static final UUID UID_2 = UUID.randomUUID();
-    private static final String TRAINING_TYPE_NAME_1 = "Yoga";
-    private static final String TRAINING_TYPE_NAME_2 = "Fitness";
-
-    private ITrainingTypeToTrainingTypeResponseMapper testObject;
-
-    @BeforeEach
-    void setUp() {
-        testObject = Mappers.getMapper(ITrainingTypeToTrainingTypeResponseMapper.class);
-    }
+    private final ITrainingTypeToTrainingTypeResponseMapper testObject =
+        Mappers.getMapper(ITrainingTypeToTrainingTypeResponseMapper.class);
 
     private static Stream<Arguments> provideConvertData() {
         return Stream.of(
-            Arguments.of(UID_1, TRAINING_TYPE_NAME_1),
-            Arguments.of(UID_2, TRAINING_TYPE_NAME_2)
+            Arguments.of(UUID.randomUUID(), "Yoga"),
+            Arguments.of(UUID.randomUUID(), "Fitness")
         );
     }
 
@@ -46,9 +36,8 @@ class ITrainingTypeToTrainingTypeResponseMapperTest {
 
         var result = testObject.convert(source);
 
-        assertNotNull(result);
-        assertEquals(uid, result.uid());
-        assertEquals(name, result.name());
+        var expected = new TrainingTypeResponse(uid, name);
+        assertEquals(expected, result);
     }
 
     @ParameterizedTest

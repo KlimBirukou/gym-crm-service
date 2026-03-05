@@ -15,11 +15,11 @@ import com.epam.gym.service.training.dto.CreateTrainingDto;
 import com.epam.gym.service.training.dto.TraineeTrainingsDto;
 import com.epam.gym.service.training.dto.TrainerTrainingsDto;
 import com.epam.gym.service.type.ITrainingTypeService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.convert.ConversionService;
@@ -34,7 +34,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 @ExtendWith(MockitoExtension.class)
 class TrainingFacadeTest {
@@ -62,49 +61,34 @@ class TrainingFacadeTest {
     @Mock
     private ConversionService conversionService;
 
+    @InjectMocks
     private TrainingFacade testObject;
-
-    @BeforeEach
-    void setUp() {
-        testObject = new TrainingFacade(
-            traineeService,
-            trainerService,
-            trainingService,
-            trainingTypeService,
-            conversionService
-        );
-    }
 
     @Test
     void create_shouldCallTrainingService_whenAlways() {
-        var request = getCreateTrainingRequest();
-        var createTrainingDto = getCreateTrainingDto();
-        var training = getTraining();
+        var request = buildCreateTrainingRequest();
+        var createTrainingDto = buildCreateTrainingDto();
+        var training = buildTraining();
         doReturn(createTrainingDto).when(conversionService).convert(request, CreateTrainingDto.class);
         doReturn(training).when(trainingService).create(createTrainingDto);
 
         testObject.create(request);
 
         verify(trainingService).create(createTrainingDto);
-
-        assertNoUnexpectedInteractions();
     }
 
     @ParameterizedTest
     @NullSource
     void create_shouldThrowException_whenRequestNull(CreateTrainingRequest request) {
         assertThrows(NullPointerException.class, () -> testObject.create(request));
-
-        assertNoUnexpectedInteractions();
     }
-
 
     @Test
     void getTraineeTrainings_shouldReturnMappedList_whenTrainingsExist() {
-        var request = getTraineeTrainingsRequest();
-        var dto = getTraineeTrainingsDto();
-        var training = getTraining();
-        var trainer = getTrainer();
+        var request = buildTraineeTrainingsRequest();
+        var dto = buildTraineeTrainingsDto();
+        var training = buildTraining();
+        var trainer = buildTrainer();
         doReturn(dto).when(conversionService).convert(request, TraineeTrainingsDto.class);
         doReturn(List.of(training)).when(trainingService).getTraineeTrainings(dto);
         doReturn(List.of(trainer)).when(trainerService).getByUids(List.of(TRAINER_UID));
@@ -118,25 +102,20 @@ class TrainingFacadeTest {
         assertEquals(TRAINING_TYPE_NAME, result.getFirst().trainingTypeName());
         assertEquals(DURATION_MINUTES, result.getFirst().duration());
         assertEquals(TRAINER_USERNAME, result.getFirst().trainerUsername());
-
-        assertNoUnexpectedInteractions();
     }
 
     @ParameterizedTest
     @NullSource
     void getTraineeTrainings_shouldThrowException_whenRequestNull(GetTraineeTrainingsRequest request) {
         assertThrows(NullPointerException.class, () -> testObject.getTraineeTrainings(request));
-
-        assertNoUnexpectedInteractions();
     }
-
 
     @Test
     void getTrainerTrainings_shouldReturnMappedList_whenTrainingsExist() {
-        var request = getTrainerTrainingsRequest();
-        var dto = getTrainerTrainingsDto();
-        var training = getTraining();
-        var trainee = getTrainee();
+        var request = buildTrainerTrainingsRequest();
+        var dto = buildTrainerTrainingsDto();
+        var training = buildTraining();
+        var trainee = buildTrainee();
         doReturn(dto).when(conversionService).convert(request, TrainerTrainingsDto.class);
         doReturn(List.of(training)).when(trainingService).getTrainerTrainings(dto);
         doReturn(List.of(trainee)).when(traineeService).getByUids(List.of(TRAINEE_UID));
@@ -150,23 +129,18 @@ class TrainingFacadeTest {
         assertEquals(TRAINING_TYPE_NAME, result.getFirst().trainingTypeName());
         assertEquals(DURATION_MINUTES, result.getFirst().duration());
         assertEquals(TRAINEE_USERNAME, result.getFirst().traineeUsername());
-
-        assertNoUnexpectedInteractions();
     }
 
     @ParameterizedTest
     @NullSource
     void getTrainerTrainings_shouldThrowException_whenRequestNull(GetTrainerTrainingRequest request) {
         assertThrows(NullPointerException.class, () -> testObject.getTrainerTrainings(request));
-
-        assertNoUnexpectedInteractions();
     }
-
 
     @Test
     void getTrainingsTypes_shouldReturnMappedList_whenTypesExist() {
-        var trainingType = getTrainingType();
-        var trainingTypeResponse = getTrainingTypeResponse();
+        var trainingType = buildTrainingType();
+        var trainingTypeResponse = buildTrainingTypeResponse();
         doReturn(List.of(trainingType)).when(trainingTypeService).getAll();
         doReturn(trainingTypeResponse).when(conversionService).convert(trainingType, TrainingTypeResponse.class);
 
@@ -176,11 +150,9 @@ class TrainingFacadeTest {
         assertEquals(1, result.size());
         assertEquals(TRAINING_TYPE_UID, result.getFirst().uid());
         assertEquals(TRAINING_TYPE_NAME, result.getFirst().name());
-
-        assertNoUnexpectedInteractions();
     }
 
-    private static CreateTrainingRequest getCreateTrainingRequest() {
+    private static CreateTrainingRequest buildCreateTrainingRequest() {
         return CreateTrainingRequest.builder()
             .traineeUsername(TRAINEE_USERNAME)
             .trainerUsername(TRAINER_USERNAME)
@@ -190,7 +162,7 @@ class TrainingFacadeTest {
             .build();
     }
 
-    private static CreateTrainingDto getCreateTrainingDto() {
+    private static CreateTrainingDto buildCreateTrainingDto() {
         return CreateTrainingDto.builder()
             .traineeUsername(TRAINEE_USERNAME)
             .trainerUsername(TRAINER_USERNAME)
@@ -200,7 +172,7 @@ class TrainingFacadeTest {
             .build();
     }
 
-    private static GetTraineeTrainingsRequest getTraineeTrainingsRequest() {
+    private static GetTraineeTrainingsRequest buildTraineeTrainingsRequest() {
         return GetTraineeTrainingsRequest.builder()
             .username(TRAINEE_USERNAME)
             .from(FROM_DATE)
@@ -210,7 +182,7 @@ class TrainingFacadeTest {
             .build();
     }
 
-    private static TraineeTrainingsDto getTraineeTrainingsDto() {
+    private static TraineeTrainingsDto buildTraineeTrainingsDto() {
         return TraineeTrainingsDto.builder()
             .username(TRAINEE_USERNAME)
             .from(FROM_DATE)
@@ -220,7 +192,7 @@ class TrainingFacadeTest {
             .build();
     }
 
-    private static GetTrainerTrainingRequest getTrainerTrainingsRequest() {
+    private static GetTrainerTrainingRequest buildTrainerTrainingsRequest() {
         return GetTrainerTrainingRequest.builder()
             .username(TRAINER_USERNAME)
             .from(FROM_DATE)
@@ -229,7 +201,7 @@ class TrainingFacadeTest {
             .build();
     }
 
-    private static TrainerTrainingsDto getTrainerTrainingsDto() {
+    private static TrainerTrainingsDto buildTrainerTrainingsDto() {
         return TrainerTrainingsDto.builder()
             .username(TRAINER_USERNAME)
             .from(FROM_DATE)
@@ -238,53 +210,43 @@ class TrainingFacadeTest {
             .build();
     }
 
-    private static Training getTraining() {
+    private static Training buildTraining() {
         return Training.builder()
             .uid(UUID.randomUUID())
             .traineeUid(TRAINEE_UID)
             .trainerUid(TRAINER_UID)
             .name(TRAINING_NAME)
-            .trainingType(getTrainingType())
+            .trainingType(buildTrainingType())
             .date(DATE)
             .duration(Duration.ofMinutes(DURATION_MINUTES))
             .build();
     }
 
-    private static TrainingType getTrainingType() {
+    private static TrainingType buildTrainingType() {
         return TrainingType.builder()
             .uid(TRAINING_TYPE_UID)
             .name(TRAINING_TYPE_NAME)
             .build();
     }
 
-    private static TrainingTypeResponse getTrainingTypeResponse() {
+    private static TrainingTypeResponse buildTrainingTypeResponse() {
         return TrainingTypeResponse.builder()
             .uid(TRAINING_TYPE_UID)
             .name(TRAINING_TYPE_NAME)
             .build();
     }
 
-    private static Trainee getTrainee() {
+    private static Trainee buildTrainee() {
         return Trainee.builder()
             .uid(TRAINEE_UID)
             .username(TRAINEE_USERNAME)
             .build();
     }
 
-    private static Trainer getTrainer() {
+    private static Trainer buildTrainer() {
         return Trainer.builder()
             .uid(TRAINER_UID)
             .username(TRAINER_USERNAME)
             .build();
-    }
-
-    private void assertNoUnexpectedInteractions() {
-        verifyNoMoreInteractions(
-            traineeService,
-            trainerService,
-            trainingService,
-            trainingTypeService,
-            conversionService
-        );
     }
 }

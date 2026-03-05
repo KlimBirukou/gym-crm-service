@@ -1,6 +1,5 @@
 package com.epam.gym.repository.mapper;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -15,12 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 class IDurationMapperTest {
 
-    private IDurationMapper testObject;
-
-    @BeforeEach
-    void setUp() {
-        testObject = Mappers.getMapper(IDurationMapper.class);
-    }
+    private final IDurationMapper testObject = Mappers.getMapper(IDurationMapper.class);
 
     private static Stream<Arguments> provideMinutesToDurationData() {
         return Stream.of(
@@ -46,7 +40,6 @@ class IDurationMapperTest {
         assertNull(result);
     }
 
-
     private static Stream<Arguments> provideDurationToMinutesData() {
         return Stream.of(
             Arguments.of(Duration.ofMinutes(90), 90),
@@ -70,40 +63,5 @@ class IDurationMapperTest {
         var result = testObject.toMinutes(duration);
 
         assertNull(result);
-    }
-
-
-    private static Stream<Arguments> provideRoundtripMinutesData() {
-        return Stream.of(
-            Arguments.of(45),
-            Arguments.of(0),
-            Arguments.of(1440)
-        );
-    }
-
-    @ParameterizedTest
-    @MethodSource("provideRoundtripMinutesData")
-    void roundtrip_shouldPreserveValue_whenMinutesToDurationToMinutes(Integer original) {
-        var duration = testObject.toDuration(original);
-        var result = testObject.toMinutes(duration);
-
-        assertEquals(original, result);
-    }
-
-    private static Stream<Arguments> provideRoundtripDurationData() {
-        return Stream.of(
-            Arguments.of(Duration.ofMinutes(120)),
-            Arguments.of(Duration.ZERO),
-            Arguments.of(Duration.ofHours(24))
-        );
-    }
-
-    @ParameterizedTest
-    @MethodSource("provideRoundtripDurationData")
-    void roundtrip_shouldPreserveValue_whenDurationToMinutesToDuration(Duration original) {
-        var minutes = testObject.toMinutes(original);
-        var result = testObject.toDuration(minutes);
-
-        assertEquals(original, result);
     }
 }

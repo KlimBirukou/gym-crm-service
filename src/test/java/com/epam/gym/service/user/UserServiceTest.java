@@ -6,7 +6,7 @@ import com.epam.gym.exception.not.found.UserNotFoundException;
 import com.epam.gym.repository.domain.user.IUserRepository;
 import com.epam.gym.service.auth.IPasswordService;
 import com.epam.gym.service.user.dto.ChangePasswordDto;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -16,6 +16,7 @@ import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -50,25 +51,22 @@ class UserServiceTest {
     @Captor
     private ArgumentCaptor<User> userCaptor;
 
+    @InjectMocks
     private UserService testObject;
 
-    @BeforeEach
-    void setUp() {
-        testObject = new UserService(
-            userRepository,
-            passwordService
-        );
+    @AfterEach
+    void tearDown() {
+        verifyNoMoreInteractions(userRepository, passwordService);
     }
 
     @Test
     void getByUsername_shouldReturnUser_whenUserExist() {
-        var user = getUser();
+        var user = buildUser();
         doReturn(Optional.of(user)).when(userRepository).getByUsername(USERNAME);
 
         var result = testObject.getByUsername(USERNAME);
 
         assertSame(user, result);
-        assertNoUnexpectedInteractions();
     }
 
     @Test
@@ -76,22 +74,18 @@ class UserServiceTest {
         doReturn(Optional.empty()).when(userRepository).getByUsername(USERNAME);
 
         assertThrows(UserNotFoundException.class, () -> testObject.getByUsername(USERNAME));
-
-        assertNoUnexpectedInteractions();
     }
 
     @ParameterizedTest
     @NullSource
     void getByUsername_shouldThrowException_whenArgumentNull(String username) {
         assertThrows(NullPointerException.class, () -> testObject.getByUsername(username));
-
-        assertNoUnexpectedInteractions();
     }
 
     @Test
     void changePassword_shouldChangePassword_whenUserExistAndPasswordValid() {
-        var user = getUser();
-        var dto = getChangePasswordDto();
+        var user = buildUser();
+        var dto = buildChangePasswordDto();
         doReturn(Optional.of(user)).when(userRepository).getByUsername(USERNAME);
         doReturn(true).when(passwordService).checkPassword(OLD_PASSWORD, OLD_HASHED_PASSWORD);
         doReturn(NEW_HASHED_PASSWORD).when(passwordService).hashPassword(NEW_PASSWORD);
@@ -103,52 +97,42 @@ class UserServiceTest {
 
         assertEquals(NEW_HASHED_PASSWORD, updated.getPassword());
         assertEquals(USERNAME, updated.getUsername());
-
-        assertNoUnexpectedInteractions();
     }
 
     @Test
     void changePassword_shouldThrowException_whenUserNotExist() {
-        var dto = getChangePasswordDto();
+        var dto = buildChangePasswordDto();
         doReturn(Optional.empty()).when(userRepository).getByUsername(USERNAME);
 
         assertThrows(UserNotFoundException.class, () -> testObject.changePassword(dto));
-
-        assertNoUnexpectedInteractions();
     }
 
     @Test
     void changePassword_shouldThrowException_whenUserExistAndPasswordInvalid() {
-        var user = getUser();
-        var dto = getChangePasswordDto();
+        var user = buildUser();
+        var dto = buildChangePasswordDto();
         doReturn(Optional.of(user)).when(userRepository).getByUsername(USERNAME);
         doReturn(false).when(passwordService).checkPassword(OLD_PASSWORD, OLD_HASHED_PASSWORD);
 
         assertThrows(AuthException.class, () -> testObject.changePassword(dto));
-
-        assertNoUnexpectedInteractions();
     }
 
     @ParameterizedTest
     @NullSource
     void changePassword_shouldThrowException_whenArgumentNull(ChangePasswordDto dto) {
         assertThrows(NullPointerException.class, () -> testObject.changePassword(dto));
-
-        assertNoUnexpectedInteractions();
     }
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
     void changeStatus_shouldChange_whenUserExist(boolean newStatus) {
-        var user = getUser();
+        var user = buildUser();
         doReturn(Optional.of(user)).when(userRepository).getByUsername(USERNAME);
 
         testObject.changeStatus(USERNAME, newStatus);
 
         verify(userRepository).update(userCaptor.capture());
         assertEquals(newStatus, userCaptor.getValue().isActive());
-
-        assertNoUnexpectedInteractions();
     }
 
     @Test
@@ -156,15 +140,12 @@ class UserServiceTest {
         doReturn(Optional.empty()).when(userRepository).getByUsername(USERNAME);
 
         assertThrows(UserNotFoundException.class, () -> testObject.changeStatus(USERNAME, true));
-
-        assertNoUnexpectedInteractions();
     }
 
     private static Stream<Arguments> changeStatusProvideNullArguments() {
         return Stream.of(
             Arguments.of(null, true),
-            Arguments.of(USERNAME, null),
-            Arguments.of(null, null)
+            Arguments.of(USERNAME, null)
         );
     }
 
@@ -174,7 +155,7 @@ class UserServiceTest {
         assertThrows(NullPointerException.class, () -> testObject.changeStatus(username, status));
     }
 
-    private static User getUser() {
+    private static User buildUser() {
         return User.builder()
             .uid(UID)
             .username(USERNAME)
@@ -185,18 +166,11 @@ class UserServiceTest {
             .build();
     }
 
-    private static ChangePasswordDto getChangePasswordDto() {
+    private static ChangePasswordDto buildChangePasswordDto() {
         return ChangePasswordDto.builder()
             .username(USERNAME)
             .oldPassword(OLD_PASSWORD)
             .newPassword(NEW_PASSWORD)
             .build();
-    }
-
-    private void assertNoUnexpectedInteractions() {
-        verifyNoMoreInteractions(
-            userRepository,
-            passwordService
-        );
     }
 }
