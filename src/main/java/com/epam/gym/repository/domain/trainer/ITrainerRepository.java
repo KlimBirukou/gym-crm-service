@@ -5,6 +5,7 @@ import lombok.NonNull;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public interface ITrainerRepository {
 
@@ -14,5 +15,9 @@ public interface ITrainerRepository {
 
     void save(@NonNull Trainer trainer);
 
+    void update(@NonNull Trainer trainer);
+
     List<Trainer> getByFirstNameAndLastName(@NonNull String firstname, @NonNull String lastName);
+
+    List<Trainer> findAllByUids(@NonNull List<UUID> uids);
 }

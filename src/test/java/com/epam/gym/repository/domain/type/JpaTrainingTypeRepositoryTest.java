@@ -3,13 +3,14 @@ package com.epam.gym.repository.domain.type;
 import com.epam.gym.domain.training.TrainingType;
 import com.epam.gym.repository.entity.TrainingTypeEntity;
 import com.epam.gym.repository.jpa.type.ITrainingTypeEntityRepository;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullSource;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.convert.ConversionService;
@@ -44,14 +45,12 @@ class JpaTrainingTypeRepositoryTest {
     @Mock
     private ConversionService conversionService;
 
+    @InjectMocks
     private JpaTrainingTypeRepository testObject;
 
-    @BeforeEach
-    void setUp() {
-        testObject = new JpaTrainingTypeRepository(
-            repository,
-            conversionService
-        );
+    @AfterEach
+    void tearDown() {
+        verifyNoMoreInteractions(repository, conversionService);
     }
 
     @Test
@@ -63,8 +62,6 @@ class JpaTrainingTypeRepositoryTest {
 
         assertTrue(result.isPresent());
         assertSame(TRAINING_TYPE_1, result.get());
-
-        assertNoUnexpectedInteractions();
     }
 
     @Test
@@ -74,18 +71,13 @@ class JpaTrainingTypeRepositoryTest {
         var result = testObject.getByName(NAME);
 
         assertTrue(result.isEmpty());
-
-        assertNoUnexpectedInteractions();
     }
 
     @ParameterizedTest
     @NullSource
     void getByName_shouldThrowException_whenArgumentNull(String name) {
         assertThrows(NullPointerException.class, () -> testObject.getByName(name));
-
-        assertNoUnexpectedInteractions();
     }
-
 
     private static Stream<Arguments> provideTestData() {
         return Stream.of(
@@ -107,15 +99,5 @@ class JpaTrainingTypeRepositoryTest {
 
         assertEquals(trainingTypes.size(), result.size());
         assertEquals(trainingTypes, result);
-
-        assertNoUnexpectedInteractions();
-    }
-
-
-    private void assertNoUnexpectedInteractions() {
-        verifyNoMoreInteractions(
-            repository,
-            conversionService
-        );
     }
 }

@@ -1,13 +1,11 @@
 package com.epam.gym.service.trainer;
 
-import com.epam.gym.exception.AuthException;
 import com.epam.gym.exception.not.found.TrainerNotFoundException;
 import com.epam.gym.service.auth.IPasswordService;
 import com.epam.gym.service.generator.name.IUsernameGenerator;
 import com.epam.gym.service.generator.password.IPasswordGenerator;
 import com.epam.gym.domain.user.Trainer;
 import com.epam.gym.repository.domain.trainer.ITrainerRepository;
-import com.epam.gym.service.trainer.dto.ChangePasswordDto;
 import com.epam.gym.service.trainer.dto.CreateTrainerDto;
 import com.epam.gym.service.trainer.dto.UpdateTrainerDto;
 import com.epam.gym.service.type.ITrainingTypeService;
@@ -16,7 +14,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 @Service
 @RequiredArgsConstructor
@@ -31,45 +33,30 @@ public class TrainerService implements ITrainerService {
     @Override
     @Transactional
     public Trainer create(@NonNull CreateTrainerDto dto) {
+        var password = passwordGenerator.generate();
         var trainer = Trainer.builder()
             .uid(UUID.randomUUID())
             .firstName(dto.firstName())
             .lastName(dto.lastName())
             .username(usernameGenerator.generate(dto.firstName(), dto.lastName()))
-            .password(passwordService.hashPassword(passwordGenerator.generate()))
+            .password(passwordService.hashPassword(password))
             .specialization(trainingTypeService.getByName(dto.specialization()))
             .active(true)
             .build();
         trainerRepository.save(trainer);
+        trainer.setPassword(password);
         return trainer;
     }
 
     @Override
     @Transactional
-    public void update(@NonNull UpdateTrainerDto dto) {
-        var trainer = getByUsername(dto.username());
+    public Trainer update(@NonNull UpdateTrainerDto dto) {
+        var trainer = trainerRepository.getByUsername(dto.username())
+            .orElseThrow(() -> new TrainerNotFoundException(dto.username()));
         trainer.setFirstName(dto.firstName());
         trainer.setLastName(dto.lastName());
-        trainerRepository.save(trainer);
-    }
-
-    @Override
-    @Transactional
-    public void changePassword(@NonNull ChangePasswordDto dto) {
-        var trainer = getByUsername(dto.username());
-        if (!passwordService.checkPassword(dto.oldPassword(), trainer.getPassword())) {
-            throw new AuthException();
-        }
-        trainer.setPassword(passwordService.hashPassword(dto.newPassword()));
-        trainerRepository.save(trainer);
-    }
-
-    @Override
-    @Transactional
-    public void toggleStatus(@NonNull String username) {
-        var trainer = getByUsername(username);
-        trainer.toggleActive();
-        trainerRepository.save(trainer);
+        trainerRepository.update(trainer);
+        return trainer;
     }
 
     @Override
@@ -77,5 +64,14 @@ public class TrainerService implements ITrainerService {
     public Trainer getByUsername(@NonNull String username) {
         return trainerRepository.getByUsername(username)
             .orElseThrow(() -> new TrainerNotFoundException(username));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Trainer> getByUids(@NonNull List<UUID> uids) {
+        return Optional.of(uids)
+            .filter(Predicate.not(Collection::isEmpty))
+            .map(trainerRepository::findAllByUids)
+            .orElseGet(List::of);
     }
 }

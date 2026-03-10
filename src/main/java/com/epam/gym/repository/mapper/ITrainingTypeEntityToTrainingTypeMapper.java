@@ -11,7 +11,5 @@ import org.springframework.core.convert.converter.Converter;
 public interface ITrainingTypeEntityToTrainingTypeMapper extends Converter<@NonNull TrainingTypeEntity, TrainingType> {
 
     @Override
-    TrainingType convert(@NonNull TrainingTypeEntity entity);
-
-    TrainingTypeEntity invertConvert(@NonNull TrainingType type);
+    TrainingType convert(TrainingTypeEntity entity);
 }

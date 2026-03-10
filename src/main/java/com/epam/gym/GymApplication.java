@@ -7,6 +7,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class GymApplication {
 
     public static final String DEFAULT_USERNAME_DELIMITER = ".";
+    public static final String REQUEST_MDC_KEY = "requestUid";
+    public static final String REQUEST_HEADER_NAME = "X-Request-Uid";
 
     public static void main(String[] args) {
         SpringApplication.run(GymApplication.class, args);

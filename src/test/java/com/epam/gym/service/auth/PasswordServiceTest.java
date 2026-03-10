@@ -1,6 +1,5 @@
 package com.epam.gym.service.auth;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -19,12 +18,7 @@ class PasswordServiceTest {
     private static final String PLAIN_PASSWORD = "plain_password";
     private static final String WRONG_PASSWORD = "wrong_password";
 
-    private PasswordService testObject;
-
-    @BeforeEach
-    void setUp() {
-        testObject = new PasswordService();
-    }
+    private final PasswordService testObject = new PasswordService();
 
     @Test
     void hashPassword_shouldReturnHashedString_whenPasswordProvided() {
@@ -37,8 +31,7 @@ class PasswordServiceTest {
     @ParameterizedTest
     @NullSource
     void hashPassword_shouldThrowException_whenPasswordNull(String password) {
-        assertThrows(NullPointerException.class,
-            () -> testObject.hashPassword(password));
+        assertThrows(NullPointerException.class, () -> testObject.hashPassword(password));
     }
 
     @Test

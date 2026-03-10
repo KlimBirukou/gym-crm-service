@@ -1,6 +1,6 @@
 DO $$
 BEGIN
-    IF NOT EXISTS (SELECT FROM pg_catalog.pg_user WHERE username = 'gym_user') THEN
+    IF NOT EXISTS (SELECT FROM pg_catalog.pg_user WHERE usename = 'gym_user') THEN
         CREATE USER gym_user WITH ENCRYPTED PASSWORD 'HXGLca@\X$@9I$K';
     END IF;
 END

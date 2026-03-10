@@ -14,7 +14,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Accessors(chain  = true)
+@Accessors(chain = true)
 public class Training {
 
     private UUID uid;
