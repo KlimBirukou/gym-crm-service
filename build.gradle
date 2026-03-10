@@ -53,6 +53,9 @@ dependencies {
     annotationProcessor "org.mapstruct.extensions.spring:mapstruct-spring-extensions:${mapstructSpringExtensionsVersion}"
     testAnnotationProcessor "org.mapstruct.extensions.spring:mapstruct-spring-extensions:${mapstructSpringExtensionsVersion}"
 
+    // Metrics
+    implementation 'io.micrometer:micrometer-registry-prometheus'
+
     // Utils
     implementation "org.apache.commons:commons-collections4:${commonsCollectionsVersion}"
     implementation "org.apache.commons:commons-lang3:${commonsLangVersion}"

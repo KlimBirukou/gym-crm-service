@@ -50,6 +50,15 @@ management:
   endpoint:
     health:
       show-details: always
+      show-components: always
+    prometheus:
+      enabled: true
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    tags:
+      application: ${spring.application.name}
   info:
     env:
       enabled: true
@@ -74,3 +83,10 @@ springdoc:
     tags-sorter: alpha
     operations-sorter: alpha
     disable-swagger-default-url: true
+
+gym:
+  actuator:
+    assignment:
+      assign: 54489364-378b-4978-a128-6a0c44bd8040
+      get-trainees: fa1f5525-1ac4-4971-b205-f2531c217808
+      get-trainers: b7e73ebe-ec6f-4ec6-b0ec-31654ccce1fc
