@@ -17,7 +17,7 @@ public class AssignmentController implements IAssignmentController {
     private final IAssignmentFacade assignmentFacade;
 
     @Override
-    @Measured("${gym.actuator.assignment.get-trainees}")
+    @Measured("GET_api_v1_assignments_get_trainees")
     public List<TraineeProfileResponse> getTrainees(String username,
                                                     Boolean assigned,
                                                     Boolean active
@@ -26,7 +26,7 @@ public class AssignmentController implements IAssignmentController {
     }
 
     @Override
-    @Measured("${gym.actuator.assignment.get-trainers}")
+    @Measured("GET_api_v1_assignments_get_trainers")
     public List<TrainerProfileResponse> getTrainers(String username,
                                                     Boolean assigned,
                                                     Boolean active
@@ -35,7 +35,7 @@ public class AssignmentController implements IAssignmentController {
     }
 
     @Override
-    @Measured("${gym.actuator.assignment.assign}")
+    @Measured("POST_api_v1_assignments_assign")
     public void assign(AssignRequest request) {
         assignmentFacade.assign(request);
     }

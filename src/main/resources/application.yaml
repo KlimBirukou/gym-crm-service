@@ -12,9 +12,6 @@ spring:
 
   # Database
   datasource:
-    url: jdbc:postgresql://localhost:5432/gym_db?currentSchema=gym_schema
-    username: gym_user
-    password: HXGLca@\X$@9I$K
     driver-class-name: org.postgresql.Driver
 
   # JPA/Hibernate

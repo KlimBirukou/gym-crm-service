@@ -9,16 +9,20 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.context.EmbeddedValueResolverAware;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringValueResolver;
+
+import java.time.Duration;
 
 @Slf4j
 @Aspect
 @Component
 @RequiredArgsConstructor
 public class MetricsAspect implements EmbeddedValueResolverAware {
+
+    private static final String BASE_METRIC_NAME = "gym.api.requests";
+    private static final String TAG_ENDPOINT = "endpoint";
 
     private static final String TAG_TYPE = "type";
     private static final String TAG_STATUS = "status";
@@ -33,44 +37,42 @@ public class MetricsAspect implements EmbeddedValueResolverAware {
 
     @Around("@annotation(measured)")
     public Object measure(ProceedingJoinPoint joinPoint, Measured measured) throws Throwable {
-        var metricName = getMetricName(joinPoint, measured);
-        var sample = Timer.start(meterRegistry);
+        String endpointName = getEndpointName(joinPoint, measured);
+        Timer.Sample sample = Timer.start(meterRegistry);
+
         try {
-            var result = joinPoint.proceed();
-            meterRegistry.counter(metricName,
-                    TAG_STATUS,
-                    STATUS_SUCCESS,
-                    TAG_TYPE,
-                    TYPE_COUNTER)
-                .increment();
+            Object result = joinPoint.proceed();
+            meterRegistry.counter(BASE_METRIC_NAME,
+                TAG_ENDPOINT, endpointName,
+                TAG_STATUS, STATUS_SUCCESS,
+                TAG_TYPE, TYPE_COUNTER,
+                TAG_EXCEPTION, "none"
+            ).increment();
             return result;
         } catch (Exception e) {
-            meterRegistry.counter(metricName,
-                TAG_STATUS,
-                STATUS_FAILURE,
-                TAG_TYPE,
-                TYPE_COUNTER,
-                TAG_EXCEPTION,
-                e.getClass().getSimpleName()
+            meterRegistry.counter(BASE_METRIC_NAME,
+                TAG_ENDPOINT, endpointName,
+                TAG_STATUS, STATUS_FAILURE,
+                TAG_TYPE, TYPE_COUNTER,
+                TAG_EXCEPTION, e.getClass().getSimpleName()
             ).increment();
             throw e;
         } finally {
-            sample.stop(meterRegistry.timer(metricName, TAG_TYPE, TYPE_TIMER));
+            Timer timer = Timer.builder(BASE_METRIC_NAME)
+                .tag(TAG_ENDPOINT, endpointName)
+                .tag(TAG_TYPE, TYPE_TIMER)
+                .publishPercentileHistogram(true)
+                .minimumExpectedValue(Duration.ofMillis(1))
+                .maximumExpectedValue(Duration.ofSeconds(30))
+                .register(meterRegistry);
+            sample.stop(timer);
         }
     }
 
-    private String getMetricName(ProceedingJoinPoint joinPoint, Measured measured) {
-        String annotationValue;
-        if (!measured.value().isEmpty()) {
-            annotationValue = measured.value();
-        } else {
-            String className = joinPoint.getSignature()
-                .getDeclaringType()
-                .getSimpleName();
-            String methodName = joinPoint.getSignature()
-                .getName();
-            annotationValue = className + "." + methodName;
-        }
+    private String getEndpointName(ProceedingJoinPoint joinPoint, Measured measured) {
+        String annotationValue = measured.value().isEmpty()
+            ? joinPoint.getSignature().getDeclaringType().getSimpleName() + "." + joinPoint.getSignature().getName()
+            : measured.value();
         return valueResolver.resolveStringValue(annotationValue);
     }
 

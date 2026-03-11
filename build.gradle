@@ -24,6 +24,10 @@ repositories {
     mavenCentral()
 }
 
+jar {
+    enabled = false
+}
+
 dependencies {
     // Spring
     implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${openapiVersion}"

@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://gym-db:5432/gym_db?currentSchema=gym_schema
+    username: gym_user
+    password: "HXGLca@\\X$@9I$K"
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+logging:
+  level:
+    root: WARN
+    com.epam.gym: INFO

@@ -12,8 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -30,55 +29,49 @@ public class CustomMetricsEndpoint {
     private static final String TYPE_COUNTER = "counter";
     private static final String TYPE_TIMER = "timer";
     public static final String UNKNOWN = "Unknown";
+    private static final String TAG_ENDPOINT = "endpoint";
+    public static final String GYM_API_REQUESTS = "gym.api.requests";
 
     private final MeterRegistry meterRegistry;
 
     @ReadOperation
     public CustomMetricsResponse getMetrics(@Selector String metricName) {
-        String decodedMetricName = java.net.URLDecoder.decode(metricName, java.nio.charset.StandardCharsets.UTF_8);
-        long success = countByStatus(decodedMetricName, STATUS_SUCCESS);
-        long failures = countByStatus(decodedMetricName, STATUS_FAILURE);
-        Map<String, Long> failuresByType = getFailuresMap(decodedMetricName);
+        long success = getCounterValue(metricName);
+        long failures = getFailuresTotal(metricName);
         long totalAttempts = success + failures;
         return CustomMetricsResponse.builder()
-            .metric(decodedMetricName)
+            .metric(metricName)
             .attempts(totalAttempts)
             .success(success)
             .failures(failures)
-            .failuresByType(failuresByType)
+            .failuresByType(getFailuresMap(metricName))
             .successRate(calculateSuccessRate(success, totalAttempts))
-            .timing(getTimingMetrics(decodedMetricName))
+            .timing(getTimingMetrics(metricName))
             .build();
     }
 
-    @ReadOperation
-    public Map<String, Object> getAllMetrics() {
-        Set<String> metrics = meterRegistry.getMeters().stream()
-            .filter(meter -> meter.getId().getTag(TAG_TYPE) != null)
-            .map(meter -> meter.getId().getName())
-            .collect(Collectors.toCollection(TreeSet::new));
-        Map<String, Object> result = new HashMap<>();
-        result.put("totalMetrics", metrics.size());
-        result.put("metrics", metrics);
-        return result;
-    }
-
-    private long countByStatus(@NonNull String metricName, @NonNull String status) {
-        return (long) meterRegistry.find(metricName)
+    private long getCounterValue(@NonNull String endpointName) {
+        return (long) meterRegistry.find(GYM_API_REQUESTS)
+            .tag(TAG_ENDPOINT, endpointName)
             .tag(TAG_TYPE, TYPE_COUNTER)
-            .tag(TAG_STATUS, status)
-            .counters()
-            .stream()
-            .mapToDouble(Counter::count)
-            .sum();
+            .tag(TAG_STATUS, CustomMetricsEndpoint.STATUS_SUCCESS)
+            .counters().stream().mapToDouble(Counter::count).sum();
     }
 
-    private Map<String, Long> getFailuresMap(@NonNull String metricName) {
-        return meterRegistry.find(metricName)
+    private long getFailuresTotal(@NonNull String endpointName) {
+        return (long) meterRegistry.find(GYM_API_REQUESTS)
+            .tag(TAG_ENDPOINT, endpointName)
             .tag(TAG_TYPE, TYPE_COUNTER)
             .tag(TAG_STATUS, STATUS_FAILURE)
-            .counters()
-            .stream()
+            .counters().stream().mapToDouble(Counter::count).sum();
+    }
+
+    private Map<String, Long> getFailuresMap(@NonNull String endpointName) {
+        return meterRegistry.find(GYM_API_REQUESTS)
+            .tag(TAG_ENDPOINT, endpointName)
+            .tag(TAG_TYPE, TYPE_COUNTER)
+            .tag(TAG_STATUS, STATUS_FAILURE)
+            .counters().stream()
             .collect(Collectors.toMap(
                 this::getExceptionName,
                 counter -> (long) counter.count(),
@@ -86,25 +79,24 @@ public class CustomMetricsEndpoint {
             ));
     }
 
-    private Map<String, Double> getTimingMetrics(@NonNull String metricName) {
+    private Map<String, Double> getTimingMetrics(@NonNull String endpointName) {
         Map<String, Double> timing = new HashMap<>();
-        Timer timer = meterRegistry.find(metricName)
+        Timer timer = meterRegistry.find(GYM_API_REQUESTS)
+            .tag(TAG_ENDPOINT, endpointName)
             .tag(TAG_TYPE, TYPE_TIMER)
             .timer();
-
-        if (timer != null) {
+        if (Objects.nonNull(timer)) {
             timing.put("count", (double) timer.count());
             timing.put("avg_ms", timer.mean(TimeUnit.MILLISECONDS));
             timing.put("max_ms", timer.max(TimeUnit.MILLISECONDS));
             timing.put("total_ms", timer.totalTime(TimeUnit.MILLISECONDS));
         }
-
         return timing;
     }
 
     private String getExceptionName(@NonNull Counter counter) {
         String value = counter.getId().getTag(TAG_EXCEPTION);
-        return value != null ? value : UNKNOWN;  // Fixed typo
+        return Objects.isNull(value) ? UNKNOWN : value;
     }
 
     private String calculateSuccessRate(long success, long total) {
