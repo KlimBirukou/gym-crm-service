@@ -1,37 +1,62 @@
-### Training Types
-* Martial Arts, Meditation, Fencing, Shapeshifting
-            
-### Trainers
- * Vesemir.Oldman - Martial Arts (Active)
- * Master.Yoda - Meditation (Active)
-* Syrio.Forel - Fencing (Active)
-* Jaqen.Hghar - Shapeshifting (Active)
-* John.Wick - Martial Arts (Inactive)
-            
-### Trainees
-* Geralt.zRivii (Active)
-* Lambert.Walrus (Active)
-* Eskel.Kaminsky (Active)
-* Anakin.Skywalker (Active)
-* Obi-Wan.Kenobi (Active)
-* Ahsoka.Tano (Active)
-* Arya.Stark (Active)
-* Brienne.Tarth (Inactive)
-           
-### Assignments
-* Vesemir.Oldman → Geralt.zRivii, Lambert.Walrus, Eskel.Kaminsky
-* Master.Yoda → Anakin.Skywalker, Obi-Wan.Kenobi, Ahsoka.Tano
-* Syrio.Forel → Arya.Stark
-* Jaqen.Hghar → Arya.Stark
-            
-### Trainings
-* 2026-05-01: Vesemir.Oldman - Geralt.zRivii
-* 2026-05-02: Vesemir.Oldman - Lambert.Walrus
-* 2026-05-03: Vesemir.Oldman - Eskel.Kaminsky
-* 2026-05-04: Master.Yoda - Anakin.Skywalker
-* 2026-05-05: Master.Yoda - Obi-Wan.Kenobi
-* 2026-05-06: Master.Yoda - Ahsoka.Tano
-* 2026-05-07: Syrio.Forel - Arya.Stark
-* 2026-05-08: Syrio.Forel - Arya.Stark
-* 2026-05-10: Jaqen.Hghar - Arya.Stark
-* 2026-05-12: Jaqen.Hghar - Arya.Stark
+# Gym CRM
+
+## Build
+before all
+```bash 
+./gradlew clean build
+```
+
+---
+
+## Run
+**local**
+```bash
+./gradlew bootRun --args='--spring.profiles.active=local'
+```
+```bash
+docker compose --profile local up -d
+```
+**dev**
+```bash
+$env:SPRING_PROFILE="dev"; docker compose --profile dev up -d
+```
+**prod**
+```bash
+$env:SPRING_PROFILE="prod"; docker compose --profile prod up -d
+```
+**remove**
+Use this command when switch between profiles to avoid connect to same db
+```bash
+docker compose --profile <profile> down -v 
+```
+
+---
+
+## Profiles
+
+| Service    | local   | dev    | prod   |
+|------------|---------|--------|--------|
+| PostgreSQL | Docker  | Docker | Docker |
+| App        | **IDE** | Docker | Docker |
+| Prometheus | Docker  | Docker | —      |
+| Grafana    | Docker  | Docker | —      |
+
+| Feature         | local | dev     | prod               |
+|-----------------|-------|---------|--------------------|
+| SQL logging     | full  | compact | off                |
+| Log level (app) | DEBUG | DEBUG   | INFO               |
+| Actuator        | all   | all     | health, prometheus |
+| Swagger         | ✅     | ✅       | ❌                  |
+| Seed data       | ✅     | ✅       | ❌                  |
+
+---
+
+## URLs
+
+| Service    | URL                                   |
+|------------|---------------------------------------|
+| App        | http://localhost:8080                 |
+| Swagger    | http://localhost:8080/swagger-ui.html |
+| Actuator   | http://localhost:8080/actuator        |
+| Prometheus | http://localhost:9090                 |
+| Grafana    | http://localhost:3000 `admin / admin` |

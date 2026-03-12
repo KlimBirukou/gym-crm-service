@@ -22,7 +22,7 @@ spring:
     show-sql: false
     properties:
       hibernate:
-        format_sql: true
+        format_sql: false
         default_schema: gym_schema
         jdbc:
           lob:
@@ -36,54 +36,46 @@ spring:
     default-schema: gym_schema
     change-log: classpath:db/changelog/main-changelog.yaml
     enabled: true
+    contexts: default
 
 # Actuator
 management:
   endpoints:
     web:
       exposure:
-        include: "*"
+        include: "health"
       base-path: /actuator
   endpoint:
     health:
-      show-details: always
-      show-components: always
+      show-details: never
+      show-components: never
     prometheus:
-      enabled: true
+      enabled: false
   metrics:
     export:
       prometheus:
-        enabled: true
+        enabled: false
     tags:
       application: ${spring.application.name}
   info:
     env:
-      enabled: true
+      enabled: false
 
 # Logging
 logging:
   level:
-    root: INFO
-    com.epam.gym: DEBUG
-    org.hibernate.SQL: ERROR
-    org.hibernate.type.descriptor.sql.BasicBinder: ERROR
+    root: WARN
+    com.epam.gym: INFO
+    org.hibernate.SQL: OFF
+    org.hibernate.type.descriptor.sql.BasicBinder: OFF
   pattern:
     correlation: "[${spring.application.name:},%X{requestUid:-}] "
     console: "%clr([){faint}%clr(${spring.application.name:}){cyan}%clr( : ){faint}%clr(%X{requestUid:-}){magenta}%clr(]){faint} %clr(%d{yyyy-MM-dd HH:mm:ss}){faint} %clr(%-5level) %clr([%thread]){faint} %clr(%logger{36}){cyan} - %msg%n"
     file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"
 
-# Swagger/OpenApi
+# Swagger
 springdoc:
-  show-actuator: true
+  api-docs:
+    enabled: false
   swagger-ui:
-    path: /swagger-ui.html
-    tags-sorter: alpha
-    operations-sorter: alpha
-    disable-swagger-default-url: true
-
-gym:
-  actuator:
-    assignment:
-      assign: 54489364-378b-4978-a128-6a0c44bd8040
-      get-trainees: fa1f5525-1ac4-4971-b205-f2531c217808
-      get-trainers: b7e73ebe-ec6f-4ec6-b0ec-31654ccce1fc
+    enabled: false
