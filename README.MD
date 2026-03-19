@@ -1,33 +1,79 @@
 # Gym CRM
 
 ## Build
-before all
-```bash 
+
+```bash
 ./gradlew clean build
 ```
 
 ---
 
 ## Run
-**local**
+
+### Local
+
+Infrastructure in Docker, app runs from IDE (check custom run command in build.gradle)
+
 ```bash
-./gradlew bootRun --args='--spring.profiles.active=local'
+docker compose -f compose.local.yaml up -d
 ```
 ```bash
-docker compose --profile local up -d
+./gradlew bootRun
 ```
-**dev**
+Stop containers
+
 ```bash
-$env:SPRING_PROFILE="dev"; docker compose --profile dev up -d
+docker compose -f compose.local.yaml stop
 ```
-**prod**
+
+Stop and remove containers with volumes
+
 ```bash
-$env:SPRING_PROFILE="prod"; docker compose --profile prod up -d
+docker compose -f compose.local.yaml down -v
 ```
-**remove**
-Use this command when switch between profiles to avoid connect to same db
+
+---
+
+### Dev
+
+Full stack in Docker. Build JAR first:
+
 ```bash
-docker compose --profile <profile> down -v 
+docker compose -f compose.dev.yaml up -d --build
+```
+
+Stop containers
+
+```bash
+docker compose -f compose.dev.yaml stop
+```
+
+Stop and remove containers with volumes
+
+```bash
+docker compose -f compose.dev.yaml down -v
+```
+
+---
+
+### Prod
+
+App + DB in Docker. Build JAR first:
+
+```bash
+docker compose -f compose.prod.yaml up -d --build
+```
+
+Stop containers
+
+```bash
+docker compose -f compose.prod.yaml stop
+```
+
+Stop and remove containers with volumes
+
+```bash
+docker compose -f compose.prod.yaml down -v
 ```
 
 ---

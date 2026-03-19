@@ -3,6 +3,12 @@ databaseChangeLog:
       id: 2026-02-16-01
       author: Klim Birukou <klim_birukou@epam.com>
       context: seed
+      preConditions:
+        onFail: MARK_RAN
+        onError: MARK_RAN
+        sqlCheck:
+          expectedResult: 0
+          sql: SELECT COUNT(*) FROM gym_schema.training_type
       changes:
         - sqlFile:
             path: ../data/training_type_init.sql

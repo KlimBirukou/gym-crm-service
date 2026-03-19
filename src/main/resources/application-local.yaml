@@ -1,4 +1,9 @@
 spring:
+  docker:
+    compose:
+      file: compose.local.yaml
+      lifecycle-management: start-only
+
   datasource:
     url: jdbc:postgresql://localhost:5432/gym_db?currentSchema=gym_schema
     username: gym_user
@@ -12,6 +17,25 @@ spring:
 
   liquibase:
     contexts: default,seed
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
+    prometheus:
+      enabled: true
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+  info:
+    env:
+      enabled: true
 
 logging:
   level:
