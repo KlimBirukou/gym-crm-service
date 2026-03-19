@@ -12,9 +12,6 @@ spring:
 
   # Database
   datasource:
-    url: jdbc:postgresql://localhost:5432/gym_db?currentSchema=gym_schema
-    username: gym_user
-    password: HXGLca@\X$@9I$K
     driver-class-name: org.postgresql.Driver
 
   # JPA/Hibernate
@@ -25,7 +22,7 @@ spring:
     show-sql: false
     properties:
       hibernate:
-        format_sql: true
+        format_sql: false
         default_schema: gym_schema
         jdbc:
           lob:
@@ -39,38 +36,46 @@ spring:
     default-schema: gym_schema
     change-log: classpath:db/changelog/main-changelog.yaml
     enabled: true
+    contexts: default
 
 # Actuator
 management:
   endpoints:
     web:
       exposure:
-        include: "*"
+        include: "health"
       base-path: /actuator
   endpoint:
     health:
-      show-details: always
+      show-details: never
+      show-components: never
+    prometheus:
+      enabled: false
+  metrics:
+    export:
+      prometheus:
+        enabled: false
+    tags:
+      application: ${spring.application.name}
   info:
     env:
-      enabled: true
+      enabled: false
 
 # Logging
 logging:
   level:
-    root: INFO
-    com.epam.gym: DEBUG
-    org.hibernate.SQL: ERROR
-    org.hibernate.type.descriptor.sql.BasicBinder: ERROR
+    root: WARN
+    com.epam.gym: INFO
+    org.hibernate.SQL: OFF
+    org.hibernate.type.descriptor.sql.BasicBinder: OFF
   pattern:
     correlation: "[${spring.application.name:},%X{requestUid:-}] "
     console: "%clr([){faint}%clr(${spring.application.name:}){cyan}%clr( : ){faint}%clr(%X{requestUid:-}){magenta}%clr(]){faint} %clr(%d{yyyy-MM-dd HH:mm:ss}){faint} %clr(%-5level) %clr([%thread]){faint} %clr(%logger{36}){cyan} - %msg%n"
     file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"
 
-# Swagger/OpenApi
+# Swagger
 springdoc:
-  show-actuator: true
+  api-docs:
+    enabled: false
   swagger-ui:
-    path: /swagger-ui.html
-    tags-sorter: alpha
-    operations-sorter: alpha
-    disable-swagger-default-url: true
+    enabled: false

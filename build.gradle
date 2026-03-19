@@ -24,6 +24,10 @@ repositories {
     mavenCentral()
 }
 
+jar {
+    enabled = false
+}
+
 dependencies {
     // Spring
     implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${openapiVersion}"
@@ -52,6 +56,9 @@ dependencies {
     annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
     annotationProcessor "org.mapstruct.extensions.spring:mapstruct-spring-extensions:${mapstructSpringExtensionsVersion}"
     testAnnotationProcessor "org.mapstruct.extensions.spring:mapstruct-spring-extensions:${mapstructSpringExtensionsVersion}"
+
+    // Metrics
+    implementation 'io.micrometer:micrometer-registry-prometheus'
 
     // Utils
     implementation "org.apache.commons:commons-collections4:${commonsCollectionsVersion}"

@@ -1,3 +1,5 @@
+name: gym
+
 services:
   gym-db:
     container_name: gym-crm-postgres
@@ -15,15 +17,87 @@ services:
     networks:
       - gym-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d gym_db"]
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d gym_db" ]
       interval: 5s
       timeout: 5s
       retries: 5
+    profiles: [ "local", "dev", "prod" ]
+
+  gym-app:
+    container_name: gym-crm-app
+    build:
+      context: .
+      dockerfile: docker/app/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILE}
+    networks:
+      - gym-network
+    depends_on:
+      gym-db:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    profiles: [ "dev", "prod" ]
+
+  prometheus:
+    container_name: gym-prometheus
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./docker/prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yaml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.enable-lifecycle'
+    networks:
+      - gym-network
+    depends_on:
+      gym-db:
+        condition: service_healthy
+    profiles: [ "local", "dev"]
+
+  grafana:
+    container_name: gym-grafana
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel
+      - GF_SERVER_ROOT_URL=http://localhost:3000
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./docker/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./docker/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    networks:
+      - gym-network
+    depends_on:
+      - prometheus
+    profiles: [ "local", "dev"]
 
 networks:
   gym-network:
+    name: gym-network
     driver: bridge
 
 volumes:
   gym_db_data:
     driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+

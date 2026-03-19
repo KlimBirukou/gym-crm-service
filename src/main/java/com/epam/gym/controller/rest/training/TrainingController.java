@@ -7,6 +7,7 @@ import com.epam.gym.controller.rest.training.dto.response.TraineeTrainingRespons
 import com.epam.gym.controller.rest.training.dto.response.TrainerTrainingsResponse;
 import com.epam.gym.controller.rest.training.dto.response.TrainingTypeResponse;
 import com.epam.gym.facade.training.ITrainingFacade;
+import com.epam.gym.metrics.annotation.Measured;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,11 +21,13 @@ public class TrainingController implements ITrainingController {
     private final ITrainingFacade trainingFacade;
 
     @Override
+    @Measured("POST_api_v1_training_create")
     public void createTraining(CreateTrainingRequest request) {
         trainingFacade.create(request);
     }
 
     @Override
+    @Measured("GET_api_v1_training_get_trainee_trainings")
     public List<TraineeTrainingResponse> getTraineeTrainings(String username,
                                                              LocalDate from,
                                                              LocalDate to,
@@ -41,6 +44,7 @@ public class TrainingController implements ITrainingController {
     }
 
     @Override
+    @Measured("GET_api_v1_training_get_trainer_trainings")
     public List<TrainerTrainingsResponse> getTrainerTrainings(String username,
                                                               LocalDate from,
                                                               LocalDate to,
@@ -55,6 +59,7 @@ public class TrainingController implements ITrainingController {
     }
 
     @Override
+    @Measured("GET_api_v1_training_get_types")
     public List<TrainingTypeResponse> getTrainingTypes() {
         return trainingFacade.getTrainingsTypes();
     }
