@@ -24,12 +24,11 @@ spring:
       hibernate:
         format_sql: false
         default_schema: gym_schema
+        order_inserts: true
+        order_updates: true
         jdbc:
-          lob:
-            non_contextual_creation: true
-      order_inserts: true
-      order_updates: true
-      batch_size: 20
+          batch_size: 20
+
 
   # Liquibase
   liquibase:
@@ -79,3 +78,9 @@ springdoc:
     enabled: false
   swagger-ui:
     enabled: false
+
+# Security
+application:
+  security:
+    jwt:
+      expiration: 86400

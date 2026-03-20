@@ -20,7 +20,7 @@ public record LoginRequest(
     @NotBlank(message = "Password is required")
     @Schema(
         description = "Current password of user",
-        example = "Vesemir.Oldman"
+        example = "password8"
     )
     String password
 ) {

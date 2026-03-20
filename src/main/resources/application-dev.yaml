@@ -42,10 +42,14 @@ logging:
 springdoc:
   api-docs:
     enabled: true
-  show-actuator: true
   swagger-ui:
     enabled: true
     path: /swagger-ui.html
     tags-sorter: alpha
     operations-sorter: alpha
     disable-swagger-default-url: true
+
+application:
+  security:
+    jwt:
+      secret: ZGV2LXNlY3JldC1rZXktZm9yLWd5bS1jcm0tYXBwLWRldmVsb3BtZW50LW9ubHk=

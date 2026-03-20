@@ -1,7 +1,7 @@
 package com.epam.gym.service.user;
 
 import com.epam.gym.domain.user.User;
-import com.epam.gym.exception.AuthException;
+import com.epam.gym.exception.auth.InvalidCredentialsException;
 import com.epam.gym.exception.not.found.UserNotFoundException;
 import com.epam.gym.repository.domain.user.IUserRepository;
 import com.epam.gym.service.auth.IPasswordService;
@@ -114,7 +114,7 @@ class UserServiceTest {
         doReturn(Optional.of(user)).when(userRepository).getByUsername(USERNAME);
         doReturn(false).when(passwordService).checkPassword(OLD_PASSWORD, OLD_HASHED_PASSWORD);
 
-        assertThrows(AuthException.class, () -> testObject.changePassword(dto));
+        assertThrows(InvalidCredentialsException.class, () -> testObject.changePassword(dto));
     }
 
     @ParameterizedTest

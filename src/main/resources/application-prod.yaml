@@ -30,3 +30,9 @@ logging:
     com.epam.gym: INFO
     org.hibernate.SQL: OFF
     org.hibernate.type.descriptor.sql.BasicBinder: OFF
+
+application:
+  security:
+    jwt:
+      secret: cHJvZC1zZWNyZXQta2V5LWZvci1neW0tY3JtLWFwcC1wcm9kdWN0aW9uLW9ubHk=
+      expiration: 28800

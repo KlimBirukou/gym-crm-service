@@ -1,6 +1,6 @@
 package com.epam.gym.controller.advice;
 
-import com.epam.gym.exception.AuthException;
+import com.epam.gym.exception.auth.InvalidCredentialsException;
 import com.epam.gym.exception.conflict.assignment.AlreadyAssignedException;
 import com.epam.gym.exception.conflict.date.DateConflictException;
 import com.epam.gym.exception.not.active.NotActiveException;
@@ -124,7 +124,7 @@ class GlobalExceptionHandlerTest {
 
     @Test
     void handleAuthException() {
-        var authException = new AuthException();
+        var authException = new InvalidCredentialsException();
 
         var response = testObject.handleException(authException, request);
 

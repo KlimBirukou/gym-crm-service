@@ -4,12 +4,14 @@ import com.epam.gym.controller.rest.auth.dto.request.ChangePasswordRequest;
 import com.epam.gym.controller.rest.auth.dto.request.LoginRequest;
 import com.epam.gym.controller.rest.auth.dto.request.RegisterTraineeRequest;
 import com.epam.gym.controller.rest.auth.dto.request.RegisterTrainerRequest;
+import com.epam.gym.controller.rest.auth.dto.response.LoginResponse;
 import com.epam.gym.controller.rest.auth.dto.response.RegistrationResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -25,7 +27,9 @@ public interface IAuthController {
 
     @Operation(
         summary = "Register trainee",
-        description = "Create a new trainee profile and get credentials.")
+        description = "Create a new trainee profile and get credentials."
+    )
+    @SecurityRequirements
     @ApiResponse(
         responseCode = "201",
         description = "Trainee registered successfully",
@@ -68,7 +72,9 @@ public interface IAuthController {
 
     @Operation(
         summary = "Register trainer",
-        description = "Create a new trainer profile and get credentials.")
+        description = "Create a new trainer profile and get credentials."
+    )
+    @SecurityRequirements
     @ApiResponse(
         responseCode = "201",
         description = "Trainer registered successfully",
@@ -113,16 +119,21 @@ public interface IAuthController {
         summary = "Login",
         description = "Authenticate user using username and password."
     )
+    @SecurityRequirements
     @ApiResponse(
-        responseCode = "204",
-        description = "Login successful"
+        responseCode = "200",
+        description = "Login successful",
+        content = @Content(
+            mediaType = MediaType.APPLICATION_JSON_VALUE,
+            schema = @Schema(implementation = LoginResponse.class))
     )
     @PostMapping(
         path = "/login",
+        produces = MediaType.APPLICATION_JSON_VALUE,
         consumes = MediaType.APPLICATION_JSON_VALUE
     )
     @ResponseStatus(HttpStatus.OK)
-    void login(
+    LoginResponse login(
         @io.swagger.v3.oas.annotations.parameters.RequestBody(
             description = "Login credentials",
             required = true,

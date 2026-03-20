@@ -4,10 +4,13 @@ import com.epam.gym.controller.rest.auth.dto.request.ChangePasswordRequest;
 import com.epam.gym.controller.rest.auth.dto.request.LoginRequest;
 import com.epam.gym.controller.rest.auth.dto.request.RegisterTraineeRequest;
 import com.epam.gym.controller.rest.auth.dto.request.RegisterTrainerRequest;
+import com.epam.gym.controller.rest.auth.dto.response.LoginResponse;
 import com.epam.gym.domain.user.Trainee;
 import com.epam.gym.domain.user.Trainer;
 import com.epam.gym.domain.user.User;
-import com.epam.gym.exception.AuthException;
+import com.epam.gym.exception.auth.InvalidCredentialsException;
+import com.epam.gym.security.JwtProperties;
+import com.epam.gym.security.service.IJwtService;
 import com.epam.gym.service.auth.IPasswordService;
 import com.epam.gym.service.trainee.ITraineeService;
 import com.epam.gym.service.trainee.dto.CreateTraineeDto;
@@ -48,6 +51,7 @@ class AuthFacadeTest {
     private static final String SPECIALIZATION = "specialization";
     private static final LocalDate BIRTHDATE = LocalDate.of(2000, 1, 1);
     private static final String ADDRESS = "address";
+    private static final String TOKEN = "token";
 
     @Mock
     private ITraineeService traineeService;
@@ -58,6 +62,10 @@ class AuthFacadeTest {
     @Mock
     private IPasswordService passwordService;
     @Mock
+    private IJwtService jwtService;
+    @Mock
+    private JwtProperties jwtProperties;
+    @Mock
     private ConversionService conversionService;
 
     @InjectMocks
@@ -65,7 +73,14 @@ class AuthFacadeTest {
 
     @AfterEach
     void tearDown() {
-        verifyNoMoreInteractions(traineeService, trainerService, userService, passwordService, conversionService);
+        verifyNoMoreInteractions(
+            traineeService,
+            trainerService,
+            userService,
+            passwordService,
+            jwtService,
+            jwtProperties,
+            conversionService);
     }
 
     @Test
@@ -116,8 +131,17 @@ class AuthFacadeTest {
         var user = buildUser();
         doReturn(user).when(userService).getByUsername(USERNAME);
         doReturn(true).when(passwordService).checkPassword(PASSWORD, HASHED_PASSWORD);
+        doReturn(TOKEN).when(jwtService).generateToken(USERNAME);
+        doReturn(100L).when(jwtProperties).getExpiration();
 
-        testObject.login(request);
+        var result = testObject.login(request);
+        assertEquals(TOKEN, result.accessToken());
+        assertNotNull(result);
+
+        verify(userService).getByUsername(USERNAME);
+        verify(passwordService).checkPassword(PASSWORD, HASHED_PASSWORD);
+        verify(jwtService).generateToken(USERNAME);
+        verify(jwtProperties).getExpiration();
     }
 
     @Test
@@ -127,7 +151,7 @@ class AuthFacadeTest {
         doReturn(user).when(userService).getByUsername(USERNAME);
         doReturn(false).when(passwordService).checkPassword(PASSWORD, HASHED_PASSWORD);
 
-        assertThrows(AuthException.class, () -> testObject.login(request));
+        assertThrows(InvalidCredentialsException.class, () -> testObject.login(request));
     }
 
     @ParameterizedTest
@@ -176,6 +200,10 @@ class AuthFacadeTest {
             .username(USERNAME)
             .password(PASSWORD)
             .build();
+    }
+
+    private static LoginResponse buildLoginResponse() {
+        return LoginResponse.of(TOKEN, 100L);
     }
 
     private static ChangePasswordRequest buildChangePasswordRequest() {

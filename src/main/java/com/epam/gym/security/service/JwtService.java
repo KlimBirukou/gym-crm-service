@@ -1,0 +1,59 @@
+package com.epam.gym.security.service;
+
+import com.epam.gym.security.JwtProperties;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import javax.crypto.SecretKey;
+import java.util.Date;
+
+@Service
+@RequiredArgsConstructor
+public class JwtService implements IJwtService {
+
+    private final JwtProperties jwtProperties;
+
+    @Override
+    public String generateToken(@NonNull String username) {
+        var now = new Date();
+        var expiry = new Date(now.getTime() + jwtProperties.getExpiration() * 1000);
+        return Jwts.builder()
+            .subject(username)
+            .issuedAt(now)
+            .expiration(expiry)
+            .signWith(signingKey())
+            .compact();
+    }
+
+    @Override
+    public String extractUsername(@NonNull String token) {
+        return Jwts.parser()
+            .verifyWith(signingKey())
+            .build()
+            .parseSignedClaims(token)
+            .getPayload()
+            .getSubject();
+    }
+
+    @Override
+    public boolean isTokenValid(@NonNull String token) {
+        try {
+            Jwts.parser()
+                .verifyWith(signingKey())
+                .build()
+                .parseSignedClaims(token);
+            return true;
+        } catch (JwtException | IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    private SecretKey signingKey() {
+        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtProperties.getSecret()));
+    }
+}

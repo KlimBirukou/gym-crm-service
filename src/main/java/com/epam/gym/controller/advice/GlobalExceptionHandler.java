@@ -1,6 +1,7 @@
 package com.epam.gym.controller.advice;
 
-import com.epam.gym.exception.AuthException;
+import com.epam.gym.exception.auth.InvalidCredentialsException;
+import com.epam.gym.exception.auth.NotAuthenticatedException;
 import com.epam.gym.exception.conflict.assignment.AlreadyAssignedException;
 import com.epam.gym.exception.conflict.date.DateConflictException;
 import com.epam.gym.exception.not.active.NotActiveException;
@@ -34,7 +35,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     private static final String ALREADY_ASSIGNED_MESSAGE = "Trainee [%s] already assigned to trainer [%s]";
     private static final String NOT_ACTIVE_MESSAGE = "%s [%s] not active to perform this action";
     private static final String DATE_CONFLICT_MESSAGE = "%s [%s] already has a training on [%s] date";
-    private static final String LOGIN_MESSAGE = "Username or password invalid";
+    private static final String INVALID_CREDENTIALS_MESSAGE = "Username or password invalid";
+    private static final String NOT_AUTHENTICATED_MESSAGE =
+        "Authentication required. Please login to access this resource";
     private static final String VALIDATION_FAILED = "VALIDATION_FAILED";
     private static final String CONTENT_TYPE_MESSAGE =
         "Content type '%s' is not supported. Supported media types are: %s";
@@ -90,11 +93,21 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity<@NonNull Object> handleException(AuthException exception, WebRequest request) {
+    public ResponseEntity<@NonNull Object> handleException(InvalidCredentialsException exception, WebRequest request) {
         return getObjectResponseEntity(
             exception,
             request,
-            LOGIN_MESSAGE,
+            INVALID_CREDENTIALS_MESSAGE,
+            HttpStatus.UNAUTHORIZED
+        );
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<@NonNull Object> handleException(NotAuthenticatedException exception, WebRequest request) {
+        return getObjectResponseEntity(
+            exception,
+            request,
+            NOT_AUTHENTICATED_MESSAGE,
             HttpStatus.UNAUTHORIZED
         );
     }

@@ -4,6 +4,7 @@ import com.epam.gym.controller.rest.auth.dto.request.ChangePasswordRequest;
 import com.epam.gym.controller.rest.auth.dto.request.LoginRequest;
 import com.epam.gym.controller.rest.auth.dto.request.RegisterTraineeRequest;
 import com.epam.gym.controller.rest.auth.dto.request.RegisterTrainerRequest;
+import com.epam.gym.controller.rest.auth.dto.response.LoginResponse;
 import com.epam.gym.controller.rest.auth.dto.response.RegistrationResponse;
 import com.epam.gym.facade.auth.IAuthFacade;
 import org.junit.jupiter.api.AfterEach;
@@ -30,6 +31,7 @@ class AuthControllerTest {
     private static final String SPECIALIZATION_NAME = "specialization_name";
     private static final String USERNAME = "username";
     private static final String PASSWORD = "password";
+    private static final String TOKEN = "token";
 
     @Mock
     private IAuthFacade authFacade;
@@ -69,9 +71,12 @@ class AuthControllerTest {
     @Test
     void login() {
         var request = buildLoginRequest();
+        var expected = buildLoginResponse();
+        doReturn(expected).when(authFacade).login(request);
 
-        testObject.login(request);
+        var actual = testObject.login(request);
 
+        assertEquals(expected, actual);
         verify(authFacade).login(request);
     }
 
@@ -113,6 +118,10 @@ class AuthControllerTest {
             .username(USERNAME)
             .password(PASSWORD)
             .build();
+    }
+
+    private static LoginResponse buildLoginResponse() {
+        return LoginResponse.of(TOKEN, 100);
     }
 
     private static ChangePasswordRequest buildChangePasswordRequest() {
