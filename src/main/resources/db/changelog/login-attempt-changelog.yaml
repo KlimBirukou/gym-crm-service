@@ -1,0 +1,34 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2026-03-22-01
+      author: Klim Birukou <klim_birukou@epam.com>
+      changes:
+        - createTable:
+            tableName: login_attempt
+            schemaName: gym_schema
+            remarks: Tracks failed login attempts per user for brute force protection
+            columns:
+              - column:
+                  name: user_uid
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_login_attempt
+                    nullable: false
+              - column:
+                  name: failed_attempts
+                  type: int
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_failed_at
+                  type: timestamp
+
+        - addForeignKeyConstraint:
+            baseTableName: login_attempt
+            baseColumnNames: user_uid
+            referencedTableName: user
+            referencedColumnNames: uid
+            constraintName: fk_login_attempt_user
+            onDelete: CASCADE

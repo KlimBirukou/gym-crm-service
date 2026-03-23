@@ -6,10 +6,7 @@ import com.epam.gym.controller.rest.auth.dto.request.RegisterTraineeRequest;
 import com.epam.gym.controller.rest.auth.dto.request.RegisterTrainerRequest;
 import com.epam.gym.controller.rest.auth.dto.response.LoginResponse;
 import com.epam.gym.controller.rest.auth.dto.response.RegistrationResponse;
-import com.epam.gym.exception.auth.InvalidCredentialsException;
-import com.epam.gym.security.JwtProperties;
-import com.epam.gym.security.service.IJwtService;
-import com.epam.gym.service.auth.IPasswordService;
+import com.epam.gym.service.auth.ILoginService;
 import com.epam.gym.service.trainee.ITraineeService;
 import com.epam.gym.service.trainee.dto.CreateTraineeDto;
 import com.epam.gym.service.trainer.ITrainerService;
@@ -23,8 +20,6 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -33,9 +28,7 @@ public class AuthFacade implements IAuthFacade {
     private final ITraineeService traineeService;
     private final ITrainerService trainerService;
     private final IUserService userService;
-    private final IPasswordService passwordService;
-    private final IJwtService jwtService;
-    private final JwtProperties jwtProperties;
+    private final ILoginService loginService;
     private final ConversionService conversionService;
 
     @Override
@@ -67,16 +60,12 @@ public class AuthFacade implements IAuthFacade {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public LoginResponse login(@NonNull LoginRequest request) {
         log.info("Login. Started. Username={}", request.username());
-        var user = userService.getByUsername(request.username());
-        Optional.of(request)
-            .filter(r -> passwordService.checkPassword(request.password(), user.getPassword()))
-            .orElseThrow(InvalidCredentialsException::new);
-        var token = jwtService.generateToken(user.getUsername());
-        log.info("Login. Finished. Successful. Username={}", request.username());
-        return LoginResponse.of(token, jwtProperties.getExpiration());
+        var response = loginService.login(request);
+        log.info("Login. Finished. Username={}", request.username());
+        return response;
     }
 
     @Override

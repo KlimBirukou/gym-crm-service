@@ -1,5 +1,6 @@
 package com.epam.gym.controller.advice;
 
+import com.epam.gym.exception.auth.AccountTemporarilyBlockedException;
 import com.epam.gym.exception.auth.InvalidCredentialsException;
 import com.epam.gym.exception.auth.NotAuthenticatedException;
 import com.epam.gym.exception.conflict.assignment.AlreadyAssignedException;
@@ -41,6 +42,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     private static final String VALIDATION_FAILED = "VALIDATION_FAILED";
     private static final String CONTENT_TYPE_MESSAGE =
         "Content type '%s' is not supported. Supported media types are: %s";
+    private static final String ACCOUNT_BLOCKED_MESSAGE =
+        "Account is temporarily blocked. Try again in %d minute(s)";
+
+    @ExceptionHandler
+    public ResponseEntity<@NonNull Object> handleException(AccountTemporarilyBlockedException exception,
+                                                           WebRequest request) {
+        return getObjectResponseEntity(
+            exception,
+            request,
+            ACCOUNT_BLOCKED_MESSAGE.formatted(exception.getMinutesRemaining()),
+            HttpStatus.TOO_MANY_REQUESTS
+        );
+    }
 
     @ExceptionHandler
     public ResponseEntity<@NonNull Object> handleException(NotFoundException exception, WebRequest request) {

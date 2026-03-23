@@ -29,11 +29,4 @@ public record LoginResponse(
     long expiresIn
 ) {
 
-    public static LoginResponse of(String accessToken, long expiresIn) {
-        return LoginResponse.builder()
-            .accessToken(accessToken)
-            .tokenType("Bearer")
-            .expiresIn(expiresIn)
-            .build();
-    }
 }
