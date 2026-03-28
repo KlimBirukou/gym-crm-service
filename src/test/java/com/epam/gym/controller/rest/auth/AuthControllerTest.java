@@ -16,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
@@ -32,6 +33,7 @@ class AuthControllerTest {
     private static final String USERNAME = "username";
     private static final String PASSWORD = "password";
     private static final String TOKEN = "token";
+    private static final String BEARER = "Bearer";
 
     @Mock
     private IAuthFacade authFacade;
@@ -81,6 +83,11 @@ class AuthControllerTest {
     }
 
     @Test
+    void logout() {
+        assertDoesNotThrow(() -> testObject.logout());
+    }
+
+    @Test
     void changePassword() {
         var request = buildChangePasswordRequest();
 
@@ -121,7 +128,11 @@ class AuthControllerTest {
     }
 
     private static LoginResponse buildLoginResponse() {
-        return LoginResponse.of(TOKEN, 100);
+        return LoginResponse.builder()
+            .expiresIn(100L)
+            .accessToken(TOKEN)
+            .tokenType(BEARER)
+            .build();
     }
 
     private static ChangePasswordRequest buildChangePasswordRequest() {

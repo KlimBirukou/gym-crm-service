@@ -20,7 +20,6 @@ import java.util.Optional;
 import static com.epam.gym.GymApplication.MAX_LOGIN_ATTEMPTS_COUNT;
 import static com.epam.gym.GymApplication.BLOCK_DURATION;
 
-
 @Service
 @RequiredArgsConstructor
 public class LoginService implements ILoginService {
@@ -51,7 +50,7 @@ public class LoginService implements ILoginService {
             .build();
     }
 
-    private LoginAttempt getOrCreateAttempt(@NonNull User user) {
+    private LoginAttempt getOrCreateAttempt(User user) {
         return loginAttemptRepository.findByUserUid(user.getUid())
             .orElseGet(() -> LoginAttempt.builder()
                 .userUid(user.getUid())
@@ -59,7 +58,7 @@ public class LoginService implements ILoginService {
             );
     }
 
-    private void checkBruteForce(@NonNull LoginAttempt attempt) {
+    private void checkBruteForce(LoginAttempt attempt) {
         Optional.of(attempt)
             .filter(a -> a.isBlocked(MAX_LOGIN_ATTEMPTS_COUNT, BLOCK_DURATION))
             .map(a -> a.minutesUntilUnblock(BLOCK_DURATION))
@@ -71,9 +70,9 @@ public class LoginService implements ILoginService {
             .ifPresent(LoginAttempt::reset);
     }
 
-    private void verifyPassword(@NonNull LoginRequest request,
-                                @NonNull User user,
-                                @NonNull LoginAttempt attempt) {
+    private void verifyPassword(LoginRequest request,
+                                User user,
+                                LoginAttempt attempt) {
         Optional.of(request)
             .filter(r -> !passwordService.checkPassword(r.password(), user.getPassword()))
             .ifPresent(r -> {

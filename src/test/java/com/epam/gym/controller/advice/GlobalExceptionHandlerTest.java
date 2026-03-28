@@ -1,14 +1,19 @@
 package com.epam.gym.controller.advice;
 
+import com.epam.gym.exception.auth.AccountTemporarilyBlockedException;
 import com.epam.gym.exception.auth.InvalidCredentialsException;
+import com.epam.gym.exception.auth.NotAuthenticatedException;
 import com.epam.gym.exception.conflict.assignment.AlreadyAssignedException;
-import com.epam.gym.exception.conflict.date.DateConflictException;
-import com.epam.gym.exception.not.active.NotActiveException;
+import com.epam.gym.exception.conflict.date.TraineeDateConflictException;
+import com.epam.gym.exception.not.active.TraineeNotActiveException;
 import com.epam.gym.exception.not.assigned.NotAssignmentException;
-import com.epam.gym.exception.not.found.NotFoundException;
+import com.epam.gym.exception.not.found.TraineeNotFoundException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -24,7 +29,9 @@ import org.springframework.web.context.request.WebRequest;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Stream;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -35,25 +42,15 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 class GlobalExceptionHandlerTest {
 
     private static final LocalDate DATE = LocalDate.of(2026, 3, 1);
-    private static final String ENTITY_NAME = "entity";
     private static final String IDENTIFIER = "identifier";
-    private static final String TRAINEE_USERNAME = "trainee_username";
-    private static final String TRAINER_USERNAME = "trainer_username";
+    private static final String TRAINEE_USERNAME = "trainee username";
+    private static final String TRAINER_USERNAME = "trainer username";
+    private static final String VALIDATION_ERROR = "validation error";
+    private static final long MINUTES_REMAINING = 10L;
     private static final String ERROR_MESSAGE_500 = "An unexpected error occurred on the server side.";
-    private static final String VALIDATION_ERROR = "Validation error";
 
     @Mock
     private WebRequest request;
-    @Mock
-    private NotFoundException notFoundException;
-    @Mock
-    private NotActiveException notActiveException;
-    @Mock
-    private DateConflictException dateConflictException;
-    @Mock
-    private AlreadyAssignedException alreadyAssignedException;
-    @Mock
-    private NotAssignmentException notAssignmentException;
     @Mock
     private MethodArgumentNotValidException methodArgumentNotValidException;
     @Mock
@@ -70,76 +67,139 @@ class GlobalExceptionHandlerTest {
     void tearDown() {
         verifyNoMoreInteractions(
             request,
-            notFoundException,
-            notActiveException,
-            dateConflictException,
-            alreadyAssignedException,
-            notAssignmentException,
             methodArgumentNotValidException,
             bindingResult,
+            objectError,
             httpMediaTypeNotSupportedException
         );
     }
 
     @Test
+    void handleInvalidCredentialsException() {
+        var response = testObject.handleUnauthorizedException(new InvalidCredentialsException(), request);
+
+        assertResponse(response, HttpStatus.UNAUTHORIZED, "UNAUTHORIZED");
+        assertDescriptionContains(response, "password");
+    }
+
+    @Test
+    void handleNotAuthenticatedException() {
+        var response = testObject.handleUnauthorizedException(new NotAuthenticatedException(), request);
+
+        assertResponse(response, HttpStatus.UNAUTHORIZED, "UNAUTHORIZED");
+        assertDescriptionContains(response, "Authentication required");
+    }
+
+    @Test
+    void handleAccountTemporarilyBlockedException() {
+        var response = testObject.handleException(
+            new AccountTemporarilyBlockedException(MINUTES_REMAINING),
+            request
+        );
+
+        assertResponse(response, HttpStatus.TOO_MANY_REQUESTS, "TOO_MANY_REQUESTS");
+        assertDescriptionContains(response, String.valueOf(MINUTES_REMAINING));
+    }
+
+    @Test
     void handleNotFoundException() {
-        doReturn(ENTITY_NAME).when(notFoundException).getEntityName();
-        doReturn(IDENTIFIER).when(notFoundException).getIdentifier();
+        var response = testObject.handleException(new TraineeNotFoundException(IDENTIFIER), request);
 
-        var response = testObject.handleException(notFoundException, request);
+        assertResponse(response, HttpStatus.NOT_FOUND, "NOT_FOUND");
+        assertDescriptionContains(response, IDENTIFIER);
+    }
 
-        assertResponse(response, HttpStatus.NOT_FOUND, HttpStatus.NOT_FOUND.name());
+    @ParameterizedTest
+    @MethodSource("provideNullIdentifiers")
+    void handleNotFoundException_nullIdentifier(String identifier) {
+        var response = testObject.handleException(new TraineeNotFoundException(identifier), request);
+
+        assertResponse(response, HttpStatus.NOT_FOUND, "NOT_FOUND");
     }
 
     @Test
     void handleNotActiveException() {
-        doReturn(ENTITY_NAME).when(notActiveException).getEntityName();
-        doReturn(IDENTIFIER).when(notActiveException).getIdentifier();
+        var response = testObject.handleException(new TraineeNotActiveException(IDENTIFIER), request);
 
-        var response = testObject.handleException(notActiveException, request);
+        assertResponse(response, HttpStatus.UNPROCESSABLE_CONTENT, "UNPROCESSABLE_CONTENT");
+        assertDescriptionContains(response, IDENTIFIER);
+    }
 
-        HttpStatus unprocessableContent = HttpStatus.UNPROCESSABLE_CONTENT;
-        assertResponse(response, unprocessableContent, unprocessableContent.name());
+    @ParameterizedTest
+    @MethodSource("provideNullIdentifiers")
+    void handleNotActiveException_nullIdentifier(String identifier) {
+        var response = testObject.handleException(new TraineeNotActiveException(identifier), request);
+
+        assertResponse(response, HttpStatus.UNPROCESSABLE_CONTENT, "UNPROCESSABLE_CONTENT");
+    }
+
+    @Test
+    void handleDateConflictException() {
+        var response = testObject.handleException(
+            new TraineeDateConflictException(IDENTIFIER, DATE),
+            request
+        );
+
+        assertResponse(response, HttpStatus.CONFLICT, "CONFLICT");
+        assertDescriptionContains(response, IDENTIFIER);
+        assertDescriptionContains(response, DATE.toString());
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideNullDatesAndIdentifiers")
+    void handleDateConflictException_nullFields(String identifier, LocalDate date) {
+        var response = testObject.handleException(
+            new TraineeDateConflictException(identifier, date),
+            request
+        );
+
+        assertResponse(response, HttpStatus.CONFLICT, "CONFLICT");
     }
 
     @Test
     void handleAlreadyAssignedException() {
-        doReturn(TRAINEE_USERNAME).when(alreadyAssignedException).getTraineeUsername();
-        doReturn(TRAINER_USERNAME).when(alreadyAssignedException).getTrainerUsername();
+        var response = testObject.handleException(
+            new AlreadyAssignedException(TRAINEE_USERNAME, TRAINER_USERNAME),
+            request
+        );
 
-        var response = testObject.handleException(alreadyAssignedException, request);
+        assertResponse(response, HttpStatus.CONFLICT, "CONFLICT");
+        assertDescriptionContains(response, TRAINEE_USERNAME);
+        assertDescriptionContains(response, TRAINER_USERNAME);
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideNullUsernames")
+    void handleAlreadyAssignedException_nullFields(String traineeUsername, String trainerUsername) {
+        var response = testObject.handleException(
+            new AlreadyAssignedException(traineeUsername, trainerUsername),
+            request
+        );
 
         assertResponse(response, HttpStatus.CONFLICT, "CONFLICT");
     }
 
     @Test
     void handleNotAssignmentException() {
-        doReturn(TRAINEE_USERNAME).when(notAssignmentException).getTraineeUsername();
-        doReturn(TRAINER_USERNAME).when(notAssignmentException).getTrainerUsername();
-
-        var response = testObject.handleException(notAssignmentException, request);
+        var response = testObject.handleException(
+            new NotAssignmentException(TRAINEE_USERNAME, TRAINER_USERNAME),
+            request
+        );
 
         assertResponse(response, HttpStatus.UNPROCESSABLE_CONTENT, "UNPROCESSABLE_CONTENT");
+        assertDescriptionContains(response, TRAINEE_USERNAME);
+        assertDescriptionContains(response, TRAINER_USERNAME);
     }
 
-    @Test
-    void handleAuthException() {
-        var authException = new InvalidCredentialsException();
+    @ParameterizedTest
+    @MethodSource("provideNullUsernames")
+    void handleNotAssignmentException_nullFields(String traineeUsername, String trainerUsername) {
+        var response = testObject.handleException(
+            new NotAssignmentException(traineeUsername, trainerUsername),
+            request
+        );
 
-        var response = testObject.handleException(authException, request);
-
-        assertResponse(response, HttpStatus.UNAUTHORIZED, "UNAUTHORIZED");
-    }
-
-    @Test
-    void handleDateConflictException() {
-        doReturn(ENTITY_NAME).when(dateConflictException).getEntityName();
-        doReturn(IDENTIFIER).when(dateConflictException).getIdentifier();
-        doReturn(DATE).when(dateConflictException).getDate();
-
-        var response = testObject.handleException(dateConflictException, request);
-
-        assertResponse(response, HttpStatus.CONFLICT, "CONFLICT");
+        assertResponse(response, HttpStatus.UNPROCESSABLE_CONTENT, "UNPROCESSABLE_CONTENT");
     }
 
     @Test
@@ -147,7 +207,6 @@ class GlobalExceptionHandlerTest {
         doReturn(VALIDATION_ERROR).when(objectError).getDefaultMessage();
         doReturn(List.of(objectError)).when(bindingResult).getAllErrors();
         doReturn(bindingResult).when(methodArgumentNotValidException).getBindingResult();
-
 
         var response = testObject.handleMethodArgumentNotValid(
             methodArgumentNotValidException,
@@ -157,6 +216,8 @@ class GlobalExceptionHandlerTest {
         );
 
         assertResponse(response, HttpStatus.BAD_REQUEST, "VALIDATION_FAILED");
+        assertNotNull(response);
+        assertDescriptionContains(response, VALIDATION_ERROR);
     }
 
     @Test
@@ -173,33 +234,50 @@ class GlobalExceptionHandlerTest {
         );
 
         assertResponse(response, HttpStatus.UNSUPPORTED_MEDIA_TYPE, "UNSUPPORTED_MEDIA_TYPE");
-
         assertNotNull(response);
-        ErrorDto dto = (ErrorDto) response.getBody();
-        assertNotNull(dto);
-        assertNotNull(dto.description());
-        assertEquals("UNSUPPORTED_MEDIA_TYPE", dto.error());
+        assertDescriptionContains(response, MediaType.TEXT_PLAIN.toString());
     }
 
     @Test
     void handleGeneralException() {
-        var generalException = new RuntimeException("Unexpected boom");
-        var response = testObject.handleGeneralException(generalException, request);
+        var response = testObject.handleGeneralException(new RuntimeException("boom"), request);
 
         assertResponse(response, HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR");
+        assertDescriptionContains(response, ERROR_MESSAGE_500);
+    }
 
-        ErrorDto dto = (ErrorDto) response.getBody();
-        assertNotNull(dto);
-        assertEquals(ERROR_MESSAGE_500, dto.description());
+    static Stream<Arguments> provideNullIdentifiers() {
+        return Stream.of(
+            Arguments.of((String) null)
+        );
+    }
+
+    static Stream<Arguments> provideNullUsernames() {
+        return Stream.of(
+            Arguments.of(null, TRAINER_USERNAME),
+            Arguments.of(TRAINEE_USERNAME, null),
+            Arguments.of(null, null)
+        );
+    }
+
+    static Stream<Arguments> provideNullDatesAndIdentifiers() {
+        return Stream.of(
+            Arguments.of(null, DATE),
+            Arguments.of(IDENTIFIER, null),
+            Arguments.of(null, null)
+        );
     }
 
     private void assertResponse(ResponseEntity<?> response, HttpStatus expectedStatus, String expectedError) {
         assertNotNull(response);
         assertEquals(expectedStatus, response.getStatusCode());
         assertInstanceOf(ErrorDto.class, response.getBody());
+        assertEquals(expectedError, ((ErrorDto) response.getBody()).error());
+    }
 
-        ErrorDto dto = (ErrorDto) response.getBody();
+    private void assertDescriptionContains(ResponseEntity<?> response, String fragment) {
+        var dto = (ErrorDto) response.getBody();
         assertNotNull(dto);
-        assertEquals(expectedError, dto.error());
+        assertThat(dto.description()).contains(fragment);
     }
 }

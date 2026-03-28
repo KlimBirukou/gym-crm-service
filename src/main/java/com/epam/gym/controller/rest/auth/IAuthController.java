@@ -145,6 +145,15 @@ public interface IAuthController {
     );
 
     @Operation(
+        summary = "Logout",
+        description = "Invalidate the current session. The client must discard the token after this call."
+    )
+    @ApiResponse(responseCode = "204", description = "Logout successfully")
+    @PostMapping(path = "/logout")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void logout();
+
+    @Operation(
         summary = "Change password",
         description = "Update user password."
     )

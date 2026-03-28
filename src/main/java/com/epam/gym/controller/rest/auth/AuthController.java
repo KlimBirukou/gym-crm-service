@@ -36,6 +36,11 @@ public class AuthController implements IAuthController {
     }
 
     @Override
+    @Measured("POST_api_v1_auth_logout")
+    public void logout() {
+    }
+
+    @Override
     @Measured("PUT_api_v1_auth_change_password")
     public void changePassword(ChangePasswordRequest request) {
         authFacade.changePassword(request);
