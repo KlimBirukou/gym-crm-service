@@ -1,4 +1,4 @@
-package com.epam.gym.security.service;
+package com.epam.gym.security;
 
 import lombok.NonNull;
 

@@ -1,9 +1,12 @@
 package com.epam.gym.service.generator.name;
 
+import com.epam.gym.configuration.properties.UserProperties;
 import com.epam.gym.mother.UsernameMother;
 import com.epam.gym.service.generator.name.factory.IUsernameFactory;
 import com.epam.gym.service.generator.name.supplier.IUsernameSupplier;
 import org.apache.commons.lang3.StringUtils;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -17,11 +20,16 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class DefaultUserNameGeneratorTest {
 
+    private static final String USERNAME_DELIMITER = ".";
     private static final int SUFFIX_0 = 0;
     private static final int SUFFIX_1 = 1;
     private static final int SUFFIX_2 = 2;
@@ -37,12 +45,23 @@ class DefaultUserNameGeneratorTest {
 
     @Mock
     private IUsernameFactory usernameFactory;
-
     @Mock
     private IUsernameSupplier usernameSupplier;
+    @Mock
+    private UserProperties userProperties;
 
     @InjectMocks
     private DefaultUsernameGenerator testObject;
+
+    @BeforeEach
+    void setUp() {
+        lenient().doReturn(USERNAME_DELIMITER).when(userProperties).usernameDelimiter();
+    }
+
+    @AfterEach
+    void tearDown() {
+        verifyNoMoreInteractions(usernameFactory, usernameSupplier);
+    }
 
     static Stream<Arguments> provideGenerateWithEmptySupplierTestData() {
         return Stream.of(
@@ -57,14 +76,14 @@ class DefaultUserNameGeneratorTest {
         String lastName,
         String username
     ) {
-        when(usernameSupplier.supply(firstName, lastName))
-            .thenReturn(EMPTY_USERNAME_LIST);
-        when(usernameFactory.create(firstName, lastName))
-            .thenReturn(username);
+        when(usernameSupplier.supply(firstName, lastName)).thenReturn(EMPTY_USERNAME_LIST);
+        when(usernameFactory.create(firstName, lastName)).thenReturn(username);
 
         var result = testObject.generate(firstName, lastName);
 
         assertEquals(result, username);
+        verify(usernameSupplier).supply(firstName, lastName);
+        verify(usernameFactory).create(firstName, lastName);
     }
 
     static Stream<Arguments> provideGenerateWithNotEmptySupplierTestData() {
@@ -83,14 +102,13 @@ class DefaultUserNameGeneratorTest {
         int calculatedSuffix,
         String username
     ) {
-        when(usernameSupplier.supply(firstName, lastName))
-            .thenReturn(usernamesList);
-        when(usernameFactory.create(firstName, lastName, calculatedSuffix))
-            .thenReturn(username);
+        when(usernameSupplier.supply(firstName, lastName)).thenReturn(usernamesList);
+        when(usernameFactory.create(firstName, lastName, calculatedSuffix)).thenReturn(username);
 
         var result = testObject.generate(firstName, lastName);
 
         assertEquals(result, username);
+        verify(usernameSupplier).supply(firstName, lastName);
     }
 
     static Stream<Arguments> provideNullNameArguments() {

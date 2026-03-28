@@ -1,6 +1,6 @@
-package com.epam.gym.security.service;
+package com.epam.gym.security;
 
-import com.epam.gym.security.JwtProperties;
+import com.epam.gym.configuration.properties.AuthProperties;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -16,12 +16,12 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class JwtService implements IJwtService {
 
-    private final JwtProperties jwtProperties;
+    private final AuthProperties authProperties;
 
     @Override
     public String generateToken(@NonNull String username) {
         var now = new Date();
-        var expiry = new Date(now.getTime() + jwtProperties.getExpiration() * 1000);
+        var expiry = new Date(now.getTime() + authProperties.jwtExpiration() * 1000);
         return Jwts.builder()
             .subject(username)
             .issuedAt(now)
@@ -54,6 +54,6 @@ public class JwtService implements IJwtService {
     }
 
     private SecretKey signingKey() {
-        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtProperties.getSecret()));
+        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(authProperties.secret()));
     }
 }

@@ -1,6 +1,5 @@
 package com.epam.gym.security;
 
-import com.epam.gym.security.service.IJwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

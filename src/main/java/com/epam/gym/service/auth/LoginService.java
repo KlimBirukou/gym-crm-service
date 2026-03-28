@@ -1,5 +1,6 @@
 package com.epam.gym.service.auth;
 
+import com.epam.gym.configuration.properties.AuthProperties;
 import com.epam.gym.controller.rest.auth.dto.request.LoginRequest;
 import com.epam.gym.controller.rest.auth.dto.response.LoginResponse;
 import com.epam.gym.domain.auth.LoginAttempt;
@@ -7,8 +8,7 @@ import com.epam.gym.domain.user.User;
 import com.epam.gym.exception.auth.AccountTemporarilyBlockedException;
 import com.epam.gym.exception.auth.InvalidCredentialsException;
 import com.epam.gym.repository.domain.auth.ILoginAttemptRepository;
-import com.epam.gym.security.JwtProperties;
-import com.epam.gym.security.service.JwtService;
+import com.epam.gym.security.JwtService;
 import com.epam.gym.service.user.IUserService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -16,9 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
-
-import static com.epam.gym.GymApplication.MAX_LOGIN_ATTEMPTS_COUNT;
-import static com.epam.gym.GymApplication.BLOCK_DURATION;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +25,7 @@ public class LoginService implements ILoginService {
     private final IUserService userService;
     private final IPasswordService passwordService;
     private final JwtService jwtService;
-    private final JwtProperties jwtProperties;
+    private final AuthProperties authProperties;
 
     @Override
     @Transactional(
@@ -46,7 +43,7 @@ public class LoginService implements ILoginService {
         return LoginResponse.builder()
             .tokenType("Bearer")
             .accessToken(jwtService.generateToken(user.getUsername()))
-            .expiresIn(jwtProperties.getExpiration())
+            .expiresIn(authProperties.jwtExpiration())
             .build();
     }
 
@@ -60,13 +57,13 @@ public class LoginService implements ILoginService {
 
     private void checkBruteForce(LoginAttempt attempt) {
         Optional.of(attempt)
-            .filter(a -> a.isBlocked(MAX_LOGIN_ATTEMPTS_COUNT, BLOCK_DURATION))
-            .map(a -> a.minutesUntilUnblock(BLOCK_DURATION))
+            .filter(a -> a.isBlocked(authProperties.maxLoginAttempts(), authProperties.blockDuration()))
+            .map(a -> a.minutesUntilUnblock(authProperties.blockDuration()))
             .ifPresent(minutes -> {
                 throw new AccountTemporarilyBlockedException(minutes);
             });
         Optional.of(attempt)
-            .filter(a -> a.isExpired(MAX_LOGIN_ATTEMPTS_COUNT, BLOCK_DURATION))
+            .filter(a -> a.isExpired(authProperties.maxLoginAttempts(), authProperties.blockDuration()))
             .ifPresent(LoginAttempt::reset);
     }
 

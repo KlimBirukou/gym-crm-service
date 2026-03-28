@@ -24,10 +24,12 @@ management:
       show-components: always
     prometheus:
       enabled: true
-  metrics:
-    export:
-      prometheus:
+  prometheus:
+    metrics:
+      export:
         enabled: true
+    tags:
+      application: ${spring.application.name}
   info:
     env:
       enabled: true
@@ -50,6 +52,5 @@ springdoc:
     disable-swagger-default-url: true
 
 application:
-  security:
-    jwt:
-      secret: ZGV2LXNlY3JldC1rZXktZm9yLWd5bS1jcm0tYXBwLWRldmVsb3BtZW50LW9ubHk=
+  auth:
+    secret: ZGV2LXNlY3JldC1rZXktZm9yLWd5bS1jcm0tYXBwLWRldmVsb3BtZW50LW9ubHk=

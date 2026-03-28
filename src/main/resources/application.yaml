@@ -51,11 +51,12 @@ management:
     prometheus:
       enabled: false
   metrics:
-    export:
-      prometheus:
-        enabled: false
     tags:
       application: ${spring.application.name}
+  prometheus:
+    metrics:
+      export:
+        enabled: false
   info:
     env:
       enabled: false
@@ -81,6 +82,12 @@ springdoc:
 
 # Security
 application:
-  security:
-    jwt:
-      expiration: 86400
+  request-uid:
+    header-name: "X-Request-Uid"
+    mdc-key: "requestUid"
+  auth:
+    max-login-attempts: 3
+    block-duration: PT15M
+    jwt-expiration: 86400
+  user:
+    username-delimiter: "."
