@@ -1,4 +1,4 @@
-package com.epam.gym.service.auth;
+package com.epam.gym.service.auth.login;
 
 import com.epam.gym.configuration.properties.AuthProperties;
 import com.epam.gym.controller.rest.auth.dto.request.LoginRequest;
@@ -8,7 +8,8 @@ import com.epam.gym.domain.user.User;
 import com.epam.gym.exception.auth.AccountTemporarilyBlockedException;
 import com.epam.gym.exception.auth.InvalidCredentialsException;
 import com.epam.gym.repository.domain.auth.ILoginAttemptRepository;
-import com.epam.gym.security.JwtService;
+import com.epam.gym.service.auth.jwt.JwtService;
+import com.epam.gym.service.auth.password.IPasswordService;
 import com.epam.gym.service.user.IUserService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;

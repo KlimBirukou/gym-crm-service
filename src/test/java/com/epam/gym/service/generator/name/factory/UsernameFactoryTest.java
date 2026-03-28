@@ -1,8 +1,6 @@
 package com.epam.gym.service.generator.name.factory;
 
 import com.epam.gym.configuration.properties.UserProperties;
-import com.epam.gym.mother.UsernameMother;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -17,10 +15,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 @ExtendWith(MockitoExtension.class)
 class UsernameFactoryTest {
@@ -32,8 +27,9 @@ class UsernameFactoryTest {
     private static final int BAD_SUFFIX_NEGATIVE = -10;
     private static final String FIRSTNAME = "firstname";
     private static final String LASTNAME = "lastname";
-    private static final String USERNAME_WITHOUT_SUFFIX = UsernameMother.get();
-    private static final String USERNAME_WITH_SUFFIX = UsernameMother.get(SUFFIX_2);
+    private static final String DEFAULT_USERNAME_DELIMITER = ".";
+    private static final String USERNAME_WITHOUT_SUFFIX =buildUsername();
+    private static final String USERNAME_WITH_SUFFIX = buildUsername(SUFFIX_2);
 
     @Mock
     private UserProperties userProperties;
@@ -104,5 +100,18 @@ class UsernameFactoryTest {
     void shouldThrowIae_whenBadSuffix(int suffix) {
         assertThrows(IllegalArgumentException.class,
             () -> testObject.create(FIRSTNAME, LASTNAME, suffix));
+    }
+
+    private static String buildUsername() {
+        return String.join(DEFAULT_USERNAME_DELIMITER,
+            FIRSTNAME,
+            LASTNAME);
+    }
+
+    private static String buildUsername(int suffix) {
+        return String.join(DEFAULT_USERNAME_DELIMITER,
+            FIRSTNAME,
+            LASTNAME,
+            String.valueOf(suffix));
     }
 }

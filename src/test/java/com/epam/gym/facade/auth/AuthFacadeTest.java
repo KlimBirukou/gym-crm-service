@@ -7,7 +7,7 @@ import com.epam.gym.controller.rest.auth.dto.request.RegisterTrainerRequest;
 import com.epam.gym.controller.rest.auth.dto.response.LoginResponse;
 import com.epam.gym.domain.user.Trainee;
 import com.epam.gym.domain.user.Trainer;
-import com.epam.gym.service.auth.ILoginService;
+import com.epam.gym.service.auth.login.ILoginService;
 import com.epam.gym.service.trainee.ITraineeService;
 import com.epam.gym.service.trainee.dto.CreateTraineeDto;
 import com.epam.gym.service.trainer.ITrainerService;

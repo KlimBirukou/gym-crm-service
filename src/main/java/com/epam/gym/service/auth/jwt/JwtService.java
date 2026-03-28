@@ -1,4 +1,4 @@
-package com.epam.gym.security;
+package com.epam.gym.service.auth.jwt;
 
 import com.epam.gym.configuration.properties.AuthProperties;
 import io.jsonwebtoken.JwtException;

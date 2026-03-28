@@ -3,7 +3,7 @@ package com.epam.gym.service.trainee;
 import com.epam.gym.domain.user.Trainee;
 import com.epam.gym.exception.not.found.TraineeNotFoundException;
 import com.epam.gym.repository.domain.trainee.ITraineeRepository;
-import com.epam.gym.service.auth.IPasswordService;
+import com.epam.gym.service.auth.password.IPasswordService;
 import com.epam.gym.service.generator.name.IUsernameGenerator;
 import com.epam.gym.service.generator.password.IPasswordGenerator;
 import com.epam.gym.service.trainee.dto.CreateTraineeDto;

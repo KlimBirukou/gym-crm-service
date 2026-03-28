@@ -1,5 +1,6 @@
 package com.epam.gym.service.auth;
 
+import com.epam.gym.service.auth.password.PasswordService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

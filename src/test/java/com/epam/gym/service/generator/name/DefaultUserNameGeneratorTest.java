@@ -1,7 +1,6 @@
 package com.epam.gym.service.generator.name;
 
 import com.epam.gym.configuration.properties.UserProperties;
-import com.epam.gym.mother.UsernameMother;
 import com.epam.gym.service.generator.name.factory.IUsernameFactory;
 import com.epam.gym.service.generator.name.supplier.IUsernameSupplier;
 import org.apache.commons.lang3.StringUtils;
@@ -20,7 +19,6 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -29,15 +27,15 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class DefaultUserNameGeneratorTest {
 
-    private static final String USERNAME_DELIMITER = ".";
     private static final int SUFFIX_0 = 0;
     private static final int SUFFIX_1 = 1;
     private static final int SUFFIX_2 = 2;
     private static final String FIRSTNAME = "firstname";
     private static final String LASTNAME = "lastname";
-    private static final String USERNAME_WITHOUT_SUFFIX = UsernameMother.get();
-    private static final String USERNAME_WITH_SUFFIX_1 = UsernameMother.get(SUFFIX_1);
-    private static final String USERNAME_WITH_SUFFIX_2 = UsernameMother.get(SUFFIX_2);
+    private static final String DEFAULT_USERNAME_DELIMITER = ".";
+    private static final String USERNAME_WITHOUT_SUFFIX = buildUsername();
+    private static final String USERNAME_WITH_SUFFIX_1 = buildUsername(SUFFIX_1);
+    private static final String USERNAME_WITH_SUFFIX_2 = buildUsername(SUFFIX_2);
     private static final List<String> EMPTY_USERNAME_LIST = List.of();
     private static final List<String> ONE_USERNAME_LIST = List.of(USERNAME_WITHOUT_SUFFIX);
     private static final List<String> MANY_USERNAMES_LIST = List.of(USERNAME_WITHOUT_SUFFIX, USERNAME_WITH_SUFFIX_1);
@@ -55,7 +53,7 @@ class DefaultUserNameGeneratorTest {
 
     @BeforeEach
     void setUp() {
-        lenient().doReturn(USERNAME_DELIMITER).when(userProperties).usernameDelimiter();
+        lenient().doReturn(DEFAULT_USERNAME_DELIMITER).when(userProperties).usernameDelimiter();
     }
 
     @AfterEach
@@ -139,5 +137,18 @@ class DefaultUserNameGeneratorTest {
     void shouldThrowIae_whenParametersAreBlank(String firstName, String lastName) {
         assertThrows(IllegalArgumentException.class,
             () -> testObject.generate(firstName, lastName));
+    }
+
+    private static String buildUsername() {
+        return String.join(DEFAULT_USERNAME_DELIMITER,
+            FIRSTNAME,
+            LASTNAME);
+    }
+
+    private static String buildUsername(int suffix) {
+        return String.join(DEFAULT_USERNAME_DELIMITER,
+            FIRSTNAME,
+            LASTNAME,
+            String.valueOf(suffix));
     }
 }

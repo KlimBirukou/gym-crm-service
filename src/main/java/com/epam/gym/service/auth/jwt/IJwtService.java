@@ -1,4 +1,4 @@
-package com.epam.gym.security;
+package com.epam.gym.service.auth.jwt;
 
 import lombok.NonNull;
 

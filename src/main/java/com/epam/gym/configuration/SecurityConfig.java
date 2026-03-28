@@ -1,7 +1,7 @@
 package com.epam.gym.configuration;
 
 import com.epam.gym.exception.auth.NotAuthenticatedException;
-import com.epam.gym.security.JwtAuthenticationFilter;
+import com.epam.gym.service.auth.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
