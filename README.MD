@@ -6,6 +6,12 @@
 ./gradlew clean build
 ```
 
+### build without running tests
+
+```bash
+./gradlew clean build -x test
+```
+
 ---
 
 ## Run
@@ -17,9 +23,11 @@ Infrastructure in Docker, app runs from IDE (check custom run command in build.g
 ```bash
 docker compose -f compose.local.yaml up -d
 ```
+
 ```bash
 ./gradlew bootRun
 ```
+
 Stop containers
 
 ```bash

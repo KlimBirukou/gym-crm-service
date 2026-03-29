@@ -54,3 +54,6 @@ springdoc:
 application:
   auth:
     secret: ZGV2LXNlY3JldC1rZXktZm9yLWd5bS1jcm0tYXBwLWRldmVsb3BtZW50LW9ubHk=
+  swagger:
+    server-url: "http://localhost:8080"
+    server-description: "Dev server"

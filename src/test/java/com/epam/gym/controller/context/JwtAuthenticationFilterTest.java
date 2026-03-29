@@ -1,4 +1,4 @@
-package com.epam.gym.service.auth;
+package com.epam.gym.controller.context;
 
 import com.epam.gym.service.auth.jwt.IJwtService;
 import jakarta.servlet.FilterChain;
@@ -24,7 +24,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 @ExtendWith(MockitoExtension.class)
-public class JwtAuthenticationFilterTest {
+class JwtAuthenticationFilterTest {
 
     private static final String AUTH_HEADER = "Authorization";
     private static final String BEARER = "Bearer ";

@@ -64,7 +64,7 @@ class LoginServiceTest {
     private ArgumentCaptor<LoginAttempt> attemptCaptor;
 
     @InjectMocks
-    private LoginService testObject;
+    private BearerLoginService testObject;
 
     @BeforeEach
     void setUp() {

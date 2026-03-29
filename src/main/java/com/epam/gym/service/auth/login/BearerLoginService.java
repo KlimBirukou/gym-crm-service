@@ -20,7 +20,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class LoginService implements ILoginService {
+public class BearerLoginService implements ILoginService {
 
     private final ILoginAttemptRepository loginAttemptRepository;
     private final IUserService userService;
@@ -73,10 +73,12 @@ public class LoginService implements ILoginService {
                                 LoginAttempt attempt) {
         Optional.of(request)
             .filter(r -> !passwordService.checkPassword(r.password(), user.getPassword()))
-            .ifPresent(r -> {
-                attempt.recordFailure();
-                loginAttemptRepository.save(attempt);
-                throw new InvalidCredentialsException();
-            });
+            .ifPresent(r -> recordFailureAndThrow(attempt));
+    }
+
+    private void recordFailureAndThrow(LoginAttempt attempt) {
+        attempt.recordFailure();
+        loginAttemptRepository.save(attempt);
+        throw new InvalidCredentialsException();
     }
 }

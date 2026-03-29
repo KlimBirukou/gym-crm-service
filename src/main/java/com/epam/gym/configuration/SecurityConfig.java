@@ -1,7 +1,8 @@
 package com.epam.gym.configuration;
 
+import com.epam.gym.configuration.properties.CorsProperties;
 import com.epam.gym.exception.auth.NotAuthenticatedException;
-import com.epam.gym.service.auth.JwtAuthenticationFilter;
+import com.epam.gym.controller.context.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -38,9 +39,10 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     @Qualifier("handlerExceptionResolver")
     private final HandlerExceptionResolver handlerExceptionResolver;
+    private final CorsProperties corsProperties;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) {
         return http
             .cors(cors ->
                 cors.configurationSource(corsConfigurationSource()))
@@ -59,26 +61,14 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         var configuration = new CorsConfiguration();
-        configureCors(configuration);
+        configuration.setAllowedOrigins(corsProperties.allowedOrigins());
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true);
+        configuration.setMaxAge(3600L);
         var source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
-    }
-
-    private void configureCors(CorsConfiguration corsConfiguration) {
-        corsConfiguration.setAllowedOrigins(List.of(
-            "http://localhost:8080",
-            "http://localhost:3000",
-            "http://localhost:9090"));
-        corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
-        corsConfiguration.setAllowedHeaders(List.of(
-            "Authorization",
-            "Content-Type",
-            "X-Requested-With"
-        ));
-        corsConfiguration.setAllowCredentials(true);
-        corsConfiguration.setMaxAge(3600L);
-        corsConfiguration.setAllowedHeaders(List.of("*"));
     }
 
     private AuthenticationEntryPoint authenticationEntryPoint() {

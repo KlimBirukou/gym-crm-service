@@ -1,4 +1,4 @@
-package com.epam.gym.service.auth;
+package com.epam.gym.controller.context;
 
 import com.epam.gym.service.auth.jwt.IJwtService;
 import jakarta.servlet.FilterChain;
@@ -34,17 +34,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
         extractToken(request)
             .filter(jwtService::isTokenValid)
-            .ifPresent(token -> {
-                var username = jwtService.extractUsername(token);
-                var authentication = new UsernamePasswordAuthenticationToken(
-                    username,
-                    null,
-                    List.of()
-                );
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-                log.debug("JWT authenticated: username={}", username);
-            });
+            .ifPresent(this::authenticateUser);
         filterChain.doFilter(request, response);
+    }
+
+    private void authenticateUser(String token) {
+        var username = jwtService.extractUsername(token);
+        var authentication = new UsernamePasswordAuthenticationToken(
+            username,
+            null,
+            List.of()
+        );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        log.debug("JWT authenticated: username={}", username);
     }
 
     private Optional<String> extractToken(HttpServletRequest request) {

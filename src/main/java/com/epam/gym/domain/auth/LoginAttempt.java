@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 @Data
 @Builder
@@ -25,16 +26,18 @@ public class LoginAttempt {
     private LocalDateTime lastFailedAt;
 
     public boolean isBlocked(int maxAttempts, @NonNull Duration blockDuration) {
-        return Optional.ofNullable(lastFailedAt)
-            .filter(last -> failedAttempts >= maxAttempts)
-            .map(last -> last.plus(blockDuration).isAfter(LocalDateTime.now()))
-            .orElse(false);
+        return checkStatus(maxAttempts, blockDuration, time -> time.isAfter(LocalDateTime.now()));
     }
 
     public boolean isExpired(int maxAttempts, @NonNull Duration blockDuration) {
+        return checkStatus(maxAttempts, blockDuration, time -> !time.isAfter(LocalDateTime.now()));
+    }
+
+    private boolean checkStatus(int maxAttempts, Duration blockDuration, Predicate<LocalDateTime> timeCondition) {
         return Optional.ofNullable(lastFailedAt)
             .filter(last -> failedAttempts >= maxAttempts)
-            .map(last -> !last.plus(blockDuration).isAfter(LocalDateTime.now()))
+            .map(last -> last.plus(blockDuration))
+            .map(timeCondition::test)
             .orElse(false);
     }
 
