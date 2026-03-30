@@ -1,10 +1,11 @@
 package com.epam.gym.controller.context;
 
-import com.epam.gym.GymApplication;
+import com.epam.gym.configuration.properties.RequestUidProperties;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
@@ -17,17 +18,20 @@ import java.util.UUID;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class RequestUidMdcFilter extends OncePerRequestFilter {
+
+    private final RequestUidProperties requestUidProperties;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-        var uid = Optional.ofNullable(request.getHeader(GymApplication.REQUEST_HEADER_NAME))
+        var uid = Optional.ofNullable(request.getHeader(requestUidProperties.headerName()))
             .filter(StringUtils::isNotBlank)
             .orElseGet(() -> UUID.randomUUID().toString());
-        try (var ignored = MDC.putCloseable(GymApplication.REQUEST_MDC_KEY, uid)) {
-            response.addHeader(GymApplication.REQUEST_HEADER_NAME, uid);
+        try (var ignored = MDC.putCloseable(requestUidProperties.mdcKey(), uid)) {
+            response.addHeader(requestUidProperties.headerName(), uid);
             log.info("REST Request: {} {}", request.getMethod(), request.getRequestURI());
             filterChain.doFilter(request, response);
             log.info("REST Response: Status {}", response.getStatus());

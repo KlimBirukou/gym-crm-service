@@ -1,6 +1,6 @@
 package com.epam.gym.service.generator.name;
 
-import com.epam.gym.GymApplication;
+import com.epam.gym.configuration.properties.UserProperties;
 import com.epam.gym.service.generator.name.factory.IUsernameFactory;
 import com.epam.gym.service.generator.name.supplier.IUsernameSupplier;
 import lombok.NonNull;
@@ -18,6 +18,7 @@ public class DefaultUsernameGenerator implements IUsernameGenerator {
 
     private final IUsernameFactory usernameFactory;
     private final IUsernameSupplier usernameSupplier;
+    private final UserProperties userProperties;
 
     @Override
     public String generate(@NonNull String firstName, @NonNull String lastName) {
@@ -27,7 +28,7 @@ public class DefaultUsernameGenerator implements IUsernameGenerator {
             return usernameFactory.create(firstName, lastName);
         }
         return usernames.stream()
-            .map(username -> username.split(Pattern.quote(GymApplication.DEFAULT_USERNAME_DELIMITER)))
+            .map(username -> username.split(Pattern.quote(userProperties.usernameDelimiter())))
             .filter(parts -> parts.length == 3)
             .mapToInt(parts -> Integer.parseInt(parts[2]))
             .max()

@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '4.0.2'
+    id 'org.springframework.boot' version '4.0.4'
     id 'io.spring.dependency-management' version '1.1.7'
 }
 
@@ -24,6 +24,10 @@ repositories {
     mavenCentral()
 }
 
+bootRun {
+    args = ["--spring.profiles.active=local"]
+}
+
 jar {
     enabled = false
 }
@@ -38,8 +42,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-liquibase'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.security:spring-security-crypto'
     developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
     // Database
@@ -63,6 +67,11 @@ dependencies {
     // Utils
     implementation "org.apache.commons:commons-collections4:${commonsCollectionsVersion}"
     implementation "org.apache.commons:commons-lang3:${commonsLangVersion}"
+
+    // JWT
+    implementation "io.jsonwebtoken:jjwt-api:${jwtVersion}"
+    runtimeOnly "io.jsonwebtoken:jjwt-impl:${jwtVersion}"
+    runtimeOnly "io.jsonwebtoken:jjwt-orgjson:${jwtVersion}"
 
     // Testing
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'

@@ -1,4 +1,4 @@
-package com.epam.gym.service.auth;
+package com.epam.gym.service.auth.password;
 
 import lombok.NonNull;
 import org.springframework.stereotype.Service;

@@ -1,10 +1,10 @@
 package com.epam.gym.service.user;
 
 import com.epam.gym.domain.user.User;
-import com.epam.gym.exception.AuthException;
+import com.epam.gym.exception.auth.InvalidCredentialsException;
 import com.epam.gym.exception.not.found.UserNotFoundException;
 import com.epam.gym.repository.domain.user.IUserRepository;
-import com.epam.gym.service.auth.IPasswordService;
+import com.epam.gym.service.auth.password.IPasswordService;
 import com.epam.gym.service.user.dto.ChangePasswordDto;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +34,7 @@ public class UserService implements IUserService {
             .orElseThrow(() -> new UserNotFoundException(dto.username()));
         Optional.of(dto)
             .filter(d -> passwordService.checkPassword(d.oldPassword(), user.getPassword()))
-            .orElseThrow(AuthException::new);
+            .orElseThrow(InvalidCredentialsException::new);
         user.setPassword(passwordService.hashPassword(dto.newPassword()));
         userRepository.update(user);
     }

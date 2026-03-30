@@ -1,6 +1,5 @@
 package com.epam.gym.service.generator.name.supplier;
 
-import com.epam.gym.mother.UsernameMother;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,8 +24,9 @@ class CompositeUsernameSupplierTest {
     private static final int SUFFIX_1 = 1;
     private static final String FIRSTNAME = "firstname";
     private static final String LASTNAME = "lastname";
-    private static final String USERNAME_WITHOUT_SUFFIX = UsernameMother.get();
-    private static final String USERNAME_WITH_SUFFIX_1 = UsernameMother.get(SUFFIX_1);
+    private static final String DEFAULT_USERNAME_DELIMITER = ".";
+    private static final String USERNAME_WITHOUT_SUFFIX = buildUsername();
+    private static final String USERNAME_WITH_SUFFIX_1 = buildUsername(SUFFIX_1);
     private static final List<String> EMPTY_USERNAME_LIST = List.of();
     private static final List<String> ONE_USERNAME_LIST = List.of(USERNAME_WITHOUT_SUFFIX);
     private static final List<String> MANY_USERNAMES_LIST = List.of(USERNAME_WITHOUT_SUFFIX, USERNAME_WITH_SUFFIX_1);
@@ -87,5 +87,18 @@ class CompositeUsernameSupplierTest {
     void shouldThrowNpe_whenParametersAreNull(String firstName, String lastName) {
         assertThrows(NullPointerException.class,
             () -> testObject.supply(firstName, lastName));
+    }
+
+    private static String buildUsername() {
+        return String.join(DEFAULT_USERNAME_DELIMITER,
+            FIRSTNAME,
+            LASTNAME);
+    }
+
+    private static String buildUsername(int suffix) {
+        return String.join(DEFAULT_USERNAME_DELIMITER,
+            FIRSTNAME,
+            LASTNAME,
+            String.valueOf(suffix));
     }
 }

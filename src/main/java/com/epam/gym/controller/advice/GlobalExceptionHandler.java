@@ -1,6 +1,8 @@
 package com.epam.gym.controller.advice;
 
-import com.epam.gym.exception.AuthException;
+import com.epam.gym.exception.auth.AccountTemporarilyBlockedException;
+import com.epam.gym.exception.auth.InvalidCredentialsException;
+import com.epam.gym.exception.auth.NotAuthenticatedException;
 import com.epam.gym.exception.conflict.assignment.AlreadyAssignedException;
 import com.epam.gym.exception.conflict.date.DateConflictException;
 import com.epam.gym.exception.not.active.NotActiveException;
@@ -34,10 +36,39 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     private static final String ALREADY_ASSIGNED_MESSAGE = "Trainee [%s] already assigned to trainer [%s]";
     private static final String NOT_ACTIVE_MESSAGE = "%s [%s] not active to perform this action";
     private static final String DATE_CONFLICT_MESSAGE = "%s [%s] already has a training on [%s] date";
-    private static final String LOGIN_MESSAGE = "Username or password invalid";
+    private static final String ACCOUNT_BLOCKED_MESSAGE = "Account is temporarily blocked. Try again in %d minute(s)";
     private static final String VALIDATION_FAILED = "VALIDATION_FAILED";
     private static final String CONTENT_TYPE_MESSAGE =
         "Content type '%s' is not supported. Supported media types are: %s";
+
+    private static final String INVALID_CREDENTIALS_MESSAGE = "Username or password invalid";
+    private static final String NOT_AUTHENTICATED_MESSAGE =
+        "Authentication required. Please login to access this resource";
+
+    @ExceptionHandler(
+        {
+            InvalidCredentialsException.class,
+            NotAuthenticatedException.class
+        }
+    )
+    public ResponseEntity<@NonNull Object> handleUnauthorizedException(RuntimeException exception,
+                                                                       WebRequest request) {
+        var message = exception instanceof InvalidCredentialsException
+            ? INVALID_CREDENTIALS_MESSAGE
+            : NOT_AUTHENTICATED_MESSAGE;
+        return getObjectResponseEntity(exception, request, message, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<@NonNull Object> handleException(AccountTemporarilyBlockedException exception,
+                                                           WebRequest request) {
+        return getObjectResponseEntity(
+            exception,
+            request,
+            ACCOUNT_BLOCKED_MESSAGE.formatted(exception.getMinutesRemaining()),
+            HttpStatus.TOO_MANY_REQUESTS
+        );
+    }
 
     @ExceptionHandler
     public ResponseEntity<@NonNull Object> handleException(NotFoundException exception, WebRequest request) {
@@ -89,16 +120,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         );
     }
 
-    @ExceptionHandler
-    public ResponseEntity<@NonNull Object> handleException(AuthException exception, WebRequest request) {
-        return getObjectResponseEntity(
-            exception,
-            request,
-            LOGIN_MESSAGE,
-            HttpStatus.UNAUTHORIZED
-        );
-    }
-
     @Override
     protected @Nullable ResponseEntity<@NonNull Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
                                                                                      @NonNull HttpHeaders headers,
@@ -109,20 +130,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             .stream()
             .map(DefaultMessageSourceResolvable::getDefaultMessage)
             .collect(Collectors.joining("; "));
-        return getObjectResponseEntity(
-            ex,
-            request,
-            message,
-            VALIDATION_FAILED,
-            HttpStatus.BAD_REQUEST
-        );
+        return getObjectResponseEntity(ex, request, message, VALIDATION_FAILED, HttpStatus.BAD_REQUEST);
     }
 
     @Override
     protected @Nullable ResponseEntity<@NonNull Object> handleHttpMediaTypeNotSupported(HttpMediaTypeNotSupportedException ex,
-                                                                                        HttpHeaders headers,
-                                                                                        HttpStatusCode status,
-                                                                                        WebRequest request) {
+                                                                                        @NonNull HttpHeaders headers,
+                                                                                        @NonNull HttpStatusCode status,
+                                                                                        @NonNull WebRequest request) {
         var supportedTypes = ex.getSupportedMediaTypes()
             .stream()
             .map(MediaType::toString)

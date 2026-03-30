@@ -1,8 +1,6 @@
 package com.epam.gym.service.generator.name.supplier;
 
 import com.epam.gym.domain.user.Trainer;
-import com.epam.gym.mother.TrainerMother;
-import com.epam.gym.mother.UsernameMother;
 import com.epam.gym.repository.domain.trainer.ITrainerRepository;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -27,12 +25,12 @@ class TrainerUsernameSupplierTest {
     private static final int SUFFIX_1 = 1;
     private static final String FIRSTNAME = "firstname";
     private static final String LASTNAME = "lastname";
-    private static final String USERNAME_WITHOUT_SUFFIX = UsernameMother.get();
-    private static final String USERNAME_WITH_SUFFIX_1 = UsernameMother.get(SUFFIX_1);
-    private static final Trainer TRAINER_WITHOUT_SUFFIX =
-        TrainerMother.get(UID, FIRSTNAME, LASTNAME, USERNAME_WITHOUT_SUFFIX);
-    private static final Trainer TRAINER_WITH_SUFFIX_1 =
-        TrainerMother.get(UID, FIRSTNAME, LASTNAME, USERNAME_WITH_SUFFIX_1);
+    private static final String PASSWORD = "password";
+    private static final String DEFAULT_USERNAME_DELIMITER = ".";
+    private static final String USERNAME_WITHOUT_SUFFIX = buildUsername();
+    private static final String USERNAME_WITH_SUFFIX_1 = buildUsername(SUFFIX_1);
+    private static final Trainer TRAINER_WITHOUT_SUFFIX = buildTrainer(USERNAME_WITHOUT_SUFFIX);
+    private static final Trainer TRAINER_WITH_SUFFIX_1 = buildTrainer(USERNAME_WITH_SUFFIX_1);
     private static final List<Trainer> EMPTY_TRAINER_LIST = List.of();
     private static final List<Trainer> LIST_WITH_TRAINER = List.of(TRAINER_WITHOUT_SUFFIX);
     private static final List<Trainer> LIST_WITH_TRAINERS = List.of(TRAINER_WITHOUT_SUFFIX, TRAINER_WITH_SUFFIX_1);
@@ -78,5 +76,29 @@ class TrainerUsernameSupplierTest {
     void shouldThrowNpe_whenArgumentsAreNull(String firstName, String lastName) {
         assertThrows(NullPointerException.class,
             () -> testObject.supply(firstName, lastName));
+    }
+
+    private static Trainer buildTrainer(String username) {
+        return Trainer.builder()
+            .uid(UID)
+            .firstName(FIRSTNAME)
+            .lastName(LASTNAME)
+            .username(username)
+            .password(PASSWORD)
+            .active(true)
+            .build();
+    }
+
+    private static String buildUsername() {
+        return String.join(DEFAULT_USERNAME_DELIMITER,
+            FIRSTNAME,
+            LASTNAME);
+    }
+
+    private static String buildUsername(int suffix) {
+        return String.join(DEFAULT_USERNAME_DELIMITER,
+            FIRSTNAME,
+            LASTNAME,
+            String.valueOf(suffix));
     }
 }

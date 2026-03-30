@@ -4,10 +4,9 @@ import com.epam.gym.controller.rest.auth.dto.request.ChangePasswordRequest;
 import com.epam.gym.controller.rest.auth.dto.request.LoginRequest;
 import com.epam.gym.controller.rest.auth.dto.request.RegisterTraineeRequest;
 import com.epam.gym.controller.rest.auth.dto.request.RegisterTrainerRequest;
+import com.epam.gym.controller.rest.auth.dto.response.LoginResponse;
 import com.epam.gym.controller.rest.auth.dto.response.RegistrationResponse;
-import com.epam.gym.domain.user.User;
-import com.epam.gym.exception.AuthException;
-import com.epam.gym.service.auth.IPasswordService;
+import com.epam.gym.service.auth.login.ILoginService;
 import com.epam.gym.service.trainee.ITraineeService;
 import com.epam.gym.service.trainee.dto.CreateTraineeDto;
 import com.epam.gym.service.trainer.ITrainerService;
@@ -21,8 +20,6 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -31,7 +28,7 @@ public class AuthFacade implements IAuthFacade {
     private final ITraineeService traineeService;
     private final ITrainerService trainerService;
     private final IUserService userService;
-    private final IPasswordService passwordService;
+    private final ILoginService loginService;
     private final ConversionService conversionService;
 
     @Override
@@ -63,15 +60,12 @@ public class AuthFacade implements IAuthFacade {
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public void login(@NonNull LoginRequest request) {
+    @Transactional
+    public LoginResponse login(@NonNull LoginRequest request) {
         log.info("Login. Started. Username={}", request.username());
-        // TODO implement in Spring Security module
-        User user = userService.getByUsername(request.username());
-        Optional.of(request)
-            .filter(r -> passwordService.checkPassword(request.password(), user.getPassword()))
-            .orElseThrow(AuthException::new);
-        log.info("Login. Finished. Successful. Username={}", request.username());
+        var response = loginService.login(request);
+        log.info("Login. Finished. Username={}", request.username());
+        return response;
     }
 
     @Override

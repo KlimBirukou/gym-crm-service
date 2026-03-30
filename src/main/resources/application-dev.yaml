@@ -24,10 +24,12 @@ management:
       show-components: always
     prometheus:
       enabled: true
-  metrics:
-    export:
-      prometheus:
+  prometheus:
+    metrics:
+      export:
         enabled: true
+    tags:
+      application: ${spring.application.name}
   info:
     env:
       enabled: true
@@ -42,10 +44,16 @@ logging:
 springdoc:
   api-docs:
     enabled: true
-  show-actuator: true
   swagger-ui:
     enabled: true
     path: /swagger-ui.html
     tags-sorter: alpha
     operations-sorter: alpha
     disable-swagger-default-url: true
+
+application:
+  auth:
+    secret: ZGV2LXNlY3JldC1rZXktZm9yLWd5bS1jcm0tYXBwLWRldmVsb3BtZW50LW9ubHk=
+  swagger:
+    server-url: "http://localhost:8080"
+    server-description: "Dev server"

@@ -72,7 +72,12 @@ class CustomMetricsEndpointTest {
 
     @Test
     void getMetrics_shouldReturnZeros_whenNoCallsMade() {
-        stubAllSearches(0.0, List.of(), List.of(), null);
+        stubAllSearches(
+            0.0,
+            List.of(),
+            List.of(),
+            null
+        );
 
         var result = testObject.getMetrics(ENDPOINT_NAME);
 
@@ -94,7 +99,7 @@ class CustomMetricsEndpointTest {
         assertEquals(10, result.attempts());
         assertEquals(10, result.success());
         assertEquals(0, result.failures());
-        assertEquals("100,00%", result.successRate());
+        assertEquals(String.format("%.2f%%", 100.0), result.successRate());
     }
 
     @Test
@@ -102,14 +107,19 @@ class CustomMetricsEndpointTest {
         doReturn(5.0).when(failureCounter1).count();
         doReturn(counterId1).when(failureCounter1).getId();
         doReturn(EXCEPTION_NOT_FOUND).when(counterId1).getTag(TAG_EXCEPTION);
-        stubAllSearches(0.0, List.of(failureCounter1), List.of(failureCounter1), null);
+        stubAllSearches(
+            0.0,
+            List.of(failureCounter1),
+            List.of(failureCounter1),
+            null
+        );
 
         var result = testObject.getMetrics(ENDPOINT_NAME);
 
         assertEquals(5, result.attempts());
         assertEquals(0, result.success());
         assertEquals(5, result.failures());
-        assertEquals("0,00%", result.successRate());
+        assertEquals(String.format("%.2f%%", 0.0), result.successRate());
     }
 
     @Test
@@ -120,7 +130,12 @@ class CustomMetricsEndpointTest {
         doReturn(counterId2).when(failureCounter2).getId();
         doReturn(EXCEPTION_NOT_FOUND).when(counterId1).getTag(TAG_EXCEPTION);
         doReturn(EXCEPTION_ILLEGAL_ARG).when(counterId2).getTag(TAG_EXCEPTION);
-        stubAllSearches(0.0, List.of(failureCounter1, failureCounter2), List.of(failureCounter1, failureCounter2), null);
+        stubAllSearches(
+            0.0,
+            List.of(failureCounter1, failureCounter2),
+            List.of(failureCounter1, failureCounter2),
+            null
+        );
 
         var result = testObject.getMetrics(ENDPOINT_NAME);
 
@@ -131,44 +146,80 @@ class CustomMetricsEndpointTest {
 
     @Test
     void getMetrics_shouldReturnTimingMetrics_whenTimerRegistered() {
-        doReturn(2L).when(timer).count();
-        doReturn(150.0).when(timer).mean(TimeUnit.MILLISECONDS);
-        doReturn(200.0).when(timer).max(TimeUnit.MILLISECONDS);
-        doReturn(350.0).when(timer).totalTime(TimeUnit.MILLISECONDS);
-        stubAllSearches(0.0, List.of(), List.of(), timer);
+        long count = 2L;
+        double totalMs = 350.0;
+        double maxMs = 200.0;
+        doReturn(count).when(timer).count();
+        doReturn(totalMs).when(timer).totalTime(TimeUnit.MILLISECONDS);
+        doReturn(maxMs).when(timer).max(TimeUnit.MILLISECONDS);
+        stubAllSearches(
+            0.0,
+            List.of(),
+            List.of(),
+            timer
+        );
 
         var result = testObject.getMetrics(ENDPOINT_NAME);
 
-        assertEquals(2.0, result.timing().get("count"));
-        assertEquals(150.0, result.timing().get("avg_ms"));
-        assertEquals(200.0, result.timing().get("max_ms"));
-        assertEquals(350.0, result.timing().get("total_ms"));
+        assertEquals((double) count, result.timing().get("count"));
+        assertEquals(totalMs / count, result.timing().get("avg_ms"));
+        assertEquals(maxMs, result.timing().get("max_ms"));
+        assertEquals(totalMs, result.timing().get("total_ms"));
     }
 
-    private static Stream<Arguments> provideSuccessRateData() {
+    @Test
+    void getMetrics_shouldReturnEmptyTiming_whenTimerNotRegistered() {
+        stubAllSearches(
+            5.0,
+            List.of(),
+            List.of(),
+            null
+        );
+
+        var result = testObject.getMetrics(ENDPOINT_NAME);
+
+        assertTrue(result.timing().isEmpty());
+    }
+
+    private static Stream<Arguments> provideSuccessOnlyRateData() {
         return Stream.of(
-            Arguments.of(10.0, 0.0, "100,00%"),
-            Arguments.of(9.0, 1.0, "90,00%"),
-            Arguments.of(1.0, 1.0, "50,00%"),
-            Arguments.of(0.0, 5.0, "0,00%")
+            Arguments.of(10.0, String.format("%.2f%%", 100.0)),
+            Arguments.of(1.0, String.format("%.2f%%", 100.0))
         );
     }
 
     @ParameterizedTest
-    @MethodSource("provideSuccessRateData")
-    void getMetrics_shouldCalculateSuccessRateCorrectly_whenDifferentRatios(
+    @MethodSource("provideSuccessOnlyRateData")
+    void getMetrics_shouldCalculateSuccessRateCorrectly_whenNoFailures(
+        double successCount,
+        String expectedRate
+    ) {
+        stubAllSearches(successCount, List.of(), List.of(), null);
+
+        var result = testObject.getMetrics(ENDPOINT_NAME);
+
+        assertEquals(expectedRate, result.successRate());
+    }
+
+    private static Stream<Arguments> provideSuccessRateWithFailuresData() {
+        return Stream.of(
+            Arguments.of(9.0, 1.0, String.format("%.2f%%", 90.0)),
+            Arguments.of(1.0, 1.0, String.format("%.2f%%", 50.0)),
+            Arguments.of(0.0, 5.0, String.format("%.2f%%", 0.0))
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideSuccessRateWithFailuresData")
+    void getMetrics_shouldCalculateSuccessRateCorrectly_whenMixedResults(
         double successCount,
         double failureCount,
         String expectedRate
     ) {
-        if (failureCount > 0) {
-            doReturn(failureCount).when(failureCounter1).count();
-            doReturn(counterId1).when(failureCounter1).getId();
-            doReturn(EXCEPTION_NOT_FOUND).when(counterId1).getTag(TAG_EXCEPTION);
-            stubAllSearches(successCount, List.of(failureCounter1), List.of(failureCounter1), null);
-        } else {
-            stubAllSearches(successCount, List.of(), List.of(), null);
-        }
+        doReturn(failureCount).when(failureCounter1).count();
+        doReturn(counterId1).when(failureCounter1).getId();
+        doReturn(EXCEPTION_NOT_FOUND).when(counterId1).getTag(TAG_EXCEPTION);
+        stubAllSearches(successCount, List.of(failureCounter1), List.of(failureCounter1), null);
 
         var result = testObject.getMetrics(ENDPOINT_NAME);
 

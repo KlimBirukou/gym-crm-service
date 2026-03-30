@@ -4,7 +4,7 @@ import com.epam.gym.domain.training.TrainingType;
 import com.epam.gym.domain.user.Trainer;
 import com.epam.gym.exception.not.found.TrainerNotFoundException;
 import com.epam.gym.repository.domain.trainer.ITrainerRepository;
-import com.epam.gym.service.auth.IPasswordService;
+import com.epam.gym.service.auth.password.IPasswordService;
 import com.epam.gym.service.generator.name.IUsernameGenerator;
 import com.epam.gym.service.generator.password.IPasswordGenerator;
 import com.epam.gym.service.trainer.dto.CreateTrainerDto;

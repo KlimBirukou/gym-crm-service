@@ -1,8 +1,14 @@
 package com.epam.gym.controller.context;
 
+import com.epam.gym.configuration.properties.RequestUidProperties;
 import jakarta.servlet.FilterChain;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.MDC;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -11,14 +17,27 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
+@ExtendWith(MockitoExtension.class)
 class RequestUidMdcFilterTest {
 
-    private static final String REQUEST_HEADER_NAME = "X-Request-Uid";
+    private static final String MDC_KEY = "key";
+    private static final String REQUEST_HEADER_NAME = "name";
 
-    private final RequestUidMdcFilter testObject = new RequestUidMdcFilter();
+    @Mock
+    private RequestUidProperties requestUidProperties;
+
+    @InjectMocks
+    private RequestUidMdcFilter testObject;
+
+    @BeforeEach
+    void setUp() {
+        lenient().doReturn(MDC_KEY).when(requestUidProperties).mdcKey();
+        lenient().doReturn(REQUEST_HEADER_NAME).when(requestUidProperties).headerName();
+    }
 
     @AfterEach
     void tearDown() {

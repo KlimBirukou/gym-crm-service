@@ -36,7 +36,7 @@ public class MetricsAspect implements EmbeddedValueResolverAware {
     private StringValueResolver valueResolver;
 
     @Around("@annotation(measured)")
-    public Object measure(ProceedingJoinPoint joinPoint, Measured measured) throws Throwable {
+    public Object measure(@NonNull ProceedingJoinPoint joinPoint, @NonNull Measured measured) throws Throwable {
         String endpointName = getEndpointName(joinPoint, measured);
         Timer.Sample sample = Timer.start(meterRegistry);
 

@@ -4,6 +4,7 @@ import com.epam.gym.controller.rest.auth.dto.request.ChangePasswordRequest;
 import com.epam.gym.controller.rest.auth.dto.request.LoginRequest;
 import com.epam.gym.controller.rest.auth.dto.request.RegisterTraineeRequest;
 import com.epam.gym.controller.rest.auth.dto.request.RegisterTrainerRequest;
+import com.epam.gym.controller.rest.auth.dto.response.LoginResponse;
 import com.epam.gym.controller.rest.auth.dto.response.RegistrationResponse;
 import com.epam.gym.facade.auth.IAuthFacade;
 import com.epam.gym.metrics.annotation.Measured;
@@ -30,8 +31,13 @@ public class AuthController implements IAuthController {
 
     @Override
     @Measured("POST_api_v1_auth_login")
-    public void login(LoginRequest request) {
-        authFacade.login(request);
+    public LoginResponse login(LoginRequest request) {
+        return authFacade.login(request);
+    }
+
+    @Override
+    @Measured("POST_api_v1_auth_logout")
+    public void logout() {
     }
 
     @Override

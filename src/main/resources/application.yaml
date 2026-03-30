@@ -24,12 +24,11 @@ spring:
       hibernate:
         format_sql: false
         default_schema: gym_schema
+        order_inserts: true
+        order_updates: true
         jdbc:
-          lob:
-            non_contextual_creation: true
-      order_inserts: true
-      order_updates: true
-      batch_size: 20
+          batch_size: 20
+
 
   # Liquibase
   liquibase:
@@ -52,11 +51,12 @@ management:
     prometheus:
       enabled: false
   metrics:
-    export:
-      prometheus:
-        enabled: false
     tags:
       application: ${spring.application.name}
+  prometheus:
+    metrics:
+      export:
+        enabled: false
   info:
     env:
       enabled: false
@@ -79,3 +79,23 @@ springdoc:
     enabled: false
   swagger-ui:
     enabled: false
+
+# Security
+application:
+  request-uid:
+    header-name: "X-Request-Uid"
+    mdc-key: "requestUid"
+  auth:
+    max-login-attempts: 3
+    block-duration: PT15M
+    jwt-expiration: 86400
+  user:
+    username-delimiter: "."
+  cors:
+    allowed-origins:
+      - "http://localhost:8080"
+      - "http://localhost:3000"
+      - "http://localhost:9090"
+  swagger:
+    server-url: "http://localhost:8080"
+    server-description: "Local server"

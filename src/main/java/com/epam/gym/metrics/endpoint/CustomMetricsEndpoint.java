@@ -86,10 +86,12 @@ public class CustomMetricsEndpoint {
             .tag(TAG_TYPE, TYPE_TIMER)
             .timer();
         if (Objects.nonNull(timer)) {
-            timing.put("count", (double) timer.count());
-            timing.put("avg_ms", timer.mean(TimeUnit.MILLISECONDS));
+            var totalMs = timer.totalTime(TimeUnit.MILLISECONDS);
+            var count = timer.count();
+            timing.put("count", (double) count);
+            timing.put("avg_ms", totalMs / count);
             timing.put("max_ms", timer.max(TimeUnit.MILLISECONDS));
-            timing.put("total_ms", timer.totalTime(TimeUnit.MILLISECONDS));
+            timing.put("total_ms", totalMs);
         }
         return timing;
     }
