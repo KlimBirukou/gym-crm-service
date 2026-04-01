@@ -57,3 +57,11 @@ application:
   swagger:
     server-url: "http://localhost:8080"
     server-description: "Dev server"
+
+eureka:
+  client:
+    enabled: true
+    service-url:
+      defaultZone: http://eureka-server:8761/eureka/
+  instance:
+    prefer-ip-address: true

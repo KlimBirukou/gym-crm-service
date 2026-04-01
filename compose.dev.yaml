@@ -15,7 +15,7 @@ services:
     volumes:
       - gym_db_dev_volume:/var/lib/postgresql
     networks:
-      - gym-network
+      - gym-shared-network
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U postgres -d gym_db" ]
       interval: 5s
@@ -32,7 +32,7 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=dev
     networks:
-      - gym-network
+      - gym-shared-network
     depends_on:
       gym-db:
         condition: service_healthy
@@ -43,56 +43,10 @@ services:
       retries: 5
       start_period: 60s
 
-  prometheus:
-    container_name: gym-dev-prometheus
-    image: prom/prometheus:latest
-    ports:
-      - "9090:9090"
-    volumes:
-      - ./docker/prometheus/prometheus-dev.yaml:/etc/prometheus/prometheus.yaml:ro
-      - prometheus_dev_volume:/prometheus
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yaml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
-      - '--web.console.templates=/usr/share/prometheus/consoles'
-      - '--storage.tsdb.retention.time=30d'
-      - '--web.enable-lifecycle'
-    networks:
-      - gym-network
-    depends_on:
-      gym-app:
-        condition: service_healthy
-
-  grafana:
-    container_name: gym-dev-grafana
-    image: grafana/grafana:latest
-    ports:
-      - "3000:3000"
-    environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=admin
-      - GF_INSTALL_PLUGINS=grafana-piechart-panel
-      - GF_SERVER_ROOT_URL=http://localhost:3000
-      - GF_USERS_ALLOW_SIGN_UP=false
-    volumes:
-      - grafana_dev_volume:/var/lib/grafana
-      - ./docker/grafana/provisioning:/etc/grafana/provisioning:ro
-      - ./docker/grafana/dashboards:/var/lib/grafana/dashboards:ro
-    networks:
-      - gym-network
-    depends_on:
-      - prometheus
-
 networks:
-  gym-network:
-    name: gym-dev-network
-    driver: bridge
+  gym-shared-network:
+    external: true
 
 volumes:
   gym_db_dev_volume:
-    driver: local
-  prometheus_dev_volume:
-    driver: local
-  grafana_dev_volume:
     driver: local

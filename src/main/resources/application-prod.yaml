@@ -35,3 +35,11 @@ application:
   auth:
     secret: cHJvZC1zZWNyZXQta2V5LWZvci1neW0tY3JtLWFwcC1wcm9kdWN0aW9uLW9ubHk=
     jwt-expiration: 28800
+
+eureka:
+  client:
+    enabled: true
+    service-url:
+      defaultZone: http://eureka-server:8761/eureka/
+  instance:
+    prefer-ip-address: true

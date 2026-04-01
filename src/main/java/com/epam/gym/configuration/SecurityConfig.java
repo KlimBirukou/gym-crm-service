@@ -30,6 +30,7 @@ public class SecurityConfig {
         "/api/v1/auth/registration/trainee",
         "/api/v1/auth/registration/trainer",
         "/api/v1/auth/login",
+        "/api/v1/training/types",
         "/actuator/**",
         "/swagger-ui/**",
         "/swagger-ui.html",
@@ -44,8 +45,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) {
         return http
-            .cors(cors ->
-                cors.configurationSource(corsConfigurationSource()))
+           /* .cors(cors ->
+                cors.configurationSource(corsConfigurationSource()))*/
+            .cors(AbstractHttpConfigurer::disable)
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

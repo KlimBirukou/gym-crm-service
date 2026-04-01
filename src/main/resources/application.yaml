@@ -96,6 +96,15 @@ application:
       - "http://localhost:8080"
       - "http://localhost:3000"
       - "http://localhost:9090"
+      - "http://localhost:8081"
   swagger:
     server-url: "http://localhost:8080"
     server-description: "Local server"
+
+eureka:
+  client:
+    enabled: false
+  instance:
+    prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 30
