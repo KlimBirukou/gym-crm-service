@@ -1,5 +1,7 @@
 package com.epam.gym.facade.training;
 
+import com.epam.gym.client.ActionType;
+import com.epam.gym.client.service.ITrainerWorkloadService;
 import com.epam.gym.controller.rest.training.dto.request.CreateTrainingRequest;
 import com.epam.gym.controller.rest.training.dto.request.GetTraineeTrainingsRequest;
 import com.epam.gym.controller.rest.training.dto.request.GetTrainerTrainingRequest;
@@ -37,6 +39,7 @@ public class TrainingFacade implements ITrainingFacade {
     private final ITrainerService trainerService;
     private final ITrainingService trainingService;
     private final ITrainingTypeService trainingTypeService;
+    private final ITrainerWorkloadService trainerWorkloadService;
     private final ConversionService conversionService;
 
     @Override
@@ -45,6 +48,7 @@ public class TrainingFacade implements ITrainingFacade {
         log.info("Create training. Started. Request={}", request);
         var dto = conversionService.convert(request, CreateTrainingDto.class);
         var training = trainingService.create(dto);
+        trainerWorkloadService.notify(training, dto.trainerUsername(), ActionType.ADD);
         log.info("Create trainings. Finished. Training={}", training);
     }
 

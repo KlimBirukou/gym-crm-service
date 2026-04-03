@@ -36,6 +36,18 @@ jar {
     enabled = false
 }
 
+ext {
+    set('springCloudVersion', "2025.1.1")
+    set('openapiVersion', "3.0.2")
+    set('mapstructVersion', "1.6.3")
+    set('mapstructSpringExtensionsVersion', "2.0.0")
+    set('lombokVersion', "1.18.44")
+    set('lombokMapstructBindingVersion', "0.2.0")
+    set('commonsCollectionsVersion', "4.4")
+    set('commonsLangVersion', "3.20.0")
+    set('jwtVersion', "0.12.7")
+}
+
 dependencies {
     // Spring
     implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${openapiVersion}"
@@ -50,8 +62,10 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
-    // Eureka Client
+    // Spring cloud
+    implementation 'org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j'
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 
     // Database
     runtimeOnly 'org.postgresql:postgresql'
