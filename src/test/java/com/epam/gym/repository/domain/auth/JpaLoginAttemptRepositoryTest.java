@@ -1,7 +1,6 @@
 package com.epam.gym.repository.domain.auth;
 
 import com.epam.gym.domain.auth.LoginAttempt;
-import com.epam.gym.repository.entity.LoginAttemptEntity;
 import com.epam.gym.repository.jpa.auth.ILoginAttemptsEntityRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;

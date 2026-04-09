@@ -1,7 +1,6 @@
 package com.epam.gym.repository.mapper;
 
 import com.epam.gym.domain.auth.LoginAttempt;
-import com.epam.gym.repository.entity.LoginAttemptEntity;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;

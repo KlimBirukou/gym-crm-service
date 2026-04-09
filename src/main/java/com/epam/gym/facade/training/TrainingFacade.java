@@ -1,7 +1,7 @@
 package com.epam.gym.facade.training;
 
-import com.epam.gym.client.ActionType;
-import com.epam.gym.client.service.ITrainerWorkloadService;
+import com.epam.gym.client.workload.ActionType;
+import com.epam.gym.client.workload.service.ITrainerWorkloadService;
 import com.epam.gym.controller.rest.training.dto.request.CreateTrainingRequest;
 import com.epam.gym.controller.rest.training.dto.request.GetTraineeTrainingsRequest;
 import com.epam.gym.controller.rest.training.dto.request.GetTrainerTrainingRequest;

@@ -1,34 +1,98 @@
 spring:
-  docker:
-    compose:
-      file: compose.local.yaml
-      lifecycle-management: start-only
+  output:
+    ansi:
+      enabled: always
+  application:
+    name: gym-crm-server
+  cloud:
+    config:
+      enabled: false
+  jackson:
+    property-naming-strategy: SNAKE_CASE
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/gym_db?currentSchema=gym_schema
-    username: gym_user
+    url: jdbc:postgresql://localhost:5532/gym_local_crm_database?currentSchema=gym_crm_schema
+    username: gym_crm_user
     password: vG8k2Pz9mN4Xw7Tq
+    driver-class-name: org.postgresql.Driver
 
   jpa:
-    show-sql: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate
+    show-sql: false # true
+    open-in-view: false
     properties:
       hibernate:
         format_sql: true
+        default_schema: gym_crm_schema
+        order_inserts: true
+        order_updates: true
+        jdbc:
+          batch_size: 20
 
   liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/main-changelog.yaml
+    default-schema: gym_crm_schema
     contexts: default,seed
+
+application:
+  auth:
+    secret: bG9jYWwtc2VjcmV0LWtleS1mb3ItZ3ltLWNybS1hcHAtbG9jYWwtZGV2ZWxvcG1lbnQ=
+    max-login-attempts: 3
+    block-duration: PT15M
+    jwt-expiration: 86400
+  request-uid:
+    header-name: "X-Request-Uid"
+    mdc-key: "requestUid"
+  security:
+    endpoints:
+      public-endpoints:
+          - "/api/v1/auth/registration/trainee",
+          - "/api/v1/auth/registration/trainer",
+          - "/api/v1/auth/login",
+          - "/actuator/**",
+          - "/swagger-ui/**",
+          - "/swagger-ui.html",
+          - "/v3/api-docs/**"
+  user:
+    username-delimiter: "."
+  internal:
+    secret: AUTH_SECRET_SUPER_PUPER_SECRET_ULTRA_MAX_FOREVER_SECRET
+    header-name: "X-Internal-Secret"
+  swagger:
+    server-url: "http://localhost:8094"
+    server-description: "Local development server"
+
+eureka:
+  client:
+    enabled: false
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      workloadService:
+        sliding-window-size: 10
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 10s
+        permitted-number-of-calls-in-half-open-state: 3
 
 management:
   endpoints:
     web:
       exposure:
         include: "*"
+      base-path: /actuator
   endpoint:
     health:
       show-details: always
       show-components: always
     prometheus:
       enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
   prometheus:
     metrics:
       export:
@@ -36,13 +100,6 @@ management:
   info:
     env:
       enabled: true
-
-logging:
-  level:
-    root: INFO
-    com.epam.gym: DEBUG
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
 
 springdoc:
   api-docs:
@@ -54,17 +111,22 @@ springdoc:
     operations-sorter: alpha
     disable-swagger-default-url: true
 
-application:
-  auth:
-    secret: bG9jYWwtc2VjcmV0LWtleS1mb3ItZ3ltLWNybS1hcHAtbG9jYWwtZGV2ZWxvcG1lbnQ=
-  swagger:
-    server-url: "http://localhost:8080"
-    server-description: "Local development server"
+logging:
+  level:
+    root: WARN
+    com.epam.gym: DEBUG
+    org.springframework.web: DEBUG
+    org.springframework.security: DEBUG
+    org.hibernate.SQL: OFF
+    org.hibernate.type.descriptor.sql.BasicBinder: OFF
+  pattern:
+    correlation: "[${spring.application.name:},%X{requestUid:-}] "
+    console: "%clr([){faint}%clr(${spring.application.name:}){cyan}%clr( : ){faint}%clr(%X{requestUid:-}){magenta}%clr(]){faint} %clr(%d{yyyy-MM-dd HH:mm:ss}){faint} %clr(%-5level) %clr([%thread]){faint} %clr(%logger{36}){cyan} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"
 
-eureka:
-  client:
-    enabled: true
-    service-url:
-      defaultZone: http://localhost:8761/eureka/
-  instance:
-    prefer-ip-address: true
+server:
+  port: 8094
+
+clients:
+  auth-server:
+    url: http://localhost:8093

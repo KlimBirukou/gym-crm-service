@@ -1,6 +1,6 @@
-package com.epam.gym.client.service;
+package com.epam.gym.client.workload.service;
 
-import com.epam.gym.client.ActionType;
+import com.epam.gym.client.workload.ActionType;
 import com.epam.gym.domain.training.Training;
 import lombok.NonNull;
 

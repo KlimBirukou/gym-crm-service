@@ -1,67 +1,29 @@
 spring:
-  datasource:
-    url: jdbc:postgresql://gym-db:5432/gym_db?currentSchema=gym_schema
-    username: gym_user
-    password: vG8k2Pz9mN4Xw7Tq
-
-  jpa:
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: false
-
-  liquibase:
-    contexts: default,seed
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-  endpoint:
-    health:
-      show-details: always
-      show-components: always
-    prometheus:
-      enabled: true
-  prometheus:
-    metrics:
-      export:
-        enabled: true
-    tags:
-      application: ${spring.application.name}
-  info:
-    env:
-      enabled: true
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+  application:
+    name: gym-crm-server
+  config:
+    import: "configserver:http://gym-config-server:8888"
+  profiles:
+    active: default
+  cloud:
+    config:
+      fail-fast: true
+      retry:
+        max-attempts: 6
+        initial-interval: 2000
+        multiplier: 1.5
+        max-interval: 10000
 
 logging:
+  pattern:
+    console: "%clr([){faint}%clr(${spring.application.name:}){cyan}%clr( : ){faint}%clr(%X{requestUid:-}){magenta}%clr(]){faint} %clr(%d{yyyy-MM-dd HH:mm:ss}){faint} %clr(%-5level) %clr([%thread]){faint} %clr(%logger{36}){cyan} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"
   level:
-    root: INFO
+    root: WARN
     com.epam.gym: DEBUG
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: OFF
+    com.epam.gym.client.auth.IAuthClient: DEBUG
 
-springdoc:
-  api-docs:
-    enabled: true
-  swagger-ui:
-    enabled: true
-    path: /swagger-ui.html
-    tags-sorter: alpha
-    operations-sorter: alpha
-    disable-swagger-default-url: true
-
-application:
-  auth:
-    secret: ZGV2LXNlY3JldC1rZXktZm9yLWd5bS1jcm0tYXBwLWRldmVsb3BtZW50LW9ubHk=
-  swagger:
-    server-url: "http://localhost:8080"
-    server-description: "Dev server"
-
-eureka:
-  client:
-    enabled: true
-    service-url:
-      defaultZone: http://eureka-server:8761/eureka/
-  instance:
-    prefer-ip-address: true
+server:
+  port: 8084

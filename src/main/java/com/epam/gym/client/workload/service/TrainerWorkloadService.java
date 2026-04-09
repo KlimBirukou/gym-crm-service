@@ -1,10 +1,9 @@
-package com.epam.gym.client.service;
+package com.epam.gym.client.workload.service;
 
-import com.epam.gym.client.ActionType;
-import com.epam.gym.client.IWorkloadClient;
-import com.epam.gym.client.TrainerWorkloadRequest;
+import com.epam.gym.client.workload.ActionType;
+import com.epam.gym.client.workload.IWorkloadClient;
+import com.epam.gym.client.workload.TrainerWorkloadRequest;
 import com.epam.gym.domain.training.Training;
-import com.epam.gym.domain.user.Trainer;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;

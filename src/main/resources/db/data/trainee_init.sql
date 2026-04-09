@@ -1,5 +1,5 @@
 WITH u_data AS (
-    INSERT INTO gym_schema.user (first_name, last_name, username, password, is_active)
+    INSERT INTO gym_crm_schema.user (first_name, last_name, username, password, is_active)
     VALUES
         ('Geralt', 'zRivii', 'Geralt.zRivii', '$2a$12$wL8CIZWnaCpWgHzsUZOQEOkoskrNRHuCvrX/8TA29/zcZo3VcrzBK', true), -- password1
         ('Lambert', 'Walrus', 'Lambert.Walrus', '$2a$12$t9HJbTt/9JOwwJhRUbn3EeEXrRqTWdJGk9ALcVf1s4rWyohY0R5pe', true), -- password2
@@ -11,7 +11,7 @@ WITH u_data AS (
         ('Brienne', 'Tarth', 'Brienne.Tarth', '$2a$12$.0DA4lKHjqh8IEsF.nDBveAwRz8oDNAvQYuQrmpvwxJ7a0l.nPk2C', false) -- password13
     RETURNING uid, username
 )
-INSERT INTO gym_schema.trainee (uid, user_uid, address, birthdate)
+INSERT INTO gym_crm_schema.trainee (uid, user_uid, address, birthdate)
 SELECT t.uid, ud.uid, t.addr, t.bday::DATE
 FROM (VALUES
     ('30000000-0000-0000-0000-000000000001'::UUID, 'Geralt.zRivii', 'Kaer Morhen Fortress, Blue Mountains', '1160-01-01'),

@@ -1,6 +1,8 @@
 package com.epam.gym.controller.context;
 
-import com.epam.gym.service.auth.jwt.IJwtService;
+import com.epam.gym.client.auth.IAuthClient;
+import com.epam.gym.client.auth.ValidateResponse;
+import feign.FeignException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -26,20 +27,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String BEARER_PREFIX = "Bearer ";
 
-    private final IJwtService jwtService;
+    private final IAuthClient authClient;
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
-        extractToken(request)
-            .filter(jwtService::isTokenValid)
-            .ifPresent(this::authenticateUser);
+        Optional.ofNullable(request.getHeader(AUTHORIZATION_HEADER))
+            .filter(header -> header.startsWith(BEARER_PREFIX))
+            .flatMap(this::safeValidate)
+            .filter(ValidateResponse::valid)
+            .ifPresent(res -> authenticateUser(res.username()));
         filterChain.doFilter(request, response);
     }
 
-    private void authenticateUser(String token) {
-        var username = jwtService.extractUsername(token);
+    private Optional<ValidateResponse> safeValidate(String header) {
+        try {
+            return Optional.ofNullable(authClient.validate(header));
+        } catch (Exception e) {
+            log.error("Auth validation failed: {}", e.getMessage());
+            return Optional.empty();
+        }
+    }
+
+    private void authenticateUser(String username) {
         var authentication = new UsernamePasswordAuthenticationToken(
             username,
             null,
@@ -47,12 +58,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
         log.debug("JWT authenticated: username={}", username);
-    }
-
-    private Optional<String> extractToken(HttpServletRequest request) {
-        return Optional.ofNullable(request.getHeader(AUTHORIZATION_HEADER))
-            .filter(StringUtils::hasText)
-            .filter(header -> header.startsWith(BEARER_PREFIX))
-            .map(header -> header.substring(BEARER_PREFIX.length()));
     }
 }

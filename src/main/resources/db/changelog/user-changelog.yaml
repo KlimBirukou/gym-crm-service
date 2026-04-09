@@ -5,7 +5,7 @@ databaseChangeLog:
       changes:
         - createTable:
             tableName: user
-            schemaName: gym_schema
+            schemaName: gym_crm_schema
             remarks: Stores common user information for trainers and trainees
             columns:
               - column:

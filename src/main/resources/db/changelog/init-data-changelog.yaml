@@ -8,7 +8,7 @@ databaseChangeLog:
         onError: MARK_RAN
         sqlCheck:
           expectedResult: 0
-          sql: SELECT COUNT(*) FROM gym_schema.training_type
+          sql: SELECT COUNT(*) FROM gym_crm_schema.training_type
       changes:
         - sqlFile:
             path: ../data/training_type_init.sql

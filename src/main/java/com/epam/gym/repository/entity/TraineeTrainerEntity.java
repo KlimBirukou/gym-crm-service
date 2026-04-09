@@ -22,7 +22,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "trainee_trainer", schema = "gym_schema")
+@Table(name = "trainee_trainer", schema = "gym_crm_schema")
 public class TraineeTrainerEntity {
 
     @Id

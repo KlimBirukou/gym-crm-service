@@ -5,7 +5,7 @@ databaseChangeLog:
       changes:
         - createTable:
             tableName: trainer
-            schemaName: gym_schema
+            schemaName: gym_crm_schema
             remarks: Stores trainer-specific information with one-to-one relation to user
             columns:
               - column:

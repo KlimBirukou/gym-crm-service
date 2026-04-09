@@ -26,7 +26,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Accessors(chain = true)
 @Entity
-@Table(name = "trainer", schema = "gym_schema")
+@Table(name = "trainer", schema = "gym_crm_schema")
 public class TrainerEntity {
 
     @Id

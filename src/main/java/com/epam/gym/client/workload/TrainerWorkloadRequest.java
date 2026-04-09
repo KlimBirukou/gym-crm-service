@@ -1,4 +1,4 @@
-package com.epam.gym.client;
+package com.epam.gym.client.workload;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;

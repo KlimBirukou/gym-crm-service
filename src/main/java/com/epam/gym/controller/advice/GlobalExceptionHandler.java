@@ -8,6 +8,7 @@ import com.epam.gym.exception.conflict.date.DateConflictException;
 import com.epam.gym.exception.not.active.NotActiveException;
 import com.epam.gym.exception.not.assigned.NotAssignmentException;
 import com.epam.gym.exception.not.found.NotFoundException;
+import feign.FeignException;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.Nullable;
@@ -117,6 +118,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             request,
             NOT_ASSIGNED_MESSAGE.formatted(exception.getTraineeUsername(), exception.getTrainerUsername()),
             HttpStatus.UNPROCESSABLE_CONTENT
+        );
+    }
+
+    @ExceptionHandler(FeignException.class)
+    public ResponseEntity<@NonNull Object> handleException(FeignException exception, WebRequest request) {
+        return getObjectResponseEntity(
+            exception,
+            request,
+            "External service unavailable",
+            HttpStatus.SERVICE_UNAVAILABLE
         );
     }
 

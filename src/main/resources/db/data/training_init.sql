@@ -1,5 +1,5 @@
 -- Training sessions
-INSERT INTO gym_schema.training (uid, trainee_uid, trainer_uid, name, date, duration, training_type_uid)
+INSERT INTO gym_crm_schema.training (uid, trainee_uid, trainer_uid, name, date, duration, training_type_uid)
 VALUES
 (
     '60000000-0000-0000-0000-000000000001',
@@ -8,7 +8,7 @@ VALUES
     'Silver Sword Techniques',
     '2026-05-01',
     120,
-    (SELECT uid FROM gym_schema.training_type WHERE name = 'Martial Arts')
+    (SELECT uid FROM gym_crm_schema.training_type WHERE name = 'Martial Arts')
 ),
 (
     '60000000-0000-0000-0000-000000000002',
@@ -17,7 +17,7 @@ VALUES
     'Monster Combat Training',
     '2026-05-02',
     90,
-    (SELECT uid FROM gym_schema.training_type WHERE name = 'Martial Arts')
+    (SELECT uid FROM gym_crm_schema.training_type WHERE name = 'Martial Arts')
 ),
 (
     '60000000-0000-0000-0000-000000000003',
@@ -26,7 +26,7 @@ VALUES
     'Signs and Swordplay',
     '2026-05-03',
     110,
-    (SELECT uid FROM gym_schema.training_type WHERE name = 'Martial Arts')
+    (SELECT uid FROM gym_crm_schema.training_type WHERE name = 'Martial Arts')
 ),
 (
     '60000000-0000-0000-0000-000000000004',
@@ -35,7 +35,7 @@ VALUES
     'Force Sensitivity Training',
     '2026-05-04',
     60,
-    (SELECT uid FROM gym_schema.training_type WHERE name = 'Meditation')
+    (SELECT uid FROM gym_crm_schema.training_type WHERE name = 'Meditation')
 ),
 (
     '60000000-0000-0000-0000-000000000005',
@@ -44,7 +44,7 @@ VALUES
     'Jedi Code and Meditation',
     '2026-05-05',
     75,
-    (SELECT uid FROM gym_schema.training_type WHERE name = 'Meditation')
+    (SELECT uid FROM gym_crm_schema.training_type WHERE name = 'Meditation')
 ),
 (
     '60000000-0000-0000-0000-000000000006',
@@ -53,7 +53,7 @@ VALUES
     'Lightsaber Forms Meditation',
     '2026-05-06',
     80,
-    (SELECT uid FROM gym_schema.training_type WHERE name = 'Meditation')
+    (SELECT uid FROM gym_crm_schema.training_type WHERE name = 'Meditation')
 ),
 (
     '60000000-0000-0000-0000-000000000007',
@@ -62,7 +62,7 @@ VALUES
     'Water Dancing Basics',
     '2026-05-07',
     60,
-    (SELECT uid FROM gym_schema.training_type WHERE name = 'Fencing')
+    (SELECT uid FROM gym_crm_schema.training_type WHERE name = 'Fencing')
 ),
 (
     '60000000-0000-0000-0000-000000000008',
@@ -71,7 +71,7 @@ VALUES
     'Balance and Footwork',
     '2026-05-08',
     55,
-    (SELECT uid FROM gym_schema.training_type WHERE name = 'Fencing')
+    (SELECT uid FROM gym_crm_schema.training_type WHERE name = 'Fencing')
 ),
 (
     '60000000-0000-0000-0000-000000000009',
@@ -80,7 +80,7 @@ VALUES
     'Face Changing Ritual',
     '2026-05-10',
     90,
-    (SELECT uid FROM gym_schema.training_type WHERE name = 'Shapeshifting')
+    (SELECT uid FROM gym_crm_schema.training_type WHERE name = 'Shapeshifting')
 ),
 (
     '60000000-0000-0000-0000-000000000010',
@@ -89,5 +89,5 @@ VALUES
     'A Girl Has No Name',
     '2026-05-12',
     120,
-    (SELECT uid FROM gym_schema.training_type WHERE name = 'Shapeshifting')
+    (SELECT uid FROM gym_crm_schema.training_type WHERE name = 'Shapeshifting')
 );

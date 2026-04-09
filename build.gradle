@@ -6,12 +6,16 @@ plugins {
 
 group = 'com.epam.gym'
 version = '0.0.1-SNAPSHOT'
-description = 'Gym CRM system'
+description = 'gym-crm-server'
 
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
     }
+}
+
+bootRun {
+    systemProperty 'spring.profiles.active', 'local'
 }
 
 configurations {
@@ -26,10 +30,6 @@ repositories {
 
 ext {
     set('springCloudVersion', "2025.1.1")
-}
-
-bootRun {
-    args = ["--spring.profiles.active=local"]
 }
 
 jar {
@@ -58,12 +58,12 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-liquibase'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
     // Spring cloud
     implementation 'org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j'
+    implementation 'org.springframework.cloud:spring-cloud-starter-config'
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 
