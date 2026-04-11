@@ -8,11 +8,15 @@ import com.epam.gym.domain.user.Trainee;
 import com.epam.gym.repository.domain.trainee.ITraineeRepository;
 import com.epam.gym.service.trainee.dto.CreateTraineeDto;
 import com.epam.gym.service.trainee.dto.UpdateTraineeDto;
+import com.epam.gym.service.training.ITrainingService;
+import com.epam.gym.service.training.dto.TraineeTrainingsDto;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Clock;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;

@@ -1,8 +1,8 @@
-name: gym
+name: gym-dev
 
 services:
   gym-crm-database:
-    container_name: gym-crm-postgres
+    container_name: gym-crm-database
     build:
       context: .
       dockerfile: docker/database/Dockerfile
@@ -13,14 +13,15 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - gym_crm_database_volumes:/var/lib/postgresql
+      - gym_dev_crm_database_volumes:/var/lib/postgresql
     networks:
-      - gym-network
+      - gym-dev-network
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U postgres -d gym_crm_database" ]
-      interval: 5s
+      interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 60s
 
   gym-crm-server:
     container_name: gym-crm-server
@@ -29,13 +30,13 @@ services:
       dockerfile: docker/app/Dockerfile
     ports:
       - "8084:8084"
-    environment:
-      - SPRING_PROFILES_ACTIVE=dev
     networks:
-      - gym-shared-network
+      - gym-dev-network
     depends_on:
       gym-crm-database:
         condition: service_healthy
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8084/actuator/health" ]
       interval: 10s
@@ -44,8 +45,8 @@ services:
       start_period: 60s
 
 networks:
-  gym-network:
+  gym-dev-network:
     external: true
 
 volumes:
-  gym_crm_database_volumes:
+  gym_dev_crm_database_volumes:

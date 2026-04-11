@@ -41,10 +41,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     private static final String VALIDATION_FAILED = "VALIDATION_FAILED";
     private static final String CONTENT_TYPE_MESSAGE =
         "Content type '%s' is not supported. Supported media types are: %s";
-
     private static final String INVALID_CREDENTIALS_MESSAGE = "Username or password invalid";
     private static final String NOT_AUTHENTICATED_MESSAGE =
         "Authentication required. Please login to access this resource";
+    private static final String SERVER_UNAVAILABLE = "Server unavailable. Try this action later";
 
     @ExceptionHandler(
         {
@@ -126,7 +126,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return getObjectResponseEntity(
             exception,
             request,
-            "External service unavailable",
+            SERVER_UNAVAILABLE,
             HttpStatus.SERVICE_UNAVAILABLE
         );
     }

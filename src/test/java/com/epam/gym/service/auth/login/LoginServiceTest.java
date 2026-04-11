@@ -1,6 +1,5 @@
 package com.epam.gym.service.auth.login;
 
-import com.epam.gym.configuration.properties.AuthProperties;
 import com.epam.gym.controller.rest.auth.dto.request.LoginRequest;
 import com.epam.gym.domain.auth.LoginAttempt;
 import com.epam.gym.domain.user.User;

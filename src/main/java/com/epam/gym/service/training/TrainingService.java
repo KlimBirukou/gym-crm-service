@@ -50,9 +50,8 @@ public class TrainingService implements ITrainingService {
             .filter(d -> assignmentService.checkAssignmentExist(d.traineeUsername(), d.trainerUsername()))
             .orElseThrow(() -> new NotAssignmentException(dto.trainerUsername(), dto.traineeUsername()));
         validateDateAvailability(dto, trainee, trainer);
-        var uid = UUID.randomUUID();
         var training = Training.builder()
-            .uid(uid)
+            .uid(UUID.randomUUID())
             .traineeUid(trainee.getUid())
             .trainerUid(trainer.getUid())
             .name(dto.name())

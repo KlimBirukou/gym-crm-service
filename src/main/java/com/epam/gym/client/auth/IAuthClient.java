@@ -1,5 +1,6 @@
 package com.epam.gym.client.auth;
 
+import com.epam.gym.configuration.FeignConfiguration;
 import com.epam.gym.controller.rest.auth.dto.response.LoginResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,9 +13,8 @@ import java.util.UUID;
 
 @FeignClient(
     name = "gym-auth-server",
-    url = "${clients.auth-server.url}",
     path = "/internal/v1",
-    configuration = FeignAuthConfig.class
+    configuration = FeignConfiguration.class
 )
 public interface IAuthClient {
 

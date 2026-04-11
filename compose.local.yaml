@@ -1,31 +1,31 @@
-name: gym-local
+name: gym-dev
 
 services:
-  gym-local-crm-databade:
-    container_name: gym-local-crm-database
+  gym-crm-databade:
+    container_name: gym-crm-database
     build:
       context: .
       dockerfile: docker/database/Dockerfile
     environment:
-      - POSTGRES_DB=gym_local_crm_database
+      - POSTGRES_DB=gym_crm_database
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=root
     ports:
-      - "5532:5432"
+      - "5432:5432"
     volumes:
-      - gym_local_crm_database_volumes:/var/lib/postgresql
+      - gym_dev_crm_database_volumes:/var/lib/postgresql
     networks:
-      - gym-network-local
+      - gym-dev-network
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres -d gym_local_crm_database" ]
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d gym_crm_database" ]
       interval: 5s
       timeout: 5s
       retries: 5
       start_period: 60s
 
 networks:
-  gym-network-local:
+  gym-dev-network:
     external: true
 
 volumes:
-  gym_local_crm_database_volumes:
+  gym_dev_crm_database_volumes:

@@ -1,6 +1,5 @@
 package com.epam.gym.service.auth.jwt;
 
-import com.epam.gym.configuration.properties.AuthProperties;
 import io.jsonwebtoken.JwtException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

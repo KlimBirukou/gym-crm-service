@@ -1,5 +1,6 @@
 package com.epam.gym.facade.trainee;
 
+import com.epam.gym.client.workload.service.ITrainerWorkloadService;
 import com.epam.gym.controller.rest.trainee.dto.request.UpdateTraineeRequest;
 import com.epam.gym.controller.rest.trainee.dto.response.TrainerProfileResponse;
 import com.epam.gym.controller.rest.trainee.dto.response.TraineeResponse;
@@ -27,6 +28,7 @@ public class TraineeFacade implements ITraineeFacade {
     private final TraineeService traineeService;
     private final ConversionService conversionService;
     private final IUserService userService;
+    private final ITrainerWorkloadService trainerWorkloadService;
 
     @Override
     @Transactional(readOnly = true)
@@ -66,9 +68,10 @@ public class TraineeFacade implements ITraineeFacade {
     @Override
     @Transactional
     public void delete(@NonNull String username) {
-        log.info("Delete trainer. Started. Username={}", username);
+        log.info("Delete trainee. Started. Username={}", username);
+        trainerWorkloadService.processMany(username);
         traineeService.delete(username);
-        log.info("Delete trainer. Finished. Username={}", username);
+        log.info("Delete trainee. Finished. Username={}", username);
     }
 
     private TraineeResponse buildTraineeResponse(Trainee trainee) {

@@ -7,4 +7,6 @@ import lombok.NonNull;
 public interface ITrainerWorkloadService {
 
     void notify(@NonNull Training training, @NonNull String trainerUsername, @NonNull ActionType actionType);
+
+    void processMany(@NonNull String username);
 }
