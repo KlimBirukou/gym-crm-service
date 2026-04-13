@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import java.util.UUID;
 
 @FeignClient(
-    name = "gym-auth-server",
+    name = "${application.clients.auth}",
     path = "/internal/v1",
     configuration = FeignConfiguration.class
 )

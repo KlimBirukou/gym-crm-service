@@ -1,12 +1,12 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '4.0.4'
+    id 'org.springframework.boot' version '4.0.5'
     id 'io.spring.dependency-management' version '1.1.7'
 }
 
 group = 'com.epam.gym'
 version = '0.0.1-SNAPSHOT'
-description = 'gym-crm-server'
+description = 'gym-crm-service'
 
 java {
     toolchain {
@@ -14,8 +14,20 @@ java {
     }
 }
 
-bootRun {
-    systemProperty 'spring.profiles.active', 'local'
+ext {
+    set('springCloudVersion', "2025.1.1")
+    set('jwtVersion', "0.12.7")
+    set('lombokVersion', "1.18.44")
+    set('lombokMapstructBindingVersion', "0.2.0")
+    set('mapstructVersion', "1.6.3")
+    set('mapstructSpringExtensionsVersion', "2.0.0")
+    set('openapiVersion', "3.0.2")
+    set('commonsCollectionsVersion', "4.4")
+    set('commonsLangVersion', "3.20.0")
+}
+
+repositories {
+    mavenCentral()
 }
 
 configurations {
@@ -24,28 +36,12 @@ configurations {
     }
 }
 
-repositories {
-    mavenCentral()
-}
-
-ext {
-    set('springCloudVersion', "2025.1.1")
-}
-
 jar {
     enabled = false
 }
 
-ext {
-    set('springCloudVersion', "2025.1.1")
-    set('openapiVersion', "3.0.2")
-    set('mapstructVersion', "1.6.3")
-    set('mapstructSpringExtensionsVersion', "2.0.0")
-    set('lombokVersion', "1.18.44")
-    set('lombokMapstructBindingVersion', "0.2.0")
-    set('commonsCollectionsVersion', "4.4")
-    set('commonsLangVersion', "3.20.0")
-    set('jwtVersion', "0.12.7")
+bootRun {
+    systemProperty 'spring.profiles.active', 'local'
 }
 
 dependencies {
@@ -56,12 +52,11 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-json'
     implementation 'org.springframework.boot:spring-boot-starter-liquibase'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
-    // Spring cloud
+    // Spring Cloud
     implementation 'org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j'
     implementation 'org.springframework.cloud:spring-cloud-starter-config'
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
@@ -69,6 +64,11 @@ dependencies {
 
     // Database
     runtimeOnly 'org.postgresql:postgresql'
+
+    // Security & JWT
+    implementation "io.jsonwebtoken:jjwt-api:${jwtVersion}"
+    runtimeOnly "io.jsonwebtoken:jjwt-impl:${jwtVersion}"
+    runtimeOnly "io.jsonwebtoken:jjwt-orgjson:${jwtVersion}"
 
     // Lombok
     compileOnly "org.projectlombok:lombok:${lombokVersion}"
@@ -89,12 +89,8 @@ dependencies {
     implementation "org.apache.commons:commons-collections4:${commonsCollectionsVersion}"
     implementation "org.apache.commons:commons-lang3:${commonsLangVersion}"
 
-    // JWT
-    implementation "io.jsonwebtoken:jjwt-api:${jwtVersion}"
-    runtimeOnly "io.jsonwebtoken:jjwt-impl:${jwtVersion}"
-    runtimeOnly "io.jsonwebtoken:jjwt-orgjson:${jwtVersion}"
-
     // Testing
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 

@@ -36,6 +36,9 @@ public class TrainerWorkloadService implements ITrainerWorkloadService {
             .username(username)
             .from(LocalDate.now(clock))
             .build());
+        if (trainings.isEmpty()) {
+            return;
+        }
         var trainerUidToUsernameMapping = fetchTrainingsTrainerData(trainings)
             .collect(Collectors.toMap(Trainer::getUid, Trainer::getUsername));
         trainings.forEach(t ->

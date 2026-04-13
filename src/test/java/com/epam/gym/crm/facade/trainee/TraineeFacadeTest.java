@@ -9,6 +9,7 @@ import com.epam.gym.crm.service.assignment.IAssignmentService;
 import com.epam.gym.crm.service.trainee.TraineeService;
 import com.epam.gym.crm.service.trainee.dto.UpdateTraineeDto;
 import com.epam.gym.crm.service.user.IUserService;
+import com.epam.gym.crm.service.workload.ITrainerWorkloadService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -57,13 +58,21 @@ class TraineeFacadeTest {
     private ConversionService conversionService;
     @Mock
     private IUserService userService;
+    @Mock
+    private ITrainerWorkloadService trainerWorkloadService;
 
     @InjectMocks
     private TraineeFacade testObject;
 
     @AfterEach
     void tearDown() {
-        verifyNoMoreInteractions(assignmentService, traineeService, conversionService, userService);
+        verifyNoMoreInteractions(
+            assignmentService,
+            traineeService,
+            conversionService,
+            userService,
+            trainerWorkloadService
+        );
     }
 
     @Test
@@ -159,6 +168,7 @@ class TraineeFacadeTest {
     void delete_shouldCallTraineeService_whenAlways() {
         testObject.delete(USERNAME);
 
+        verify(trainerWorkloadService).processMany(USERNAME);
         verify(traineeService).delete(USERNAME);
     }
 

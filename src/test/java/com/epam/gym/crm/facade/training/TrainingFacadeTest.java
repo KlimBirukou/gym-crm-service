@@ -1,5 +1,7 @@
 package com.epam.gym.crm.facade.training;
 
+import com.epam.gym.crm.client.workload.ActionType;
+import com.epam.gym.crm.client.workload.notifier.ITrainerWorkloadNotifier;
 import com.epam.gym.crm.controller.rest.training.dto.request.CreateTrainingRequest;
 import com.epam.gym.crm.controller.rest.training.dto.request.GetTraineeTrainingsRequest;
 import com.epam.gym.crm.controller.rest.training.dto.request.GetTrainerTrainingRequest;
@@ -32,6 +34,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
@@ -59,22 +62,28 @@ class TrainingFacadeTest {
     @Mock
     private ITrainingTypeService trainingTypeService;
     @Mock
+    private ITrainerWorkloadNotifier trainerWorkloadService;
+    @Mock
     private ConversionService conversionService;
 
     @InjectMocks
     private TrainingFacade testObject;
 
     @Test
-    void create_shouldCallTrainingService_whenAlways() {
+    void
+    create_shouldConvertAndCreateTrainingAndNotify_whenRequestIsValid() {
         var request = buildCreateTrainingRequest();
         var createTrainingDto = buildCreateTrainingDto();
         var training = buildTraining();
         doReturn(createTrainingDto).when(conversionService).convert(request, CreateTrainingDto.class);
         doReturn(training).when(trainingService).create(createTrainingDto);
+        doNothing().when(trainerWorkloadService).notify(training, createTrainingDto.trainerUsername(), ActionType.ADD);
 
         testObject.create(request);
 
+        verify(conversionService).convert(request, CreateTrainingDto.class);
         verify(trainingService).create(createTrainingDto);
+        verify(trainerWorkloadService).notify(training, createTrainingDto.trainerUsername(), ActionType.ADD);
     }
 
     @ParameterizedTest

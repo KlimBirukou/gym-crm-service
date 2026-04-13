@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @FeignClient(
-    name = "gym-workload-server",
+    name = "${application.clients.workload}",
     path="/internal/v1/workload",
     configuration = FeignConfiguration.class
 )
