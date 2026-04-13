@@ -1,7 +1,7 @@
 package com.epam.gym.crm.facade.training;
 
 import com.epam.gym.crm.client.workload.ActionType;
-import com.epam.gym.crm.service.workload.ITrainerWorkloadService;
+import com.epam.gym.crm.client.workload.notifier.ITrainerWorkloadNotifier;
 import com.epam.gym.crm.controller.rest.training.dto.request.CreateTrainingRequest;
 import com.epam.gym.crm.controller.rest.training.dto.request.GetTraineeTrainingsRequest;
 import com.epam.gym.crm.controller.rest.training.dto.request.GetTrainerTrainingRequest;
@@ -39,7 +39,7 @@ public class TrainingFacade implements ITrainingFacade {
     private final ITrainerService trainerService;
     private final ITrainingService trainingService;
     private final ITrainingTypeService trainingTypeService;
-    private final ITrainerWorkloadService trainerWorkloadService;
+    private final ITrainerWorkloadNotifier trainerWorkloadService;
     private final ConversionService conversionService;
 
     @Override

@@ -13,7 +13,7 @@ import org.mapstruct.extensions.spring.SpringMapperConfig;
     unmappedTargetPolicy = ReportingPolicy.IGNORE
 )
 @SpringMapperConfig(
-    conversionServiceAdapterPackage = "com.epam.gym.configuration"
+    conversionServiceAdapterPackage = "com.epam.gym.crm.configuration"
 )
 public interface IMapStructConfiguration {
 

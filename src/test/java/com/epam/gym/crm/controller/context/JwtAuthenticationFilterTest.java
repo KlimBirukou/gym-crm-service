@@ -1,6 +1,5 @@
 package com.epam.gym.crm.controller.context;
 
-import com.epam.gym.service.auth.jwt.IJwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

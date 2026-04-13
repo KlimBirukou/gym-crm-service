@@ -28,7 +28,7 @@ public class TraineeFacade implements ITraineeFacade {
     private final TraineeService traineeService;
     private final ConversionService conversionService;
     private final IUserService userService;
-    private final ITrainerWorkloadService trainerWorkloadService;
+    private final ITrainerWorkloadService trainerWorkloadProcessor;
 
     @Override
     @Transactional(readOnly = true)
@@ -69,7 +69,7 @@ public class TraineeFacade implements ITraineeFacade {
     @Transactional
     public void delete(@NonNull String username) {
         log.info("Delete trainee. Started. Username={}", username);
-        trainerWorkloadService.processMany(username);
+        trainerWorkloadProcessor.processMany(username);
         traineeService.delete(username);
         log.info("Delete trainee. Finished. Username={}", username);
     }
