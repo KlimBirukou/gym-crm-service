@@ -1,0 +1,72 @@
+package com.epam.gym.crm.controller.context;
+
+import com.epam.gym.crm.configuration.properties.RequestUidProperties;
+import jakarta.servlet.FilterChain;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.MDC;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
+
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+
+@ExtendWith(MockitoExtension.class)
+class RequestUidMdcFilterTest {
+
+    private static final String MDC_KEY = "key";
+    private static final String REQUEST_HEADER_NAME = "name";
+
+    @Mock
+    private RequestUidProperties requestUidProperties;
+
+    @InjectMocks
+    private RequestUidMdcFilter testObject;
+
+    @BeforeEach
+    void setUp() {
+        lenient().doReturn(MDC_KEY).when(requestUidProperties).mdcKey();
+        lenient().doReturn(REQUEST_HEADER_NAME).when(requestUidProperties).headerName();
+    }
+
+    @AfterEach
+    void tearDown() {
+        MDC.clear();
+    }
+
+    @Test
+    void doFilterInternal_shouldUseHeaderIfPresent() throws Exception {
+        var existingUid = UUID.randomUUID().toString();
+        var request = new MockHttpServletRequest();
+        request.addHeader(REQUEST_HEADER_NAME, existingUid);
+        var response = new MockHttpServletResponse();
+        var chain = mock(FilterChain.class);
+
+        testObject.doFilterInternal(request, response, chain);
+
+        assertEquals(existingUid, response.getHeader(REQUEST_HEADER_NAME));
+        verify(chain).doFilter(request, response);
+    }
+
+    @Test
+    void doFilterInternal_shouldGenerateUidIfHeaderMissing() throws Exception {
+        var request = new MockHttpServletRequest();
+        var response = new MockHttpServletResponse();
+        var chain = mock(FilterChain.class);
+
+        testObject.doFilterInternal(request, response, chain);
+
+        assertNotNull(response.getHeader(REQUEST_HEADER_NAME));
+        verify(chain).doFilter(request, response);
+    }
+}

@@ -6,9 +6,6 @@ databaseChangeLog:
       file: user-changelog.yaml
       relativeToChangeLogFile: true
   - include:
-      file: login-attempt-changelog.yaml
-      relativeToChangeLogFile: true
-  - include:
       file: trainee-changelog.yaml
       relativeToChangeLogFile: true
   - include:

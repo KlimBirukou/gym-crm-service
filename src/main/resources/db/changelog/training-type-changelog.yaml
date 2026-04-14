@@ -5,7 +5,7 @@ databaseChangeLog:
       changes:
         - createTable:
             tableName: training_type
-            schemaName: gym_schema
+            schemaName: gym_crm_schema
             remarks: Stores training-type enumeration to training
             columns:
               - column:

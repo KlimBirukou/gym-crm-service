@@ -1,4 +1,4 @@
-INSERT INTO gym_schema.training_type (name) VALUES
+INSERT INTO gym_crm_schema.training_type (name) VALUES
 ('Martial Arts'),
 ('Meditation'),
 ('Fencing'),

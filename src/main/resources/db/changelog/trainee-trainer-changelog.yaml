@@ -5,7 +5,7 @@ databaseChangeLog:
       changes:
         - createTable:
             tableName: trainee_trainer
-            schemaName: gym_schema
+            schemaName: gym_crm_schema
             remarks: Join table between trainee and trainer
             columns:
               - column:

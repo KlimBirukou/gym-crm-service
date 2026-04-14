@@ -5,7 +5,7 @@ databaseChangeLog:
       changes:
         - createTable:
             tableName: training
-            schemaName: gym_schema
+            schemaName: gym_crm_schema
             remarks: Create table for storing trainings
             columns:
               - column:

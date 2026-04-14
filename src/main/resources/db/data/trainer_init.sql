@@ -1,5 +1,5 @@
 WITH u_data AS (
-    INSERT INTO gym_schema.user (first_name, last_name, username, password, is_active)
+    INSERT INTO gym_crm_schema.user (first_name, last_name, username, password, is_active)
     VALUES
         ('Vesemir', 'Oldman', 'Vesemir.Oldman', '$2a$12$.Gc3o.dussXb8yPnGs5HrelRhxqayZVbx9lnDp7mw//usBcL1Dji2', true), -- password8
         ('Master', 'Yoda', 'Master.Yoda', '$2a$12$ZTMedwCtbwL7FL1bFfpD1e7DIl6SY3Z2I89kG3TqRLQpGUBbKih8y', true), -- password9
@@ -8,7 +8,7 @@ WITH u_data AS (
         ('John', 'Wick', 'John.Wick', '$2a$12$BfCn9buk2Z1aPLmbdUN/o.w3sYVSREAXIPUIcyZV6.ygIecZK2IXO', false)  --password12
     RETURNING uid, username
 )
-INSERT INTO gym_schema.trainer (uid, user_uid, training_type_uid)
+INSERT INTO gym_crm_schema.trainer (uid, user_uid, training_type_uid)
 SELECT t.uid, ud.uid, tt.uid
 FROM (VALUES
     ('40000000-0000-0000-0000-000000000001'::UUID, 'Vesemir.Oldman', 'Martial Arts'),
@@ -18,4 +18,4 @@ FROM (VALUES
     ('40000000-0000-0000-0000-000000000005'::UUID, 'John.Wick', 'Martial Arts')
 ) AS t(uid, uname, spec_name)
 JOIN u_data ud ON ud.username = t.uname
-JOIN gym_schema.training_type tt ON tt.name = t.spec_name;
+JOIN gym_crm_schema.training_type tt ON tt.name = t.spec_name;
