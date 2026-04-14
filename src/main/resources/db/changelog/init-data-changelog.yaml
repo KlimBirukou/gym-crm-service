@@ -22,6 +22,3 @@ databaseChangeLog:
         - sqlFile:
             path: ../data/assignment_init.sql
             relativeToChangelogFile: true
-        - sqlFile:
-            path: ../data/training_init.sql
-            relativeToChangelogFile: true
