@@ -1,7 +1,7 @@
 package com.epam.gym.crm.service.workload;
 
-import com.epam.gym.crm.client.workload.ActionType;
-import com.epam.gym.crm.client.workload.notifier.ITrainerWorkloadNotifier;
+import com.epam.gym.crm.sender.EventType;
+import com.epam.gym.crm.sender.ITrainerWorkloadUpdateEventSender;
 import com.epam.gym.crm.domain.training.Training;
 import com.epam.gym.crm.domain.user.Trainer;
 import com.epam.gym.crm.service.trainer.ITrainerService;
@@ -53,7 +53,7 @@ class TrainerWorkloadServiceTest {
     @Mock
     private Clock clock;
     @Mock
-    private ITrainerWorkloadNotifier workloadService;
+    private ITrainerWorkloadUpdateEventSender workloadService;
 
     @InjectMocks
     private TrainerWorkloadService testObject;
@@ -81,7 +81,7 @@ class TrainerWorkloadServiceTest {
 
         verify(trainingService).getTraineeTrainings(dto);
         verify(trainerService).getByUids(List.of(TRAINER_UID_1));
-        verify(workloadService).notify(training, TRAINER_USERNAME_1, ActionType.DELETE);
+        verify(workloadService).notify(training, TRAINER_USERNAME_1, EventType.DELETE);
     }
 
     @Test
@@ -98,8 +98,8 @@ class TrainerWorkloadServiceTest {
 
         verify(trainingService).getTraineeTrainings(dto);
         verify(trainerService).getByUids(List.of(TRAINER_UID_1, TRAINER_UID_2));
-        verify(workloadService).notify(training1, TRAINER_USERNAME_1, ActionType.DELETE);
-        verify(workloadService).notify(training2, TRAINER_USERNAME_2, ActionType.DELETE);
+        verify(workloadService).notify(training1, TRAINER_USERNAME_1, EventType.DELETE);
+        verify(workloadService).notify(training2, TRAINER_USERNAME_2, EventType.DELETE);
     }
 
     @Test
@@ -116,7 +116,7 @@ class TrainerWorkloadServiceTest {
         verify(trainingService).getTraineeTrainings(dto);
         verify(trainerService, times(1)).getByUids(List.of(TRAINER_UID_1));
         verify(workloadService, times(2))
-            .notify(any(), eq(TRAINER_USERNAME_1), eq(ActionType.DELETE));
+            .notify(any(), eq(TRAINER_USERNAME_1), eq(EventType.DELETE));
     }
 
     @Test

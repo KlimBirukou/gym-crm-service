@@ -1,7 +1,7 @@
 package com.epam.gym.crm.service.workload;
 
-import com.epam.gym.crm.client.workload.ActionType;
-import com.epam.gym.crm.client.workload.notifier.ITrainerWorkloadNotifier;
+import com.epam.gym.crm.sender.EventType;
+import com.epam.gym.crm.sender.ITrainerWorkloadUpdateEventSender;
 import com.epam.gym.crm.domain.training.Training;
 import com.epam.gym.crm.domain.user.Trainer;
 import com.epam.gym.crm.service.trainer.ITrainerService;
@@ -27,7 +27,7 @@ public class TrainerWorkloadService implements ITrainerWorkloadService {
     private final ITrainingService trainingService;
     private final ITrainerService trainerService;
     private final Clock clock;
-    private final ITrainerWorkloadNotifier workloadService;
+    private final ITrainerWorkloadUpdateEventSender workloadService;
 
     @Override
     @Transactional(readOnly = true)
@@ -42,7 +42,7 @@ public class TrainerWorkloadService implements ITrainerWorkloadService {
         var trainerUidToUsernameMapping = fetchTrainingsTrainerData(trainings)
             .collect(Collectors.toMap(Trainer::getUid, Trainer::getUsername));
         trainings.forEach(t ->
-            workloadService.notify(t, trainerUidToUsernameMapping.get(t.getTrainerUid()), ActionType.DELETE)
+            workloadService.notify(t, trainerUidToUsernameMapping.get(t.getTrainerUid()), EventType.DELETE)
         );
     }
 
