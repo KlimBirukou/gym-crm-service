@@ -1,7 +1,7 @@
 package com.epam.gym.crm.facade.training;
 
-import com.epam.gym.crm.client.workload.ActionType;
-import com.epam.gym.crm.client.workload.notifier.ITrainerWorkloadNotifier;
+import com.epam.gym.crm.sender.EventType;
+import com.epam.gym.crm.sender.ITrainerWorkloadUpdateEventSender;
 import com.epam.gym.crm.controller.rest.training.dto.request.CreateTrainingRequest;
 import com.epam.gym.crm.controller.rest.training.dto.request.GetTraineeTrainingsRequest;
 import com.epam.gym.crm.controller.rest.training.dto.request.GetTrainerTrainingRequest;
@@ -62,7 +62,7 @@ class TrainingFacadeTest {
     @Mock
     private ITrainingTypeService trainingTypeService;
     @Mock
-    private ITrainerWorkloadNotifier trainerWorkloadService;
+    private ITrainerWorkloadUpdateEventSender trainerWorkloadService;
     @Mock
     private ConversionService conversionService;
 
@@ -77,13 +77,13 @@ class TrainingFacadeTest {
         var training = buildTraining();
         doReturn(createTrainingDto).when(conversionService).convert(request, CreateTrainingDto.class);
         doReturn(training).when(trainingService).create(createTrainingDto);
-        doNothing().when(trainerWorkloadService).notify(training, createTrainingDto.trainerUsername(), ActionType.ADD);
+        doNothing().when(trainerWorkloadService).notify(training, createTrainingDto.trainerUsername(), EventType.ADD);
 
         testObject.create(request);
 
         verify(conversionService).convert(request, CreateTrainingDto.class);
         verify(trainingService).create(createTrainingDto);
-        verify(trainerWorkloadService).notify(training, createTrainingDto.trainerUsername(), ActionType.ADD);
+        verify(trainerWorkloadService).notify(training, createTrainingDto.trainerUsername(), EventType.ADD);
     }
 
     @ParameterizedTest
