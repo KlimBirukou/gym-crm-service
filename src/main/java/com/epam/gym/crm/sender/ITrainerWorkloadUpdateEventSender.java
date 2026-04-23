@@ -5,5 +5,5 @@ import lombok.NonNull;
 
 public interface ITrainerWorkloadUpdateEventSender {
 
-    void notify(@NonNull Training training, @NonNull String trainerUsername, @NonNull EventType actionType);
+    void notify(@NonNull Training training, @NonNull String trainerUsername, @NonNull WorkloadUpdateEventType actionType);
 }

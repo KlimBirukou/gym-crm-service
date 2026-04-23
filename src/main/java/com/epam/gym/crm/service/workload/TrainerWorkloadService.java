@@ -1,6 +1,6 @@
 package com.epam.gym.crm.service.workload;
 
-import com.epam.gym.crm.sender.EventType;
+import com.epam.gym.crm.sender.WorkloadUpdateEventType;
 import com.epam.gym.crm.sender.ITrainerWorkloadUpdateEventSender;
 import com.epam.gym.crm.domain.training.Training;
 import com.epam.gym.crm.domain.user.Trainer;
@@ -42,7 +42,7 @@ public class TrainerWorkloadService implements ITrainerWorkloadService {
         var trainerUidToUsernameMapping = fetchTrainingsTrainerData(trainings)
             .collect(Collectors.toMap(Trainer::getUid, Trainer::getUsername));
         trainings.forEach(t ->
-            workloadService.notify(t, trainerUidToUsernameMapping.get(t.getTrainerUid()), EventType.DELETE)
+            workloadService.notify(t, trainerUidToUsernameMapping.get(t.getTrainerUid()), WorkloadUpdateEventType.DELETE)
         );
     }
 

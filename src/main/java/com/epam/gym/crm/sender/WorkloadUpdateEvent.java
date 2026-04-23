@@ -8,12 +8,12 @@ import java.time.LocalDate;
 
 @Builder
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public record TrainerWorkloadUpdateEvent(
+public record WorkloadUpdateEvent(
 
     String trainerUsername,
     LocalDate trainingDate,
     int trainingDuration,
-    EventType actionType
+    WorkloadUpdateEventType eventType
 ) {
 
 }

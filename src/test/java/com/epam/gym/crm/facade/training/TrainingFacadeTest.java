@@ -1,6 +1,6 @@
 package com.epam.gym.crm.facade.training;
 
-import com.epam.gym.crm.sender.EventType;
+import com.epam.gym.crm.sender.WorkloadUpdateEventType;
 import com.epam.gym.crm.sender.ITrainerWorkloadUpdateEventSender;
 import com.epam.gym.crm.controller.rest.training.dto.request.CreateTrainingRequest;
 import com.epam.gym.crm.controller.rest.training.dto.request.GetTraineeTrainingsRequest;
@@ -77,13 +77,13 @@ class TrainingFacadeTest {
         var training = buildTraining();
         doReturn(createTrainingDto).when(conversionService).convert(request, CreateTrainingDto.class);
         doReturn(training).when(trainingService).create(createTrainingDto);
-        doNothing().when(trainerWorkloadService).notify(training, createTrainingDto.trainerUsername(), EventType.ADD);
+        doNothing().when(trainerWorkloadService).notify(training, createTrainingDto.trainerUsername(), WorkloadUpdateEventType.ADD);
 
         testObject.create(request);
 
         verify(conversionService).convert(request, CreateTrainingDto.class);
         verify(trainingService).create(createTrainingDto);
-        verify(trainerWorkloadService).notify(training, createTrainingDto.trainerUsername(), EventType.ADD);
+        verify(trainerWorkloadService).notify(training, createTrainingDto.trainerUsername(), WorkloadUpdateEventType.ADD);
     }
 
     @ParameterizedTest

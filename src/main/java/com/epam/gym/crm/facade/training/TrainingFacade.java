@@ -1,6 +1,6 @@
 package com.epam.gym.crm.facade.training;
 
-import com.epam.gym.crm.sender.EventType;
+import com.epam.gym.crm.sender.WorkloadUpdateEventType;
 import com.epam.gym.crm.sender.ITrainerWorkloadUpdateEventSender;
 import com.epam.gym.crm.controller.rest.training.dto.request.CreateTrainingRequest;
 import com.epam.gym.crm.controller.rest.training.dto.request.GetTraineeTrainingsRequest;
@@ -48,7 +48,7 @@ public class TrainingFacade implements ITrainingFacade {
         log.info("Create training. Started. Request={}", request);
         var dto = conversionService.convert(request, CreateTrainingDto.class);
         var training = trainingService.create(dto);
-        trainerWorkloadService.notify(training, dto.trainerUsername(), EventType.ADD);
+        trainerWorkloadService.notify(training, dto.trainerUsername(), WorkloadUpdateEventType.ADD);
         log.info("Create trainings. Finished. Training={}", training);
     }
 

@@ -1,6 +1,6 @@
 package com.epam.gym.crm.configuration;
 
-import com.epam.gym.crm.sender.TrainerWorkloadUpdateEvent;
+import com.epam.gym.crm.sender.WorkloadUpdateEvent;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.kafka.support.serializer.JacksonJsonSerializer;
@@ -20,7 +20,7 @@ public class KafkaProducerConfiguration {
     private String bootstrapServers;
 
     @Bean
-    public ProducerFactory<String, TrainerWorkloadUpdateEvent> producerFactory() {
+    public ProducerFactory<String, WorkloadUpdateEvent> producerFactory() {
         return new DefaultKafkaProducerFactory<>(Map.of(
             ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers,
             ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class,
@@ -33,8 +33,8 @@ public class KafkaProducerConfiguration {
     }
 
     @Bean
-    public KafkaTemplate<String, TrainerWorkloadUpdateEvent> kafkaTemplate(
-        ProducerFactory<String, TrainerWorkloadUpdateEvent> producerFactory) {
+    public KafkaTemplate<String, WorkloadUpdateEvent> kafkaTemplate(
+        ProducerFactory<String, WorkloadUpdateEvent> producerFactory) {
         return new KafkaTemplate<>(producerFactory);
     }
 }
