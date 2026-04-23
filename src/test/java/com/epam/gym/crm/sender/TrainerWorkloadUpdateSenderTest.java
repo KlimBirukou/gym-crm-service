@@ -40,12 +40,12 @@ class TrainerWorkloadUpdateSenderTest {
     private static final int DURATION_MINUTES = 120;
 
     @Mock
-    private KafkaTemplate<String, TrainerWorkloadUpdateEvent> kafkaTemplate;
+    private KafkaTemplate<String, WorkloadUpdateEvent> kafkaTemplate;
     @Mock
     private RequestUidProperties requestUidProperties;
 
     @Captor
-    private ArgumentCaptor<ProducerRecord<String, TrainerWorkloadUpdateEvent>> recordCaptor;
+    private ArgumentCaptor<ProducerRecord<String, WorkloadUpdateEvent>> recordCaptor;
 
     @InjectMocks
     private TrainerWorkloadUpdateEventSender testObject;
@@ -59,7 +59,7 @@ class TrainerWorkloadUpdateSenderTest {
     void notify_shouldSendRecord_whenValidInput() {
         setupMocks();
 
-        testObject.notify(buildTraining(), TRAINER_USERNAME, EventType.ADD);
+        testObject.notify(buildTraining(), TRAINER_USERNAME, WorkloadUpdateEventType.ADD);
 
         verify(kafkaTemplate).send(recordCaptor.capture());
         var payload = recordCaptor.getValue().value();
@@ -69,13 +69,13 @@ class TrainerWorkloadUpdateSenderTest {
         assertEquals(TRAINER_USERNAME, payload.trainerUsername());
         assertEquals(DATE, payload.trainingDate());
         assertEquals(DURATION_MINUTES, payload.trainingDuration());
-        assertEquals(EventType.ADD, payload.actionType());
+        assertEquals(WorkloadUpdateEventType.ADD, payload.eventType());
     }
 
     private static Stream<Arguments> provideNullArguments() {
         return Stream.of(
-            Arguments.of(null, TRAINER_USERNAME, EventType.ADD),
-            Arguments.of(buildTraining(), null, EventType.ADD),
+            Arguments.of(null, TRAINER_USERNAME, WorkloadUpdateEventType.ADD),
+            Arguments.of(buildTraining(), null, WorkloadUpdateEventType.ADD),
             Arguments.of(buildTraining(), TRAINER_USERNAME, null)
         );
     }
@@ -84,7 +84,7 @@ class TrainerWorkloadUpdateSenderTest {
     @MethodSource("provideNullArguments")
     void notify_shouldThrowException_whenArgumentIsNull(Training training,
                                                      String trainerUsername,
-                                                     EventType actionType) {
+                                                     WorkloadUpdateEventType actionType) {
         assertThrows(NullPointerException.class,
             () -> testObject.notify(training, trainerUsername, actionType));
     }

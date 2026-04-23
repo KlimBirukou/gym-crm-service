@@ -1,5 +1,5 @@
 package com.epam.gym.crm.sender;
 
-public enum EventType {
+public enum WorkloadUpdateEventType {
     ADD, DELETE
 }

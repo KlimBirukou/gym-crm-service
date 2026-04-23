@@ -19,7 +19,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class TrainerWorkloadUpdateEventSender implements ITrainerWorkloadUpdateEventSender {
 
-    private final KafkaTemplate<String, TrainerWorkloadUpdateEvent> kafkaTemplate;
+    private final KafkaTemplate<String, WorkloadUpdateEvent> kafkaTemplate;
     private final RequestUidProperties requestUidProperties;
 
     @Value("${application.messaging.topics.trainer-workload}")
@@ -28,21 +28,21 @@ public class TrainerWorkloadUpdateEventSender implements ITrainerWorkloadUpdateE
     @Override
     public void notify(@NonNull Training training,
                        @NonNull String trainerUsername,
-                       @NonNull EventType actionType) {
+                       @NonNull WorkloadUpdateEventType actionType) {
         log.info(
             "Notify workload service. Started. Trainer={}, Duration={}, Date={}, ActionType={}",
             trainerUsername, training.getDuration(), training.getDate(), actionType
         );
-        var request = TrainerWorkloadUpdateEvent.builder()
+        var request = WorkloadUpdateEvent.builder()
             .trainerUsername(trainerUsername)
             .trainingDate(training.getDate())
             .trainingDuration((int) training.getDuration().toMinutes())
-            .actionType(actionType)
+            .eventType(actionType)
             .build();
         send(trainerUsername, request);
     }
 
-    private void send(@NonNull String trainerUsername, TrainerWorkloadUpdateEvent request) {
+    private void send(@NonNull String trainerUsername, WorkloadUpdateEvent request) {
         kafkaTemplate.send(createRecord(trainerUsername, request))
             .thenAccept(result ->
                 log.info("Notify workload service. Finished. Trainer={}, Partition={}, Offset={}",
@@ -52,7 +52,7 @@ public class TrainerWorkloadUpdateEventSender implements ITrainerWorkloadUpdateE
             .join();
     }
 
-    private ProducerRecord<String, TrainerWorkloadUpdateEvent> createRecord(String key, TrainerWorkloadUpdateEvent payload) {
+    private ProducerRecord<String, WorkloadUpdateEvent> createRecord(String key, WorkloadUpdateEvent payload) {
         var headerValue = Optional.ofNullable(MDC.get(requestUidProperties.mdcKey()))
             .orElse("")
             .getBytes(StandardCharsets.UTF_8);
